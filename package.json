@@ -1,0 +1,21 @@
+{
+  "name": "accountable",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "test": "node scripts/test.mjs",
+    "seed": "node scripts/ensure-deps.mjs --uv-only && uv run python -m backend.seed"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
+    "concurrently": "^10.0.7"
+  }
+}

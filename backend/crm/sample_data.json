@@ -1,120 +1,380 @@
 {
   "about": [
-    "The sample records shown in the mockups (docs/mockups/), saved so the app can be built to match them. crm/sample_data.py turns these offsets into dates on the day the data is made, and adds what this file leaves out.",
-    "Made from the mockups dated Mon Nov 16, 2026. On that date these records give the mockups' figures: open pipeline $9,040,000 across 17 deals, expected revenue $3,481,000, won this month $1,080,000 from 2 deals, won in the last 12 months $7,710,000 from 16 deals, 3 deals late."
+    "The sample data, made fresh from this list each time with every date counted from the day the data is made. crm/sample_data.py turns the offsets into dates and adds the records.",
+    "The organizations, the first 15 contacts, all 40 deals, the first 9 follow-ups and the recent activity are the records shown in the mockups (docs/mockups/). On Mon Nov 16, 2026 they give the mockups' figures: open pipeline $9,040,000 across 17 deals, expected revenue $3,481,000, won this month $1,080,000 from 2 deals, won in the last 12 months $7,710,000 from 16 deals, 3 deals late.",
+    "Every other activity and stage change is older than the tenth recent item, so the dashboard's recent activity matches the mockup on that date."
   ],
   "dates": {
     "daysFromToday": "That many days after today, or before it when negative.",
     "monthsAgoAndDay": "For won deals: that day of the month, monthsAgo calendar months before the current month. A day past the end of a short month becomes its last day, and a date after today becomes today. This keeps the right wins in each month on any date, including the 1st and the 31st.",
     "time": "Local time of day, 24-hour. An entry dated today whose time is still to come is moved to a few minutes before the data is made, so recent activity never shows the future.",
-    "onCloseDate": "The stage change happens on the deal's close date, since moving a deal to Won or Lost sets its close date."
+    "onCloseDate": "The stage change happens on the deal's close date, since moving a deal to Won or Lost sets its close date.",
+    "daysBeforeClose": "For closed deals: that many days before the deal's close date.",
+    "dueInDays": "A follow-up's date: that many days after today, or before it when negative."
   },
   "boardOrder": "Deals are listed in board order within each stage: the first open deal at a stage is the top card in its column. Won and Lost are newest first.",
-  "stillToAdd": [
-    "About 21 more contacts, two to four per organization, so there are about 36, with Lead, Qualified and Customer all well represented. Each contact needs a status, job title, email under a made-up company domain ending in .example.com, and phone.",
-    "Each organization needs an industry (at least six across the twelve), a website and notes.",
-    "Stage history for every deal past New, between its start and today or its close, matching furthestStage, including the stage changes listed under recentActivity.",
-    "About 120 activities over the last 12 months, including the ones listed here, linked to a contact, a deal or both.",
-    "Each follow-up below needs its activity type and when it was logged. Add 4 more follow-ups due later than 7 days from today, and some marked done."
-  ],
   "organizations": [
     {
-      "name": "Atlas Freight"
+      "name": "Atlas Freight",
+      "industry": "Logistics",
+      "website": "https://www.atlasfreight.example.com",
+      "notes": "Regional trucking and warehousing across the South. Renewal customer since 2021, with the southern routes as their biggest lanes."
     },
     {
-      "name": "Bluepeak Energy"
+      "name": "Bluepeak Energy",
+      "industry": "Energy",
+      "website": "https://www.bluepeak.example.com",
+      "notes": "Wind and gas operator with ten turbines coming out of warranty. Finance signs off anything over $500,000."
     },
     {
-      "name": "Brightline Insurance"
+      "name": "Brightline Insurance",
+      "industry": "Financial services",
+      "website": "https://www.brightline.example.com",
+      "notes": "Mid-size insurer replacing its core systems. Security reviews come before any demo."
     },
     {
-      "name": "Cedar Valley Foods"
+      "name": "Cedar Valley Foods",
+      "industry": "Food and beverage",
+      "website": "https://www.cedarvalley.example.com",
+      "notes": "Four plants making packaged foods. Busy season runs from August to October, so work is planned around it."
     },
     {
-      "name": "Granite Ridge Construction"
+      "name": "Granite Ridge Construction",
+      "industry": "Construction",
+      "website": "https://www.graniteridge.example.com",
+      "notes": "General contractor on hospital and school projects. Buys per project, with delivery in phases."
     },
     {
-      "name": "Harbor Health Partners"
+      "name": "Harbor Health Partners",
+      "industry": "Healthcare",
+      "website": "https://www.harborhealth.example.com",
+      "notes": "Three clinics and a small hospital. Clinical sign-off is needed for anything on the wards."
     },
     {
-      "name": "Ironwood Fabrication"
+      "name": "Ironwood Fabrication",
+      "industry": "Manufacturing",
+      "website": "https://www.ironwood.example.com",
+      "notes": "Steel fabrication for trailers and frames. Procurement wants to be copied on every quote."
     },
     {
-      "name": "Keystone Capital"
+      "name": "Keystone Capital",
+      "industry": "Financial services",
+      "website": "https://www.keystonecap.example.com",
+      "notes": "Regional bank with forty branches and a trading floor in the city. Long buying cycles, reliable payer."
     },
     {
-      "name": "Meridian Labs"
+      "name": "Meridian Labs",
+      "industry": "Life sciences",
+      "website": "https://www.meridianlabs.example.com",
+      "notes": "Contract research lab growing fast. Moving into a new building next year."
     },
     {
-      "name": "Northwind Metals"
+      "name": "Northwind Metals",
+      "industry": "Manufacturing",
+      "website": "https://www.northwind.example.com",
+      "notes": "Steel and alloy producer, our largest account. Supply agreements are renewed each autumn."
     },
     {
-      "name": "Solano Utilities"
+      "name": "Solano Utilities",
+      "industry": "Utilities",
+      "website": "https://www.solano.example.com",
+      "notes": "Electric and water utility for the valley. Works to a two-year capital plan."
     },
     {
-      "name": "Summit Rail Logistics"
+      "name": "Summit Rail Logistics",
+      "industry": "Logistics",
+      "website": "https://www.summitrail.example.com",
+      "notes": "Rail freight operator with two yards. Lost the tracking deal on price, still buying signals and software."
     }
   ],
   "contacts": [
     {
       "name": "Aisha Rahman",
-      "organization": "Meridian Labs"
+      "organization": "Meridian Labs",
+      "status": "customer",
+      "jobTitle": "Director of Lab Operations",
+      "email": "aisha.rahman@meridianlabs.example.com",
+      "phone": "+1 (617) 555-0114"
     },
     {
       "name": "Ben Adler",
-      "organization": "Summit Rail Logistics"
+      "organization": "Summit Rail Logistics",
+      "status": "customer",
+      "jobTitle": "Head of Operations",
+      "email": "ben.adler@summitrail.example.com",
+      "phone": "+1 (303) 555-0127"
     },
     {
       "name": "Carlos Mendes",
-      "organization": "Ironwood Fabrication"
+      "organization": "Ironwood Fabrication",
+      "status": "customer",
+      "jobTitle": "Plant Manager",
+      "email": "carlos.mendes@ironwood.example.com",
+      "phone": "+1 (414) 555-0131"
     },
     {
       "name": "Dana Ortiz",
-      "organization": "Atlas Freight"
+      "organization": "Atlas Freight",
+      "status": "customer",
+      "jobTitle": "VP Logistics",
+      "email": "dana.ortiz@atlasfreight.example.com",
+      "phone": "+1 (404) 555-0108"
     },
     {
       "name": "Ethan Cole",
-      "organization": "Brightline Insurance"
+      "organization": "Brightline Insurance",
+      "status": "qualified",
+      "jobTitle": "CIO",
+      "email": "ethan.cole@brightline.example.com",
+      "phone": "+1 (860) 555-0145"
     },
     {
       "name": "Grace Kim",
-      "organization": "Cedar Valley Foods"
+      "organization": "Cedar Valley Foods",
+      "status": "customer",
+      "jobTitle": "Operations Director",
+      "email": "grace.kim@cedarvalley.example.com",
+      "phone": "+1 (559) 555-0152"
     },
     {
       "name": "Henry Liu",
-      "organization": "Keystone Capital"
+      "organization": "Keystone Capital",
+      "status": "customer",
+      "jobTitle": "Head of Facilities",
+      "email": "henry.liu@keystonecap.example.com",
+      "phone": "+1 (212) 555-0163"
     },
     {
       "name": "Lena Moreau",
-      "organization": "Harbor Health Partners"
+      "organization": "Harbor Health Partners",
+      "status": "customer",
+      "jobTitle": "Chief Nursing Officer",
+      "email": "lena.moreau@harborhealth.example.com",
+      "phone": "+1 (206) 555-0170"
     },
     {
       "name": "Marcus Hale",
-      "organization": "Bluepeak Energy"
+      "organization": "Bluepeak Energy",
+      "status": "customer",
+      "jobTitle": "Asset Manager",
+      "email": "marcus.hale@bluepeak.example.com",
+      "phone": "+1 (512) 555-0181"
     },
     {
       "name": "Nora Fitz",
-      "organization": "Solano Utilities"
+      "organization": "Solano Utilities",
+      "status": "customer",
+      "jobTitle": "Director of Grid Operations",
+      "email": "nora.fitz@solano.example.com",
+      "phone": "+1 (916) 555-0119"
     },
     {
       "name": "Olivia Grant",
-      "organization": "Granite Ridge Construction"
+      "organization": "Granite Ridge Construction",
+      "status": "customer",
+      "jobTitle": "Project Director",
+      "email": "olivia.grant@graniteridge.example.com",
+      "phone": "+1 (602) 555-0136"
     },
     {
       "name": "Priya Shah",
-      "organization": "Northwind Metals"
+      "organization": "Northwind Metals",
+      "status": "customer",
+      "jobTitle": "Procurement Director",
+      "email": "priya.shah@northwind.example.com",
+      "phone": "+1 (412) 555-0142"
     },
     {
       "name": "Raj Patel",
-      "organization": "Harbor Health Partners"
+      "organization": "Harbor Health Partners",
+      "status": "qualified",
+      "jobTitle": "Head of Radiology",
+      "email": "raj.patel@harborhealth.example.com",
+      "phone": "+1 (206) 555-0177"
     },
     {
       "name": "Sam Whitfield",
-      "organization": "Atlas Freight"
+      "organization": "Atlas Freight",
+      "status": "qualified",
+      "jobTitle": "Fleet Manager",
+      "email": "sam.whitfield@atlasfreight.example.com",
+      "phone": "+1 (404) 555-0193"
     },
     {
       "name": "Tom Becker",
-      "organization": "Northwind Metals"
+      "organization": "Northwind Metals",
+      "status": "customer",
+      "jobTitle": "Plant Engineer",
+      "email": "tom.becker@northwind.example.com",
+      "phone": "+1 (412) 555-0158"
+    },
+    {
+      "name": "Kevin Brooks",
+      "organization": "Atlas Freight",
+      "status": "qualified",
+      "jobTitle": "Southern Routes Manager",
+      "email": "kevin.brooks@atlasfreight.example.com",
+      "phone": "+1 (404) 555-0121"
+    },
+    {
+      "name": "Hannah Weiss",
+      "organization": "Bluepeak Energy",
+      "status": "lead",
+      "jobTitle": "Finance Director",
+      "email": "hannah.weiss@bluepeak.example.com",
+      "phone": "+1 (512) 555-0186"
+    },
+    {
+      "name": "Omar Haddad",
+      "organization": "Bluepeak Energy",
+      "status": "qualified",
+      "jobTitle": "Site Engineer",
+      "email": "omar.haddad@bluepeak.example.com",
+      "phone": "+1 (512) 555-0104"
+    },
+    {
+      "name": "Julia Romero",
+      "organization": "Brightline Insurance",
+      "status": "qualified",
+      "jobTitle": "Head of IT Security",
+      "email": "julia.romero@brightline.example.com",
+      "phone": "+1 (860) 555-0149"
+    },
+    {
+      "name": "Peter Novak",
+      "organization": "Brightline Insurance",
+      "status": "lead",
+      "jobTitle": "Policy Operations Manager",
+      "email": "peter.novak@brightline.example.com",
+      "phone": "+1 (860) 555-0112"
+    },
+    {
+      "name": "Luis Ortega",
+      "organization": "Cedar Valley Foods",
+      "status": "lead",
+      "jobTitle": "Plant Manager",
+      "email": "luis.ortega@cedarvalley.example.com",
+      "phone": "+1 (559) 555-0165"
+    },
+    {
+      "name": "Megan Price",
+      "organization": "Cedar Valley Foods",
+      "status": "qualified",
+      "jobTitle": "Quality Lead",
+      "email": "megan.price@cedarvalley.example.com",
+      "phone": "+1 (559) 555-0138"
+    },
+    {
+      "name": "Derek Simmons",
+      "organization": "Granite Ridge Construction",
+      "status": "lead",
+      "jobTitle": "Site Manager",
+      "email": "derek.simmons@graniteridge.example.com",
+      "phone": "+1 (602) 555-0172"
+    },
+    {
+      "name": "Fatima Noor",
+      "organization": "Granite Ridge Construction",
+      "status": "qualified",
+      "jobTitle": "Health and Safety Manager",
+      "email": "fatima.noor@graniteridge.example.com",
+      "phone": "+1 (602) 555-0117"
+    },
+    {
+      "name": "Chloe Bennett",
+      "organization": "Harbor Health Partners",
+      "status": "lead",
+      "jobTitle": "Clinical IT Lead",
+      "email": "chloe.bennett@harborhealth.example.com",
+      "phone": "+1 (206) 555-0124"
+    },
+    {
+      "name": "Ivan Petrov",
+      "organization": "Ironwood Fabrication",
+      "status": "lead",
+      "jobTitle": "Maintenance Lead",
+      "email": "ivan.petrov@ironwood.example.com",
+      "phone": "+1 (414) 555-0189"
+    },
+    {
+      "name": "Sarah Lindqvist",
+      "organization": "Ironwood Fabrication",
+      "status": "lead",
+      "jobTitle": "Procurement Manager",
+      "email": "sarah.lindqvist@ironwood.example.com",
+      "phone": "+1 (414) 555-0146"
+    },
+    {
+      "name": "Rachel Stein",
+      "organization": "Keystone Capital",
+      "status": "lead",
+      "jobTitle": "Procurement Lead",
+      "email": "rachel.stein@keystonecap.example.com",
+      "phone": "+1 (212) 555-0130"
+    },
+    {
+      "name": "Victor Huang",
+      "organization": "Keystone Capital",
+      "status": "qualified",
+      "jobTitle": "Head of Infrastructure",
+      "email": "victor.huang@keystonecap.example.com",
+      "phone": "+1 (212) 555-0198"
+    },
+    {
+      "name": "Daniel Okafor",
+      "organization": "Meridian Labs",
+      "status": "lead",
+      "jobTitle": "Facilities Lead",
+      "email": "daniel.okafor@meridianlabs.example.com",
+      "phone": "+1 (617) 555-0161"
+    },
+    {
+      "name": "Emily Carter",
+      "organization": "Meridian Labs",
+      "status": "qualified",
+      "jobTitle": "Lab Manager",
+      "email": "emily.carter@meridianlabs.example.com",
+      "phone": "+1 (617) 555-0175"
+    },
+    {
+      "name": "Alan Fraser",
+      "organization": "Northwind Metals",
+      "status": "lead",
+      "jobTitle": "Metallurgist",
+      "email": "alan.fraser@northwind.example.com",
+      "phone": "+1 (412) 555-0103"
+    },
+    {
+      "name": "Mei Tanaka",
+      "organization": "Northwind Metals",
+      "status": "qualified",
+      "jobTitle": "Process Engineer",
+      "email": "mei.tanaka@northwind.example.com",
+      "phone": "+1 (412) 555-0187"
+    },
+    {
+      "name": "George Alvarez",
+      "organization": "Solano Utilities",
+      "status": "lead",
+      "jobTitle": "Field Operations Lead",
+      "email": "george.alvarez@solano.example.com",
+      "phone": "+1 (916) 555-0140"
+    },
+    {
+      "name": "Tara Quinn",
+      "organization": "Solano Utilities",
+      "status": "qualified",
+      "jobTitle": "Metering Program Manager",
+      "email": "tara.quinn@solano.example.com",
+      "phone": "+1 (916) 555-0155"
+    },
+    {
+      "name": "Nadia Volkov",
+      "organization": "Summit Rail Logistics",
+      "status": "lead",
+      "jobTitle": "Yard Systems Manager",
+      "email": "nadia.volkov@summitrail.example.com",
+      "phone": "+1 (303) 555-0168"
     }
   ],
   "deals": [
@@ -127,7 +387,11 @@
       "close": {
         "daysFromToday": 256
       },
-      "furthestStage": "new"
+      "furthestStage": "new",
+      "start": {
+        "daysFromToday": -21
+      },
+      "history": []
     },
     {
       "name": "Robotic welding cell",
@@ -138,7 +402,11 @@
       "close": {
         "daysFromToday": 207
       },
-      "furthestStage": "new"
+      "furthestStage": "new",
+      "start": {
+        "daysFromToday": -14
+      },
+      "history": []
     },
     {
       "name": "Claims platform upgrade",
@@ -149,7 +417,11 @@
       "close": {
         "daysFromToday": 150
       },
-      "furthestStage": "new"
+      "furthestStage": "new",
+      "start": {
+        "daysFromToday": -33
+      },
+      "history": []
     },
     {
       "name": "Cold storage expansion",
@@ -160,7 +432,11 @@
       "close": {
         "daysFromToday": 226
       },
-      "furthestStage": "new"
+      "furthestStage": "new",
+      "start": {
+        "daysFromToday": -26
+      },
+      "history": []
     },
     {
       "name": "Packaging line retrofit",
@@ -171,7 +447,11 @@
       "close": {
         "daysFromToday": 185
       },
-      "furthestStage": "new"
+      "furthestStage": "new",
+      "start": {
+        "daysFromToday": -40
+      },
+      "history": []
     },
     {
       "name": "Patient records system",
@@ -182,7 +462,20 @@
       "close": {
         "daysFromToday": 135
       },
-      "furthestStage": "qualified"
+      "furthestStage": "qualified",
+      "start": {
+        "daysFromToday": -75
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -47,
+            "time": "10:15"
+          }
+        }
+      ]
     },
     {
       "name": "Precast panel contract",
@@ -193,7 +486,20 @@
       "close": {
         "daysFromToday": -6
       },
-      "furthestStage": "qualified"
+      "furthestStage": "qualified",
+      "start": {
+        "daysFromToday": -120
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -80,
+            "time": "14:30"
+          }
+        }
+      ]
     },
     {
       "name": "Data center refresh",
@@ -204,7 +510,20 @@
       "close": {
         "daysFromToday": 144
       },
-      "furthestStage": "qualified"
+      "furthestStage": "qualified",
+      "start": {
+        "daysFromToday": -66
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -38,
+            "time": "11:00"
+          }
+        }
+      ]
     },
     {
       "name": "Furnace controls upgrade",
@@ -215,7 +534,20 @@
       "close": {
         "daysFromToday": 106
       },
-      "furthestStage": "qualified"
+      "furthestStage": "qualified",
+      "start": {
+        "daysFromToday": -58
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -29,
+            "time": "15:45"
+          }
+        }
+      ]
     },
     {
       "name": "Yard management software",
@@ -226,7 +558,20 @@
       "close": {
         "daysFromToday": 102
       },
-      "furthestStage": "qualified"
+      "furthestStage": "qualified",
+      "start": {
+        "daysFromToday": -52
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -24,
+            "time": "09:40"
+          }
+        }
+      ]
     },
     {
       "name": "Turbine maintenance contract",
@@ -237,7 +582,28 @@
       "close": {
         "daysFromToday": -12
       },
-      "furthestStage": "proposal"
+      "furthestStage": "proposal",
+      "start": {
+        "daysFromToday": -150
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -110,
+            "time": "10:00"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysFromToday": -64,
+            "time": "16:00"
+          }
+        }
+      ]
     },
     {
       "name": "Fleet telematics",
@@ -248,7 +614,28 @@
       "close": {
         "daysFromToday": 67
       },
-      "furthestStage": "proposal"
+      "furthestStage": "proposal",
+      "start": {
+        "daysFromToday": -98
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -71,
+            "time": "13:20"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysFromToday": -33,
+            "time": "10:50"
+          }
+        }
+      ]
     },
     {
       "name": "ERP rollout",
@@ -259,7 +646,28 @@
       "close": {
         "daysFromToday": 88
       },
-      "furthestStage": "proposal"
+      "furthestStage": "proposal",
+      "start": {
+        "daysFromToday": -105
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -76,
+            "time": "09:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysFromToday": -41,
+            "time": "14:10"
+          }
+        }
+      ]
     },
     {
       "name": "Lab automation",
@@ -270,7 +678,28 @@
       "close": {
         "daysFromToday": 32
       },
-      "furthestStage": "proposal"
+      "furthestStage": "proposal",
+      "start": {
+        "daysFromToday": -88
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -52,
+            "time": "11:45"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysFromToday": -11,
+            "time": "16:20"
+          }
+        }
+      ]
     },
     {
       "name": "Steel supply agreement 2027",
@@ -281,7 +710,36 @@
       "close": {
         "daysFromToday": 25
       },
-      "furthestStage": "negotiation"
+      "furthestStage": "negotiation",
+      "start": {
+        "daysFromToday": -140
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -101,
+            "time": "10:20"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysFromToday": -58,
+            "time": "15:30"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysFromToday": 0,
+            "time": "11:20"
+          }
+        }
+      ]
     },
     {
       "name": "Atlas Freight renewal",
@@ -292,7 +750,36 @@
       "close": {
         "daysFromToday": -17
       },
-      "furthestStage": "negotiation"
+      "furthestStage": "negotiation",
+      "start": {
+        "daysFromToday": -160
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -125,
+            "time": "09:15"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysFromToday": -84,
+            "time": "13:45"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysFromToday": -39,
+            "time": "10:05"
+          }
+        }
+      ]
     },
     {
       "name": "Imaging equipment lease",
@@ -303,7 +790,36 @@
       "close": {
         "daysFromToday": 60
       },
-      "furthestStage": "negotiation"
+      "furthestStage": "negotiation",
+      "start": {
+        "daysFromToday": -118
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysFromToday": -90,
+            "time": "14:00"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysFromToday": -55,
+            "time": "11:30"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysFromToday": -21,
+            "time": "16:15"
+          }
+        }
+      ]
     },
     {
       "name": "Branch network upgrade",
@@ -315,7 +831,44 @@
         "monthsAgo": 0,
         "day": 12
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 130
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 104,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 63,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 27,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "15:05"
+          }
+        }
+      ]
     },
     {
       "name": "Substation maintenance",
@@ -327,7 +880,44 @@
         "monthsAgo": 0,
         "day": 3
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 95
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 72,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 44,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 18,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "11:40"
+          }
+        }
+      ]
     },
     {
       "name": "Site safety systems",
@@ -339,7 +929,44 @@
         "monthsAgo": 1,
         "day": 21
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 110
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 85,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 50,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 20,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "16:10"
+          }
+        }
+      ]
     },
     {
       "name": "Furnace relining",
@@ -351,7 +978,44 @@
         "monthsAgo": 1,
         "day": 6
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 80
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 61,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 35,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 14,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "10:25"
+          }
+        }
+      ]
     },
     {
       "name": "Cold chain monitoring",
@@ -363,7 +1027,44 @@
         "monthsAgo": 2,
         "day": 29
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 120
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 92,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 55,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 22,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "14:50"
+          }
+        }
+      ]
     },
     {
       "name": "Meter replacement",
@@ -375,7 +1076,44 @@
         "monthsAgo": 2,
         "day": 10
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 140
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 108,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 66,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 25,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "09:55"
+          }
+        }
+      ]
     },
     {
       "name": "Signal upgrade",
@@ -387,7 +1125,44 @@
         "monthsAgo": 4,
         "day": 15
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 90
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 70,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 38,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 16,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "13:15"
+          }
+        }
+      ]
     },
     {
       "name": "Crane rental contract",
@@ -399,7 +1174,44 @@
         "monthsAgo": 5,
         "day": 26
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 60
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 45,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 28,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 10,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "15:30"
+          }
+        }
+      ]
     },
     {
       "name": "Trading floor fit-out",
@@ -411,7 +1223,44 @@
         "monthsAgo": 5,
         "day": 5
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 125
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 97,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 58,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 24,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "11:05"
+          }
+        }
+      ]
     },
     {
       "name": "Pipeline inspection",
@@ -423,7 +1272,44 @@
         "monthsAgo": 6,
         "day": 19
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 100
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 76,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 42,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 17,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "10:40"
+          }
+        }
+      ]
     },
     {
       "name": "CNC line service",
@@ -435,7 +1321,44 @@
         "monthsAgo": 7,
         "day": 24
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 70
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 52,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 30,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 12,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "14:20"
+          }
+        }
+      ]
     },
     {
       "name": "Nurse call system",
@@ -447,7 +1370,44 @@
         "monthsAgo": 7,
         "day": 8
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 150
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 118,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 70,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 28,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "16:45"
+          }
+        }
+      ]
     },
     {
       "name": "Warehouse scanners",
@@ -459,7 +1419,44 @@
         "monthsAgo": 9,
         "day": 18
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 75
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 56,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 33,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 13,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "09:35"
+          }
+        }
+      ]
     },
     {
       "name": "Clean room fit-out",
@@ -471,7 +1468,44 @@
         "monthsAgo": 10,
         "day": 28
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 85
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 63,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 37,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 15,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "12:10"
+          }
+        }
+      ]
     },
     {
       "name": "Alloy supply 2026",
@@ -483,7 +1517,44 @@
         "monthsAgo": 10,
         "day": 14
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 115
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 88,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 52,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 21,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "15:20"
+          }
+        }
+      ]
     },
     {
       "name": "Conveyor replacement",
@@ -495,7 +1566,44 @@
         "monthsAgo": 11,
         "day": 9
       },
-      "furthestStage": "won"
+      "furthestStage": "won",
+      "start": {
+        "daysBeforeClose": 95
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 71,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 40,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 16,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "won",
+          "at": {
+            "onCloseDate": true,
+            "time": "10:00"
+          }
+        }
+      ]
     },
     {
       "name": "Policy admin migration",
@@ -506,7 +1614,44 @@
       "close": {
         "daysFromToday": -7
       },
-      "furthestStage": "negotiation"
+      "furthestStage": "negotiation",
+      "start": {
+        "daysBeforeClose": 150
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 118,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 74,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 30,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "lost",
+          "at": {
+            "onCloseDate": true,
+            "time": "09:50"
+          }
+        }
+      ]
     },
     {
       "name": "Rail car tracking",
@@ -517,7 +1662,44 @@
       "close": {
         "daysFromToday": -19
       },
-      "furthestStage": "negotiation"
+      "furthestStage": "negotiation",
+      "start": {
+        "daysBeforeClose": 110
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 86,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 52,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "negotiation",
+          "at": {
+            "daysBeforeClose": 21,
+            "time": "11:20"
+          }
+        },
+        {
+          "from": "negotiation",
+          "to": "lost",
+          "at": {
+            "onCloseDate": true,
+            "time": "14:35"
+          }
+        }
+      ]
     },
     {
       "name": "Solar farm survey",
@@ -528,7 +1710,36 @@
       "close": {
         "daysFromToday": -94
       },
-      "furthestStage": "proposal"
+      "furthestStage": "proposal",
+      "start": {
+        "daysBeforeClose": 90
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 66,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 31,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "lost",
+          "at": {
+            "onCloseDate": true,
+            "time": "11:25"
+          }
+        }
+      ]
     },
     {
       "name": "Pharmacy automation",
@@ -539,7 +1750,36 @@
       "close": {
         "daysFromToday": -166
       },
-      "furthestStage": "proposal"
+      "furthestStage": "proposal",
+      "start": {
+        "daysBeforeClose": 100
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 72,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "proposal",
+          "at": {
+            "daysBeforeClose": 36,
+            "time": "14:15"
+          }
+        },
+        {
+          "from": "proposal",
+          "to": "lost",
+          "at": {
+            "onCloseDate": true,
+            "time": "15:55"
+          }
+        }
+      ]
     },
     {
       "name": "Paint shop upgrade",
@@ -550,7 +1790,28 @@
       "close": {
         "daysFromToday": -241
       },
-      "furthestStage": "qualified"
+      "furthestStage": "qualified",
+      "start": {
+        "daysBeforeClose": 70
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 41,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "lost",
+          "at": {
+            "onCloseDate": true,
+            "time": "10:15"
+          }
+        }
+      ]
     },
     {
       "name": "Cross-dock lease",
@@ -561,7 +1822,28 @@
       "close": {
         "daysFromToday": -287
       },
-      "furthestStage": "qualified"
+      "furthestStage": "qualified",
+      "start": {
+        "daysBeforeClose": 65
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "qualified",
+          "at": {
+            "daysBeforeClose": 38,
+            "time": "10:30"
+          }
+        },
+        {
+          "from": "qualified",
+          "to": "lost",
+          "at": {
+            "onCloseDate": true,
+            "time": "13:40"
+          }
+        }
+      ]
     },
     {
       "name": "Sequencer purchase",
@@ -572,7 +1854,20 @@
       "close": {
         "daysFromToday": -310
       },
-      "furthestStage": "new"
+      "furthestStage": "new",
+      "start": {
+        "daysBeforeClose": 45
+      },
+      "history": [
+        {
+          "from": "new",
+          "to": "lost",
+          "at": {
+            "onCloseDate": true,
+            "time": "16:05"
+          }
+        }
+      ]
     }
   ],
   "followUps": [
@@ -580,55 +1875,227 @@
       "description": "Send revised pricing for year two",
       "contact": "Marcus Hale",
       "deal": "Turbine maintenance contract",
-      "dueInDays": -9
+      "dueInDays": -9,
+      "type": "call",
+      "logged": {
+        "daysFromToday": -16,
+        "time": "10:00"
+      },
+      "done": false
     },
     {
       "description": "Chase the signed NDA",
       "contact": "Ben Adler",
       "deal": "Yard management software",
-      "dueInDays": -6
+      "dueInDays": -6,
+      "type": "email",
+      "logged": {
+        "daysFromToday": -18,
+        "time": "11:30"
+      },
+      "done": false
     },
     {
       "description": "Call back about the delivery schedule",
       "contact": "Dana Ortiz",
       "deal": "Atlas Freight renewal",
-      "dueInDays": -3
+      "dueInDays": -3,
+      "type": "call",
+      "logged": {
+        "daysFromToday": -15,
+        "time": "15:00"
+      },
+      "done": false
     },
     {
       "description": "Book a site visit",
       "contact": "Olivia Grant",
       "deal": "Precast panel contract",
-      "dueInDays": -1
+      "dueInDays": -1,
+      "type": "note",
+      "logged": {
+        "daysFromToday": -14,
+        "time": "09:45"
+      },
+      "done": false
     },
     {
       "description": "Confirm the legal review date",
       "contact": "Priya Shah",
       "deal": "Steel supply agreement 2027",
-      "dueInDays": 0
+      "dueInDays": 0,
+      "type": "call",
+      "logged": {
+        "daysFromToday": -13,
+        "time": "16:30"
+      },
+      "done": false
     },
     {
       "description": "Send the records migration case study",
       "contact": "Lena Moreau",
       "deal": "Patient records system",
-      "dueInDays": 1
+      "dueInDays": 1,
+      "type": "email",
+      "logged": {
+        "daysFromToday": -19,
+        "time": "14:15"
+      },
+      "done": false
     },
     {
       "description": "Demo for the operations team",
       "contact": "Henry Liu",
       "deal": "Data center refresh",
-      "dueInDays": 3
+      "dueInDays": 3,
+      "type": "call",
+      "logged": {
+        "daysFromToday": -17,
+        "time": "10:40"
+      },
+      "done": false
     },
     {
       "description": "Send the revised proposal",
       "contact": "Aisha Rahman",
       "deal": "Lab automation",
-      "dueInDays": 5
+      "dueInDays": 5,
+      "type": "email",
+      "logged": {
+        "daysFromToday": -14,
+        "time": "13:00"
+      },
+      "done": false
     },
     {
       "description": "Check budget approval",
       "contact": "Grace Kim",
       "deal": "ERP rollout",
-      "dueInDays": 7
+      "dueInDays": 7,
+      "type": "note",
+      "logged": {
+        "daysFromToday": -22,
+        "time": "11:10"
+      },
+      "done": false
+    },
+    {
+      "description": "Send the fleet pilot results",
+      "contact": "Sam Whitfield",
+      "deal": "Fleet telematics",
+      "dueInDays": 10,
+      "type": "email",
+      "logged": {
+        "daysFromToday": -20,
+        "time": "15:40"
+      },
+      "done": false
+    },
+    {
+      "description": "Share the warranty terms",
+      "contact": "Raj Patel",
+      "deal": "Imaging equipment lease",
+      "dueInDays": 12,
+      "type": "email",
+      "logged": {
+        "daysFromToday": -21,
+        "time": "09:25"
+      },
+      "done": false
+    },
+    {
+      "description": "Plan the phase two kickoff",
+      "contact": "Nora Fitz",
+      "deal": "Grid sensor rollout",
+      "dueInDays": 14,
+      "type": "call",
+      "logged": {
+        "daysFromToday": -18,
+        "time": "13:10"
+      },
+      "done": false
+    },
+    {
+      "description": "Quarterly review with the plant team",
+      "contact": "Tom Becker",
+      "deal": "Furnace controls upgrade",
+      "dueInDays": 21,
+      "type": "note",
+      "logged": {
+        "daysFromToday": -25,
+        "time": "16:50"
+      },
+      "done": false
+    },
+    {
+      "description": "Send the NDA for signature",
+      "contact": "Ben Adler",
+      "deal": "Yard management software",
+      "dueInDays": -30,
+      "type": "email",
+      "logged": {
+        "daysFromToday": -40,
+        "time": "10:15"
+      },
+      "done": true
+    },
+    {
+      "description": "Book the plant tour",
+      "contact": "Carlos Mendes",
+      "dueInDays": -25,
+      "type": "call",
+      "logged": {
+        "daysFromToday": -35,
+        "time": "14:40"
+      },
+      "done": true
+    },
+    {
+      "description": "Send references from other insurers",
+      "contact": "Ethan Cole",
+      "deal": "Claims platform upgrade",
+      "dueInDays": -20,
+      "type": "email",
+      "logged": {
+        "daysFromToday": -30,
+        "time": "11:05"
+      },
+      "done": true
+    },
+    {
+      "description": "Confirm the meter count",
+      "contact": "Nora Fitz",
+      "dueInDays": -45,
+      "type": "call",
+      "logged": {
+        "daysFromToday": -60,
+        "time": "09:55"
+      },
+      "done": true
+    },
+    {
+      "description": "Introduce the implementation lead",
+      "contact": "Henry Liu",
+      "deal": "Data center refresh",
+      "dueInDays": -28,
+      "type": "email",
+      "logged": {
+        "daysFromToday": -36,
+        "time": "15:20"
+      },
+      "done": true
+    },
+    {
+      "description": "Get the signed order form",
+      "contact": "Henry Liu",
+      "deal": "Branch network upgrade",
+      "dueInDays": -8,
+      "type": "call",
+      "logged": {
+        "daysFromToday": -20,
+        "time": "10:35"
+      },
+      "done": true
     }
   ],
   "recentActivity": [
@@ -736,6 +2203,1176 @@
       "at": {
         "daysFromToday": -12,
         "time": "13:30"
+      }
+    }
+  ],
+  "activities": [
+    {
+      "type": "call",
+      "contact": "Nora Fitz",
+      "deal": "Grid sensor rollout",
+      "description": "First call about sensors for the north grid. They want a pilot on two substations.",
+      "at": {
+        "daysFromToday": -20,
+        "time": "10:05"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Tara Quinn",
+      "deal": "Grid sensor rollout",
+      "description": "Sent the sensor spec sheet and pilot pricing.",
+      "at": {
+        "daysFromToday": -16,
+        "time": "14:20"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Carlos Mendes",
+      "deal": "Robotic welding cell",
+      "description": "Wants to cut weld rework on the trailer line. Asked for cycle times.",
+      "at": {
+        "daysFromToday": -13,
+        "time": "09:30"
+      }
+    },
+    {
+      "type": "note",
+      "contact": "Ethan Cole",
+      "deal": "Claims platform upgrade",
+      "description": "Met at the insurance tech forum. Their claims system is out of support next year.",
+      "at": {
+        "daysFromToday": -32,
+        "time": "11:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Julia Romero",
+      "deal": "Claims platform upgrade",
+      "description": "Julia asked for a security questionnaire before the next call.",
+      "at": {
+        "daysFromToday": -26,
+        "time": "15:10"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Aisha Rahman",
+      "deal": "Cold storage expansion",
+      "description": "Two new freezer rooms for the sample archive. Budget is set for next year.",
+      "at": {
+        "daysFromToday": -25,
+        "time": "13:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Daniel Okafor",
+      "deal": "Cold storage expansion",
+      "description": "Sent questions about power and floor loading for the new rooms.",
+      "at": {
+        "daysFromToday": -18,
+        "time": "10:45"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Grace Kim",
+      "deal": "Packaging line retrofit",
+      "description": "Line 3 needs new wrappers and checkweighers. Work has to fit around the busy season.",
+      "at": {
+        "daysFromToday": -38,
+        "time": "09:50"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Packaging line retrofit",
+      "description": "Engineering estimate: six weeks on site.",
+      "at": {
+        "daysFromToday": -30,
+        "time": "16:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Lena Moreau",
+      "deal": "Patient records system",
+      "description": "Discovery call. Three clinics still keep paper charts.",
+      "at": {
+        "daysFromToday": -70,
+        "time": "10:30"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Chloe Bennett",
+      "deal": "Patient records system",
+      "description": "Sent the data migration plan to clinical IT.",
+      "at": {
+        "daysFromToday": -45,
+        "time": "14:00"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Patient records system",
+      "description": "Their compliance review passed.",
+      "at": {
+        "daysFromToday": -30,
+        "time": "11:20"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Olivia Grant",
+      "deal": "Precast panel contract",
+      "description": "Panels for the hospital wing. Delivery in three phases.",
+      "at": {
+        "daysFromToday": -115,
+        "time": "08:45"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Derek Simmons",
+      "deal": "Precast panel contract",
+      "description": "Sent the panel schedule and transport plan.",
+      "at": {
+        "daysFromToday": -78,
+        "time": "13:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Olivia Grant",
+      "deal": "Precast panel contract",
+      "description": "The project start slipped. Olivia expects a decision soon.",
+      "at": {
+        "daysFromToday": -40,
+        "time": "15:20"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Henry Liu",
+      "deal": "Data center refresh",
+      "description": "Two server rooms go out of support next year. Wants a phased refresh.",
+      "at": {
+        "daysFromToday": -64,
+        "time": "11:10"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Victor Huang",
+      "deal": "Data center refresh",
+      "description": "Victor sent the current rack inventory.",
+      "at": {
+        "daysFromToday": -35,
+        "time": "09:25"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Tom Becker",
+      "deal": "Furnace controls upgrade",
+      "description": "Furnace 2 controls keep failing. Looking for a retrofit, not a rebuild.",
+      "at": {
+        "daysFromToday": -56,
+        "time": "14:40"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Mei Tanaka",
+      "deal": "Furnace controls upgrade",
+      "description": "Mei asked for downtime estimates for each furnace.",
+      "at": {
+        "daysFromToday": -27,
+        "time": "10:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Ben Adler",
+      "deal": "Yard management software",
+      "description": "Yard moves are tracked on whiteboards. Wants live gate data.",
+      "at": {
+        "daysFromToday": -50,
+        "time": "10:05"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Nadia Volkov",
+      "deal": "Yard management software",
+      "description": "Sent the list of integrations for their transport system.",
+      "at": {
+        "daysFromToday": -22,
+        "time": "15:35"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Marcus Hale",
+      "deal": "Turbine maintenance contract",
+      "description": "Ten turbines come out of warranty in spring. Wants a three-year contract.",
+      "at": {
+        "daysFromToday": -148,
+        "time": "09:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Omar Haddad",
+      "deal": "Turbine maintenance contract",
+      "description": "Sent questions about the maintenance history to the site team.",
+      "at": {
+        "daysFromToday": -100,
+        "time": "13:15"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Marcus Hale",
+      "deal": "Turbine maintenance contract",
+      "description": "Sent the proposal with two service levels.",
+      "at": {
+        "daysFromToday": -62,
+        "time": "11:40"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Hannah Weiss",
+      "deal": "Turbine maintenance contract",
+      "description": "Hannah in finance wants year two priced lower.",
+      "at": {
+        "daysFromToday": -30,
+        "time": "16:10"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Sam Whitfield",
+      "deal": "Fleet telematics",
+      "description": "Interested in a pilot on 40 trucks.",
+      "at": {
+        "daysFromToday": -95,
+        "time": "10:20"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Fleet telematics",
+      "description": "Pilot trucks fitted and reporting.",
+      "at": {
+        "daysFromToday": -60,
+        "time": "12:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Sam Whitfield",
+      "deal": "Fleet telematics",
+      "description": "Sent the proposal for the full fleet.",
+      "at": {
+        "daysFromToday": -31,
+        "time": "14:50"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Grace Kim",
+      "deal": "ERP rollout",
+      "description": "Finance and the plants run separate systems. Wants one ERP.",
+      "at": {
+        "daysFromToday": -100,
+        "time": "11:30"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Luis Ortega",
+      "deal": "ERP rollout",
+      "description": "Sent the agenda for the process workshop.",
+      "at": {
+        "daysFromToday": -70,
+        "time": "09:15"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "ERP rollout",
+      "description": "Workshop done. Scope set at four plants.",
+      "at": {
+        "daysFromToday": -45,
+        "time": "15:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Grace Kim",
+      "deal": "ERP rollout",
+      "description": "Sent the proposal.",
+      "at": {
+        "daysFromToday": -39,
+        "time": "10:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Aisha Rahman",
+      "deal": "Lab automation",
+      "description": "Sample prep takes two people full time. Looking at liquid handlers.",
+      "at": {
+        "daysFromToday": -85,
+        "time": "13:40"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Emily Carter",
+      "deal": "Lab automation",
+      "description": "Emily sent their assay list.",
+      "at": {
+        "daysFromToday": -50,
+        "time": "11:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Aisha Rahman",
+      "deal": "Lab automation",
+      "description": "Agreed the scope for the proposal.",
+      "at": {
+        "daysFromToday": -20,
+        "time": "09:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Priya Shah",
+      "deal": "Steel supply agreement 2027",
+      "description": "Steel supply for 2027. Volumes up 15 percent on this year.",
+      "at": {
+        "daysFromToday": -138,
+        "time": "10:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Alan Fraser",
+      "deal": "Steel supply agreement 2027",
+      "description": "Alan sent the grade specifications.",
+      "at": {
+        "daysFromToday": -95,
+        "time": "14:30"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Priya Shah",
+      "deal": "Steel supply agreement 2027",
+      "description": "Sent the supply proposal with quarterly pricing.",
+      "at": {
+        "daysFromToday": -56,
+        "time": "16:20"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Steel supply agreement 2027",
+      "description": "Price index clause agreed in principle.",
+      "at": {
+        "daysFromToday": -25,
+        "time": "11:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Dana Ortiz",
+      "deal": "Atlas Freight renewal",
+      "description": "Renewal talks open early. Wants better rates on the southern routes.",
+      "at": {
+        "daysFromToday": -158,
+        "time": "09:40"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Kevin Brooks",
+      "deal": "Atlas Freight renewal",
+      "description": "Kevin sent last year's lane volumes.",
+      "at": {
+        "daysFromToday": -120,
+        "time": "13:05"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Dana Ortiz",
+      "deal": "Atlas Freight renewal",
+      "description": "Sent the renewal proposal.",
+      "at": {
+        "daysFromToday": -82,
+        "time": "10:50"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Dana Ortiz",
+      "deal": "Atlas Freight renewal",
+      "description": "Terms are close. The delivery schedule is still open.",
+      "at": {
+        "daysFromToday": -37,
+        "time": "15:15"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Raj Patel",
+      "deal": "Imaging equipment lease",
+      "description": "Two MRI units due for replacement. Prefers a lease.",
+      "at": {
+        "daysFromToday": -115,
+        "time": "11:25"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Lena Moreau",
+      "deal": "Imaging equipment lease",
+      "description": "Lena confirmed which clinics get the new units.",
+      "at": {
+        "daysFromToday": -85,
+        "time": "09:50"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Raj Patel",
+      "deal": "Imaging equipment lease",
+      "description": "Sent the lease proposal.",
+      "at": {
+        "daysFromToday": -53,
+        "time": "14:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Raj Patel",
+      "deal": "Imaging equipment lease",
+      "description": "Negotiating the service terms.",
+      "at": {
+        "daysFromToday": -19,
+        "time": "10:10"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Henry Liu",
+      "deal": "Branch network upgrade",
+      "description": "Forty branches on old routers. Wants a rolling upgrade.",
+      "at": {
+        "daysBeforeClose": 125,
+        "time": "10:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Rachel Stein",
+      "deal": "Branch network upgrade",
+      "description": "Sent the proposal to procurement.",
+      "at": {
+        "daysBeforeClose": 60,
+        "time": "14:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Henry Liu",
+      "deal": "Branch network upgrade",
+      "description": "Agreed the order of the rollout.",
+      "at": {
+        "daysBeforeClose": 20,
+        "time": "11:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Nora Fitz",
+      "deal": "Substation maintenance",
+      "description": "Three substations need maintenance this winter.",
+      "at": {
+        "daysBeforeClose": 90,
+        "time": "09:30"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "George Alvarez",
+      "deal": "Substation maintenance",
+      "description": "Sent the maintenance plan.",
+      "at": {
+        "daysBeforeClose": 40,
+        "time": "13:10"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Nora Fitz",
+      "deal": "Substation maintenance",
+      "description": "Sent the contract for signature.",
+      "at": {
+        "daysBeforeClose": 2,
+        "time": "16:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Olivia Grant",
+      "deal": "Site safety systems",
+      "description": "New safety rules on site. Needs gas detection and access control.",
+      "at": {
+        "daysBeforeClose": 105,
+        "time": "10:15"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Fatima Noor",
+      "deal": "Site safety systems",
+      "description": "Fatima sent the list of sites.",
+      "at": {
+        "daysBeforeClose": 47,
+        "time": "11:45"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Site safety systems",
+      "description": "Contract signed.",
+      "at": {
+        "daysBeforeClose": 5,
+        "time": "15:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Priya Shah",
+      "deal": "Furnace relining",
+      "description": "Furnace 1 needs relining in the autumn shutdown.",
+      "at": {
+        "daysBeforeClose": 78,
+        "time": "13:20"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Priya Shah",
+      "deal": "Furnace relining",
+      "description": "Confirmed the shutdown dates.",
+      "at": {
+        "daysBeforeClose": 12,
+        "time": "10:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Grace Kim",
+      "deal": "Cold chain monitoring",
+      "description": "Temperatures are logged by hand in two warehouses.",
+      "at": {
+        "daysBeforeClose": 115,
+        "time": "09:45"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Megan Price",
+      "deal": "Cold chain monitoring",
+      "description": "Megan sent the warehouse layouts.",
+      "at": {
+        "daysBeforeClose": 50,
+        "time": "14:25"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Grace Kim",
+      "deal": "Cold chain monitoring",
+      "description": "Sent the final pricing.",
+      "at": {
+        "daysBeforeClose": 8,
+        "time": "11:15"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Nora Fitz",
+      "deal": "Meter replacement",
+      "description": "Twelve thousand meters to replace over two years.",
+      "at": {
+        "daysBeforeClose": 135,
+        "time": "10:40"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Tara Quinn",
+      "deal": "Meter replacement",
+      "description": "Tara sent the install areas.",
+      "at": {
+        "daysBeforeClose": 60,
+        "time": "15:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Nora Fitz",
+      "deal": "Meter replacement",
+      "description": "Agreed the install schedule.",
+      "at": {
+        "daysBeforeClose": 10,
+        "time": "09:20"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Ben Adler",
+      "deal": "Signal upgrade",
+      "description": "Signals in the east yard need upgrading.",
+      "at": {
+        "daysBeforeClose": 85,
+        "time": "11:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Ben Adler",
+      "deal": "Signal upgrade",
+      "description": "Sent the contract.",
+      "at": {
+        "daysBeforeClose": 15,
+        "time": "14:10"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Olivia Grant",
+      "deal": "Crane rental contract",
+      "description": "Two tower cranes needed for the summer.",
+      "at": {
+        "daysBeforeClose": 55,
+        "time": "08:30"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Derek Simmons",
+      "deal": "Crane rental contract",
+      "description": "Derek confirmed site access for the cranes.",
+      "at": {
+        "daysBeforeClose": 9,
+        "time": "16:20"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Henry Liu",
+      "deal": "Trading floor fit-out",
+      "description": "New trading floor on level 12.",
+      "at": {
+        "daysBeforeClose": 120,
+        "time": "10:30"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Victor Huang",
+      "deal": "Trading floor fit-out",
+      "description": "Victor approved the cabling plan.",
+      "at": {
+        "daysBeforeClose": 22,
+        "time": "13:40"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Marcus Hale",
+      "deal": "Pipeline inspection",
+      "description": "Inspection of 80 miles of gas pipeline.",
+      "at": {
+        "daysBeforeClose": 95,
+        "time": "09:10"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Omar Haddad",
+      "deal": "Pipeline inspection",
+      "description": "Omar sent the access permits.",
+      "at": {
+        "daysBeforeClose": 15,
+        "time": "11:50"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Carlos Mendes",
+      "deal": "CNC line service",
+      "description": "Service contract for six CNC machines.",
+      "at": {
+        "daysBeforeClose": 65,
+        "time": "14:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Sarah Lindqvist",
+      "deal": "CNC line service",
+      "description": "Sarah approved the purchase order.",
+      "at": {
+        "daysBeforeClose": 10,
+        "time": "10:20"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Lena Moreau",
+      "deal": "Nurse call system",
+      "description": "Nurse call system across three wards.",
+      "at": {
+        "daysBeforeClose": 145,
+        "time": "11:35"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Raj Patel",
+      "deal": "Nurse call system",
+      "description": "Raj sent the ward layouts.",
+      "at": {
+        "daysBeforeClose": 60,
+        "time": "15:05"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Nurse call system",
+      "description": "Clinical sign-off received.",
+      "at": {
+        "daysBeforeClose": 12,
+        "time": "09:40"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Dana Ortiz",
+      "deal": "Warehouse scanners",
+      "description": "Scanners for two warehouses.",
+      "at": {
+        "daysBeforeClose": 70,
+        "time": "10:25"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Dana Ortiz",
+      "deal": "Warehouse scanners",
+      "description": "Sent the order confirmation.",
+      "at": {
+        "daysBeforeClose": 8,
+        "time": "13:50"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Aisha Rahman",
+      "deal": "Clean room fit-out",
+      "description": "Clean room for the new assay lab.",
+      "at": {
+        "daysBeforeClose": 80,
+        "time": "09:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Aisha Rahman",
+      "deal": "Clean room fit-out",
+      "description": "Sent the validation plan.",
+      "at": {
+        "daysBeforeClose": 7,
+        "time": "14:45"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Tom Becker",
+      "deal": "Alloy supply 2026",
+      "description": "Alloy supply for 2026, with two new grades.",
+      "at": {
+        "daysBeforeClose": 110,
+        "time": "10:50"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Tom Becker",
+      "deal": "Alloy supply 2026",
+      "description": "Sent the final contract.",
+      "at": {
+        "daysBeforeClose": 10,
+        "time": "16:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Grace Kim",
+      "deal": "Conveyor replacement",
+      "description": "Conveyors on line 1 are at the end of their life.",
+      "at": {
+        "daysBeforeClose": 90,
+        "time": "13:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Grace Kim",
+      "deal": "Conveyor replacement",
+      "description": "Sent the install dates.",
+      "at": {
+        "daysBeforeClose": 6,
+        "time": "10:10"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Ethan Cole",
+      "deal": "Policy admin migration",
+      "description": "Policy admin system migration. Large scope.",
+      "at": {
+        "daysBeforeClose": 145,
+        "time": "10:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Peter Novak",
+      "deal": "Policy admin migration",
+      "description": "Peter sent the policy volumes.",
+      "at": {
+        "daysBeforeClose": 70,
+        "time": "14:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Ethan Cole",
+      "deal": "Policy admin migration",
+      "description": "They chose a vendor already on their cloud. Price was close.",
+      "at": {
+        "daysBeforeClose": 6,
+        "time": "11:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Ben Adler",
+      "deal": "Rail car tracking",
+      "description": "Tracking for 600 rail cars.",
+      "at": {
+        "daysBeforeClose": 105,
+        "time": "09:30"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Rail car tracking",
+      "description": "Lost on price. Ben may come back next year.",
+      "at": {
+        "daysBeforeClose": 3,
+        "time": "15:45"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Marcus Hale",
+      "deal": "Solar farm survey",
+      "description": "Survey for a 50 MW solar site.",
+      "at": {
+        "daysBeforeClose": 85,
+        "time": "13:15"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Solar farm survey",
+      "description": "Their board shelved the project.",
+      "at": {
+        "daysBeforeClose": 2,
+        "time": "10:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Raj Patel",
+      "deal": "Pharmacy automation",
+      "description": "Automating pharmacy dispensing.",
+      "at": {
+        "daysBeforeClose": 95,
+        "time": "11:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Raj Patel",
+      "deal": "Pharmacy automation",
+      "description": "They went with the incumbent.",
+      "at": {
+        "daysBeforeClose": 4,
+        "time": "09:20"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Carlos Mendes",
+      "deal": "Paint shop upgrade",
+      "description": "Paint shop upgrade for the frame line.",
+      "at": {
+        "daysBeforeClose": 65,
+        "time": "14:30"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Paint shop upgrade",
+      "description": "Budget cut. Project cancelled.",
+      "at": {
+        "daysBeforeClose": 1,
+        "time": "10:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Sam Whitfield",
+      "deal": "Cross-dock lease",
+      "description": "Cross-dock space near the port.",
+      "at": {
+        "daysBeforeClose": 60,
+        "time": "10:45"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Cross-dock lease",
+      "description": "They found a site closer to the port.",
+      "at": {
+        "daysBeforeClose": 2,
+        "time": "16:00"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Aisha Rahman",
+      "deal": "Sequencer purchase",
+      "description": "Asked for sequencer pricing.",
+      "at": {
+        "daysBeforeClose": 40,
+        "time": "11:20"
+      }
+    },
+    {
+      "type": "note",
+      "deal": "Sequencer purchase",
+      "description": "They bought a used unit instead.",
+      "at": {
+        "daysBeforeClose": 1,
+        "time": "14:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Kevin Brooks",
+      "description": "Introduced by Dana. Runs the southern routes.",
+      "at": {
+        "daysFromToday": -140,
+        "time": "10:00"
+      }
+    },
+    {
+      "type": "note",
+      "contact": "Hannah Weiss",
+      "description": "New finance director. Signs off contracts over $500,000.",
+      "at": {
+        "daysFromToday": -45,
+        "time": "09:30"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Peter Novak",
+      "description": "Sent our case study on claims systems.",
+      "at": {
+        "daysFromToday": -90,
+        "time": "13:00"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Luis Ortega",
+      "description": "Plant manager at the Fresno site.",
+      "at": {
+        "daysFromToday": -110,
+        "time": "15:30"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Derek Simmons",
+      "description": "Site manager for the hospital wing.",
+      "at": {
+        "daysFromToday": -200,
+        "time": "10:15"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Chloe Bennett",
+      "description": "Runs clinical IT. Interested in the records project.",
+      "at": {
+        "daysFromToday": -60,
+        "time": "11:40"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Ivan Petrov",
+      "description": "Maintenance lead. Asked about service contracts.",
+      "at": {
+        "daysFromToday": -170,
+        "time": "14:10"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Rachel Stein",
+      "description": "Joined procurement from another bank.",
+      "at": {
+        "daysFromToday": -100,
+        "time": "09:05"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Daniel Okafor",
+      "description": "Facilities lead for the new building.",
+      "at": {
+        "daysFromToday": -55,
+        "time": "13:25"
+      }
+    },
+    {
+      "type": "note",
+      "contact": "Alan Fraser",
+      "description": "Metallurgist. Writes the grade specifications.",
+      "at": {
+        "daysFromToday": -180,
+        "time": "16:40"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "George Alvarez",
+      "description": "Leads field operations.",
+      "at": {
+        "daysFromToday": -75,
+        "time": "10:35"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Nadia Volkov",
+      "description": "Runs the yard systems. Wants a demo.",
+      "at": {
+        "daysFromToday": -35,
+        "time": "14:55"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Julia Romero",
+      "description": "Head of IT security. Reviews every new vendor.",
+      "at": {
+        "daysFromToday": -150,
+        "time": "11:15"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Sarah Lindqvist",
+      "description": "Procurement. Asked to be copied on all quotes.",
+      "at": {
+        "daysFromToday": -95,
+        "time": "15:45"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Mei Tanaka",
+      "description": "Process engineer for the furnaces.",
+      "at": {
+        "daysFromToday": -65,
+        "time": "10:25"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Emily Carter",
+      "description": "Lab manager. Wants a demo of liquid handlers.",
+      "at": {
+        "daysFromToday": -120,
+        "time": "13:35"
+      }
+    },
+    {
+      "type": "note",
+      "contact": "Megan Price",
+      "description": "Quality lead. Signs off food safety changes.",
+      "at": {
+        "daysFromToday": -85,
+        "time": "11:55"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Omar Haddad",
+      "description": "Site engineer at the wind farm.",
+      "at": {
+        "daysFromToday": -160,
+        "time": "14:15"
+      }
+    },
+    {
+      "type": "call",
+      "contact": "Tara Quinn",
+      "description": "Runs the metering program.",
+      "at": {
+        "daysFromToday": -125,
+        "time": "09:45"
+      }
+    },
+    {
+      "type": "email",
+      "contact": "Victor Huang",
+      "description": "Head of infrastructure.",
+      "at": {
+        "daysFromToday": -80,
+        "time": "16:05"
       }
     }
   ]

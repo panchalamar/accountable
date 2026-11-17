@@ -1,0 +1,42 @@
+/* Every color token from the spec's "Visual design", light theme.
+   A dark theme later means a second set of these values. */
+:root {
+  --bg: #f0f4f5;
+  --panel: #ffffff;
+  --ink: #073b4c; /* Midnight: text, Negotiation */
+  --ink-muted: #56717a; /* secondary text, Lost */
+  --divider: #e3eaec; /* lines between rows only, never behind text */
+  --primary: #06d6a0; /* Sea Green: main buttons, Won, Customer */
+  --primary-hover: #05c493;
+  --primary-text: #047a5c;
+  --secondary: #ffc145; /* Marigold: Qualified */
+  --secondary-text: #8a5a00;
+  --tertiary: #f78c6b; /* Coral: Proposal */
+  --tertiary-text: #b54a2a;
+  --info: #118ab2; /* Cerulean: New, Lead, large text and fills */
+  --info-strong: #0b6e8e; /* behind small white text, and the focus ring */
+  --alert: #ef476f; /* Raspberry: large alerts, chart highlights */
+  --alert-strong: #c9184a; /* Late chip, Delete buttons, error text */
+  --sea-mist: #cdd8db; /* ink on dark surfaces */
+  --nav-current: #e6fbf5;
+  --forecast-bg: #f3f7f8;
+  --tint-new: #dceff6;
+  --tint-qualified: #fff0cc;
+  --tint-proposal: #fde3da;
+  --tint-negotiation: #dde6e9;
+  --tint-won: #d5f7ec;
+  --tint-lost: #e6ecee;
+  --ink-on-tint: #4a6670;
+  --alert-on-dark: #ff9db1;
+  --muted-on-dark: #9db4ba;
+
+  /* Derived from the tokens above */
+  --field-border: #7f949a; /* 3.2:1 on white, for form fields */
+  --outline-soft: #c8d5d9;
+  --focus-ring: var(--info-strong);
+}
+
+/* On any dark surface the focus ring is Sea Green. */
+.on-dark {
+  --focus-ring: var(--primary);
+}

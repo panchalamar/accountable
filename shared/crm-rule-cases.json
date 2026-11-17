@@ -1,0 +1,87 @@
+{
+  "about": [
+    "Cases for the CRM rules that the backend and the frontend both have. pytest (backend/tests/crm/test_shared_cases.py) and Vitest (frontend/src/crm/lib/sharedCases.test.ts) check every case, so the two can't drift apart.",
+    "Expected revenue is value x probability / 100, rounded to whole dollars with halves rounding up. It's worked out in whole numbers, so large values pick up no floating-point errors. Totals add up the rounded amounts, so a total always equals the sum of the figures shown under it.",
+    "A deal is late when it's open and its close date is before today. closeInDays counts from today."
+  ],
+  "stages": [
+    { "stage": "new", "label": "New", "probability": 10, "open": true },
+    { "stage": "qualified", "label": "Qualified", "probability": 25, "open": true },
+    { "stage": "proposal", "label": "Proposal", "probability": 50, "open": true },
+    { "stage": "negotiation", "label": "Negotiation", "probability": 75, "open": true },
+    { "stage": "won", "label": "Won", "probability": 100, "open": false },
+    { "stage": "lost", "label": "Lost", "probability": 0, "open": false }
+  ],
+  "expectedRevenue": [
+    { "value": 100000, "probability": 10, "expected": 10000, "why": "A plain case." },
+    { "value": 760000, "probability": 25, "expected": 190000, "why": "A Qualified deal from the mockup." },
+    { "value": 5, "probability": 50, "expected": 3, "why": "$2.50 is a half, so it rounds up. Rounding halves to even would give $2." },
+    { "value": 1, "probability": 50, "expected": 1, "why": "$0.50 rounds up to $1." },
+    { "value": 5, "probability": 10, "expected": 1, "why": "$0.50 rounds up to $1." },
+    { "value": 1, "probability": 49, "expected": 0, "why": "$0.49 rounds down." },
+    { "value": 1000010, "probability": 35, "expected": 350004, "why": "$350,003.50 rounds up. Multiplying by 0.35 instead gives 350,003.49999999994, which would round down." },
+    { "value": 2500005, "probability": 10, "expected": 250001, "why": "$250,000.50 rounds up." },
+    { "value": 999999999999, "probability": 75, "expected": 749999999999, "why": "The largest value allowed: $749,999,999,999.25 rounds down." },
+    { "value": 999999999999, "probability": 33, "expected": 330000000000, "why": "The largest value allowed: $329,999,999,999.67 rounds up." },
+    { "value": 0, "probability": 75, "expected": 0, "why": "A deal can be worth $0." },
+    { "value": 640000, "probability": 100, "expected": 640000, "why": "A won deal is worth its full value." },
+    { "value": 720000, "probability": 0, "expected": 0, "why": "A lost deal is worth nothing." }
+  ],
+  "totals": [
+    {
+      "deals": [],
+      "value": 0,
+      "expected": 0,
+      "why": "An empty column."
+    },
+    {
+      "deals": [
+        { "value": 5, "probability": 50 },
+        { "value": 5, "probability": 50 }
+      ],
+      "value": 10,
+      "expected": 6,
+      "why": "Each deal rounds to $3, so the total is $6. Rounding the total of $5.00 instead would give $5, and the column wouldn't add up."
+    },
+    {
+      "deals": [
+        { "value": 1, "probability": 50 },
+        { "value": 1, "probability": 50 },
+        { "value": 1, "probability": 50 }
+      ],
+      "value": 3,
+      "expected": 3,
+      "why": "Three $0.50 amounts each round up to $1."
+    },
+    {
+      "deals": [
+        { "value": 760000, "probability": 25 },
+        { "value": 540000, "probability": 25 },
+        { "value": 650000, "probability": 25 },
+        { "value": 400000, "probability": 25 },
+        { "value": 380000, "probability": 25 }
+      ],
+      "value": 2730000,
+      "expected": 682500,
+      "why": "The mockup's Qualified column."
+    },
+    {
+      "deals": [
+        { "value": 1000010, "probability": 35 },
+        { "value": 2500005, "probability": 10 },
+        { "value": 999999999999, "probability": 33 }
+      ],
+      "value": 1000003500014,
+      "expected": 330000600005,
+      "why": "Large values and halves together: $350,004 + $250,001 + $330,000,000,000."
+    }
+  ],
+  "late": [
+    { "stage": "proposal", "closeInDays": -1, "late": true, "why": "Open and due yesterday." },
+    { "stage": "qualified", "closeInDays": -400, "late": true, "why": "Open and long overdue." },
+    { "stage": "negotiation", "closeInDays": 0, "late": false, "why": "Due today isn't late." },
+    { "stage": "new", "closeInDays": 1, "late": false, "why": "Due tomorrow." },
+    { "stage": "won", "closeInDays": -1, "late": false, "why": "Closed deals are never late." },
+    { "stage": "lost", "closeInDays": -30, "late": false, "why": "Closed deals are never late." }
+  ]
+}

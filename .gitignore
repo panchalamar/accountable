@@ -43,7 +43,8 @@ htmlcov/
 coverage.xml
 coverage/
 
-# Local databases
+# Local databases: the app's data, its backups and the test database
+data/
 *.db
 *.sqlite
 *.sqlite3
