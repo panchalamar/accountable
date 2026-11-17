@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accountable, mockup 4: Forecast</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F0F4F5;--panel:#FFFFFF;--ink:#073B4C;--ink-muted:#56717A;--divider:#E3EAEC;--column:#F5F8F9;
+--primary:#06D6A0;--primary-text:#047A5C;--secondary:#FFC145;--secondary-text:#8A5A00;--tertiary:#F78C6B;--tertiary-text:#B54A2A;
+--info:#118AB2;--info-strong:#0B6E8E;--alert:#EF476F;--alert-strong:#C9184A;--sea-mist:#CDD8DB;
+--sans:'Instrument Sans',system-ui,sans-serif;--serif:'Instrument Serif',Georgia,serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font:15px/1.5 var(--sans);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol{margin:0}
+ul,ol{padding:0;list-style:none}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--info-strong);outline-offset:2px}
+.icon{flex:none;display:block}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:16px;top:-48px;z-index:10;background:var(--ink);color:#fff;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+.skip:focus{top:16px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.chip{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;line-height:1;white-space:nowrap}
+.chip-late{background:var(--alert-strong);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:10px;font-weight:600;font-size:14.5px;text-decoration:none;white-space:nowrap;transition:background-color .15s,box-shadow .15s}
+.btn-primary{background:var(--primary);color:var(--ink)}
+.btn-primary:hover{background:#05c493}
+.link{color:var(--info-strong);text-decoration:none}
+.link:hover{text-decoration:underline}
+.chart{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--mono);font-size:11px;fill:var(--ink-muted)}
+.chart .lbl{fill:var(--ink);font-weight:600}
+.chart .grid{stroke:var(--divider);stroke-width:1}
+.chart .base{stroke:#C9D5D8;stroke-width:1}
+.cb{appearance:none;-webkit-appearance:none;flex:none;width:20px;height:20px;margin:0;border:2px solid var(--ink-muted);border-radius:6px;background:#fff;cursor:pointer;display:grid;place-items:center;transition:background-color .15s,border-color .15s}
+.cb:hover{border-color:var(--primary-text)}
+.cb:checked{background:var(--primary-text);border-color:var(--primary-text)}
+.cb:checked::after{content:'';width:10px;height:6px;border:2px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.tip{position:absolute;z-index:50;pointer-events:none;background:#073B4C;color:#fff;font:12.5px/1.45 var(--sans);padding:8px 11px;border-radius:8px;box-shadow:0 6px 18px rgba(7,59,76,.22);max-width:260px}
+.tip .tip-h{font-weight:600}
+.tip div:not(.tip-h){color:#CDD8DB;font-family:var(--mono);font-size:12px}
+[data-fu]{transition:opacity .25s ease}
+[data-fu].is-done{opacity:0}
+[data-group] .empty{display:none}
+[data-group].is-empty>.empty{display:block}
+body{min-width:1280px}
+.top{display:flex;align-items:center;gap:36px;height:68px;padding:0 32px;background:var(--panel)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:650;font-size:18px;letter-spacing:-.01em}
+.top nav ul{display:flex;gap:4px}
+.top nav a{display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:10px;text-decoration:none;font-weight:500;font-size:14.5px;color:var(--ink)}
+.top nav a .icon{color:var(--ink-muted)}
+.top nav a:hover{background:var(--bg)}
+.top nav a.is-current{background:#E6FBF5;font-weight:600}
+.top nav a.is-current .icon{color:var(--primary-text)}
+.top-date{margin-left:auto;color:var(--ink-muted);font-size:14px}
+main{padding:28px 32px 48px}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px}
+h1{font-size:28px;font-weight:600;letter-spacing:-.015em;line-height:1.2}
+.ctx{color:var(--ink-muted);font-size:14.5px;margin-top:2px}
+.btn{height:42px}
+.panel{background:var(--panel);border-radius:16px;padding:24px 28px}
+h2{font-size:17px;font-weight:600;letter-spacing:-.005em}
+h3{font-size:14.5px;font-weight:600}
+.sub{color:var(--ink-muted);font-size:13.5px;margin-top:2px}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px}
+.ph-meta{color:var(--ink-muted);font-size:13.5px;white-space:nowrap}
+/* hero */
+.hero{border-radius:20px;padding:26px 32px 28px}
+.hero-head{margin-bottom:22px}
+.split{display:grid}
+.figs{display:flex;gap:56px;padding-left:58px}
+.figs-ahead{padding-left:22px}
+.fig-l{font-size:13.5px;color:var(--ink-muted);font-weight:500}
+.fig-v{font-size:32px;font-weight:500;letter-spacing:-.03em;line-height:1.2;margin-top:2px}
+.fig-s{font-size:13px;color:var(--ink-muted);margin-top:2px}
+.hero-chart{margin-top:18px}
+.chart .late-t{fill:var(--alert-strong);font-weight:700}
+.chart .today-t{fill:#fff;font-family:var(--sans);font-size:12px;font-weight:600}
+.chart .hit{fill:transparent}
+.chart .hit:hover{fill:rgba(7,59,76,.04)}
+.key{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;padding-left:58px;margin-top:6px;font-size:13px;color:var(--ink)}
+.key span{display:inline-flex;align-items:center;gap:8px}
+.key i{width:12px;height:12px;border-radius:4px}
+.key .key-late{color:var(--alert-strong);font-weight:500;margin-left:auto}
+.strip{margin-top:26px;padding-top:22px;column-gap:0}
+.strip-bars{padding:0 0 0 58px}
+.strip-bars .chart{margin-left:-58px;width:calc(100% + 58px);margin-top:10px}
+.strip-stages{padding-left:22px}
+.stages{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+.stages th,.stages td{padding:6px 0;text-align:right;font-weight:400}
+.stages thead th{font-size:12.5px;color:var(--ink-muted);padding-top:0}
+.stages th:first-child{text-align:left}
+.stages tbody th{font-weight:500;display:flex;align-items:center;gap:9px}
+.stages tbody tr+tr th,.stages tbody tr+tr td{border-top:1px solid var(--divider)}
+.stages i{width:10px;height:10px;border-radius:3px;flex:none}
+/* funnel */
+.funnel{margin-top:20px}
+.steps{display:flex;gap:2px;align-items:flex-end;margin-top:8px}
+.step{flex:1;display:flex;flex-direction:column;justify-content:flex-end}
+.step-l{padding:0 0 10px 2px}
+.step-n{font-weight:600;font-size:14.5px}
+.step-v{font-size:15px;font-weight:500;margin-top:1px}
+.step-s{font-size:12.5px;color:var(--ink-muted)}
+.step-b{border-radius:8px 8px 0 0}
+.step:first-child .step-b{border-bottom-left-radius:8px}
+.step:last-child .step-b{border-bottom-right-radius:8px}
+/* follow-ups and activity */
+.week,.act{margin-top:20px}
+.grp-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.grp-h.over{color:var(--alert-strong)}
+.grp-note{font-size:12.5px;font-weight:500;color:var(--ink-muted);margin-left:4px}
+.badge{display:inline-grid;place-items:center;min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:var(--bg);color:var(--ink);font-size:12px;font-weight:600;font-family:var(--mono)}
+.badge-over{background:var(--alert-strong);color:#fff}
+.wk-over{background:#FDECEF;border-radius:14px;padding:14px 14px 14px}
+.wk-over .grp-note{color:#8F2944}
+.wk-next{margin-top:20px}
+.wk-row{display:grid;gap:10px}
+.wk-days{display:grid;gap:10px}
+.wk-day{background:var(--column);border-radius:14px;padding:10px}
+.wk-day.is-today{background:#FFF1CF}
+.wk-dh{display:flex;justify-content:space-between;font-size:13px;font-weight:600;padding:2px 4px 8px}
+.wk-dh .num{font-weight:500;font-size:12.5px}
+.wk-list{display:flex;flex-direction:column;gap:8px}
+.wk-i{background:var(--panel);border-radius:10px;padding:11px 12px 12px;box-shadow:0 1px 2px rgba(7,59,76,.06)}
+.wk-top{display:flex;gap:10px;align-items:flex-start}
+.wk-top .cb{margin-top:1px}
+.wk-t{font-weight:500;font-size:14px;line-height:1.4}
+.wk-links{font-size:13px;margin:4px 0 0 30px;line-height:1.4}
+.wk-when{font-size:12.5px;color:var(--ink-muted);margin:6px 0 0 30px}
+.wk-when.over{color:var(--alert-strong);font-weight:600}
+.wk-when.today{color:var(--secondary-text);font-weight:600}
+.empty{color:var(--ink-muted);font-size:13.5px;padding:4px}
+.act-cols{columns:2;column-gap:56px}
+.act-i{display:grid;grid-template-columns:72px 28px 1fr;column-gap:12px;padding:11px 0;align-items:start;break-inside:avoid;border-bottom:1px solid var(--divider)}
+.act-when{display:flex;flex-direction:column;font-size:12.5px;color:var(--ink-muted);line-height:1.35}
+.act-when .num{font-size:12px}
+.act-ic{width:28px;height:28px;border-radius:999px;background:var(--bg);display:grid;place-items:center;color:var(--ink-muted)}
+.is-stage .act-ic{background:#E6FBF5;color:var(--primary-text)}
+.act-t{font-size:14.5px}
+.act-k{font-weight:600}
+.act-d{font-size:13.5px;color:var(--ink-muted);margin-top:1px}
+.act-move{font-size:13.5px;color:var(--ink-muted);margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.chip{height:20px;padding:0 8px;font-size:11.5px}
+/* pipeline */
+.head-figs{display:flex;align-items:flex-end;gap:32px}
+.head-v{font-size:22px;font-weight:500;letter-spacing:-.02em;line-height:1.2}
+.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;align-items:start}
+.col{background:var(--column);border-radius:16px;padding:14px 10px 10px}
+.col-h{padding:0 6px 12px}
+.col-h h2{display:flex;align-items:center;gap:8px;font-size:15px}
+.col-h h2 i{width:10px;height:10px;border-radius:999px;flex:none}
+.col-w{font-size:12px;font-weight:500;color:var(--ink-muted)}
+.col-n{margin-left:auto;font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink-muted)}
+.col-v{font-size:16px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
+.col-s{font-size:12.5px;color:var(--ink-muted)}
+.cards{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--panel);border-radius:12px;padding:11px 12px 12px;box-shadow:0 1px 2px rgba(7,59,76,.06);transition:box-shadow .15s}
+.card:hover{box-shadow:0 4px 14px rgba(7,59,76,.1)}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+.card-date{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-muted);min-width:0}
+.card-date .num{white-space:nowrap}
+.card-date .chip{height:19px;padding:0 7px;font-size:11px}
+.menu-btn{flex:none;width:28px;height:28px;border:0;border-radius:8px;background:transparent;display:grid;place-items:center;color:var(--ink-muted);margin:-4px -4px -4px 0}
+.menu-btn:hover{background:var(--bg);color:var(--ink)}
+.card-name{display:block;font-weight:600;font-size:14.5px;line-height:1.35;text-decoration:none}
+.card-name:hover{text-decoration:underline}
+.card-org{font-size:13px;color:var(--ink-muted);margin-top:3px;line-height:1.4}
+.card-v{font-size:15px;font-weight:600;margin-top:8px}
+.add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:38px;margin-top:8px;border:0;border-radius:10px;background:transparent;color:var(--ink);font-weight:600;font-size:13.5px}
+.add .icon{color:var(--ink-muted)}
+.add:hover{background:var(--panel)}
+</style>
+</head>
+<body data-name="Accountable, mockup 4: Forecast">
+<a class="skip" href="#main">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol><symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol><symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol><symbol id="i-deals" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></symbol><symbol id="i-pipeline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 7v7"/><path d="M12 7v4"/><path d="M16 7v9"/></symbol><symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></symbol><symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-updown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol><symbol id="i-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol><symbol id="i-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 13H8"/><path d="M16 17H8"/><path d="M16 13h-2"/></symbol><symbol id="i-move" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol><symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol><symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol><symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol></svg>
+<header class="top">
+  <a class="brand" href="#dashboard" aria-label="Accountable, go to the dashboard">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="9" fill="#073B4C"/><path d="M8.5 15.5l4.5 4.5 8.5-9.5" fill="none" stroke="#06D6A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Accountable</span>
+  </a>
+  <nav aria-label="Sections"><ul><li><a href="#dashboard" data-nav="dashboard"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-dashboard"/></svg>Dashboard</a></li><li><a href="#organizations" data-nav="organizations"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-building"/></svg>Organizations</a></li><li><a href="#contacts" data-nav="contacts"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-users"/></svg>Contacts</a></li><li><a href="#deals" data-nav="deals"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-deals"/></svg>Deals</a></li><li><a href="#pipeline" data-nav="pipeline"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-pipeline"/></svg>Pipeline</a></li></ul></nav>
+  <p class="top-date">Monday, Nov 16, 2026</p>
+</header><main id="main"><section data-screen="dashboard" aria-labelledby="dash-h">
+  <div class="head">
+    <div><h1 id="dash-h">Dashboard</h1><p class="ctx">Figures as of Nov 16, 2026</p></div>
+    <a class="btn btn-primary" href="#add"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</a>
+  </div>
+  <section class="panel hero" aria-labelledby="hero-h">
+  <div class="hero-head">
+    <h2 id="hero-h">Revenue won, and what's due to close</h2>
+    <p class="sub">$7.7M won in the last 12 months. $9.0M is open, $2.0M of it in 3 late deals.</p>
+  </div>
+  <div class="split" style="grid-template-columns:768.9fr 543.1fr">
+    <div class="figs figs-past">
+      <div class="fig"><p class="fig-l">Won in the last 12 months</p><p class="fig-v num">$7,710,000</p><p class="fig-s">16 deals, a win in 10 of 12 months</p></div>
+      <div class="fig"><p class="fig-l">Won this month</p><p class="fig-v num">$1,080,000</p><p class="fig-s">2 deals, up $120,000 on October</p></div>
+    </div>
+    <div class="figs figs-ahead">
+      <div class="fig"><p class="fig-l">Open pipeline</p><p class="fig-v num">$9,040,000</p><p class="fig-s">17 deals, 3 late</p></div>
+      <div class="fig"><p class="fig-l">Expected revenue</p><p class="fig-v num">$3,481,000</p><p class="fig-s">39% of the open pipeline</p></div>
+    </div>
+  </div>
+  <div class="hero-chart"><svg class="chart" viewBox="0 0 1312 330" role="img" aria-label="Revenue won by month from December 2025 to November 2026, then open deals by the month they are due to close. December 2025 won $420,000, January 2026 won $780,000, February 2026 won $260,000, March 2026 won $0, April 2026 won $1,150,000, May 2026 won $540,000, June 2026 won $890,000, July 2026 won $310,000, August 2026 won $0, September 2026 won $1,320,000, October 2026 won $960,000, November 2026 won $1,080,000. Late: 3 open deals, $1,980,000, December 2026: 2 open deals, $1,350,000, January 2027: 2 open deals, $980,000, February 2027: 2 open deals, $860,000, March 2027: 2 open deals, $1,160,000, April 2027: 2 open deals, $1,060,000, May 2027: 1 open deal, $290,000, June 2027: 2 open deals, $840,000, July 2027: 1 open deal, $520,000."><rect x="768.9" y="30" width="537.1" height="254" rx="10" fill="#F3F7F8"/><line class="base" x1="58" x2="1302" y1="284" y2="284"/><text x="46" y="288" text-anchor="end">$0</text><line class="grid" x1="58" x2="1302" y1="224" y2="224"/><text x="46" y="228" text-anchor="end">$500K</text><line class="grid" x1="58" x2="1302" y1="164" y2="164"/><text x="46" y="168" text-anchor="end">$1M</text><line class="grid" x1="58" x2="1302" y1="104" y2="104"/><text x="46" y="108" text-anchor="end">$1.5M</text><line class="grid" x1="58" x2="1302" y1="44" y2="44"/><text x="46" y="48" text-anchor="end">$2M</text><text x="87.6" y="304" text-anchor="middle">Dec</text><text x="87.6" y="319" text-anchor="middle">2025</text><text x="146.9" y="304" text-anchor="middle">Jan</text><text x="146.9" y="319" text-anchor="middle">2026</text><text x="206.1" y="304" text-anchor="middle">Feb</text><text x="265.3" y="304" text-anchor="middle">Mar</text><text x="324.6" y="304" text-anchor="middle">Apr</text><text x="383.8" y="304" text-anchor="middle">May</text><text x="443" y="304" text-anchor="middle">Jun</text><text x="502.3" y="304" text-anchor="middle">Jul</text><text x="561.5" y="304" text-anchor="middle">Aug</text><text x="620.8" y="304" text-anchor="middle">Sep</text><text x="680" y="304" text-anchor="middle">Oct</text><text x="739.2" y="304" text-anchor="middle">Nov</text><text x="798.5" y="304" text-anchor="middle" class="late-t">Late</text><text x="857.7" y="304" text-anchor="middle">Dec</text><text x="917" y="304" text-anchor="middle">Jan</text><text x="917" y="319" text-anchor="middle">2027</text><text x="976.2" y="304" text-anchor="middle">Feb</text><text x="1035.4" y="304" text-anchor="middle">Mar</text><text x="1094.7" y="304" text-anchor="middle">Apr</text><text x="1153.9" y="304" text-anchor="middle">May</text><text x="1213.1" y="304" text-anchor="middle">Jun</text><text x="1272.4" y="304" text-anchor="middle">Jul</text><path d="M87.6,233.6L146.9,190.4L206.1,252.8L265.3,284L324.6,146L383.8,219.2L443,177.2L502.3,246.8L561.5,284L620.8,125.6L680,168.8L739.2,154.4L739.2,284L87.6,284Z" fill="#06D6A0" fill-opacity=".13"/><path d="M87.6,233.6L146.9,190.4L206.1,252.8L265.3,284L324.6,146L383.8,219.2L443,177.2L502.3,246.8L561.5,284L620.8,125.6L680,168.8L739.2,154.4" fill="none" stroke="#047A5C" stroke-width="2" stroke-linejoin="round"/><rect class="hit" x="58" y="44" width="59.2" height="240" data-tip="December 2025|$420,000 won|1 deal"/><circle cx="87.6" cy="233.6" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="117.2" y="44" width="59.2" height="240" data-tip="January 2026|$780,000 won|2 deals"/><circle cx="146.9" cy="190.4" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="176.5" y="44" width="59.2" height="240" data-tip="February 2026|$260,000 won|1 deal"/><circle cx="206.1" cy="252.8" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="235.7" y="44" width="59.2" height="240" data-tip="March 2026|$0 won|0 deals"/><circle cx="265.3" cy="284" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="295" y="44" width="59.2" height="240" data-tip="April 2026|$1,150,000 won|2 deals"/><circle cx="324.6" cy="146" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="354.2" y="44" width="59.2" height="240" data-tip="May 2026|$540,000 won|1 deal"/><circle cx="383.8" cy="219.2" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="413.4" y="44" width="59.2" height="240" data-tip="June 2026|$890,000 won|2 deals"/><circle cx="443" cy="177.2" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="472.7" y="44" width="59.2" height="240" data-tip="July 2026|$310,000 won|1 deal"/><circle cx="502.3" cy="246.8" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="531.9" y="44" width="59.2" height="240" data-tip="August 2026|$0 won|0 deals"/><circle cx="561.5" cy="284" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="591.1" y="44" width="59.2" height="240" data-tip="September 2026|$1,320,000 won|2 deals"/><circle cx="620.8" cy="125.6" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><text class="lbl" x="620.8" y="113.6" text-anchor="middle">$1.3M</text><rect class="hit" x="650.4" y="44" width="59.2" height="240" data-tip="October 2026|$960,000 won|2 deals"/><circle cx="680" cy="168.8" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><rect class="hit" x="709.6" y="44" width="59.2" height="240" data-tip="November 2026|$1,080,000 won|2 deals"/><circle cx="739.2" cy="154.4" r="4" fill="#047A5C" stroke="#fff" stroke-width="2" pointer-events="none"/><text class="lbl" x="739.2" y="142.4" text-anchor="middle">$1.1M</text><rect x="786.5" y="216.8" width="24" height="67.2" fill="#073B4C"/><rect x="786.5" y="111.2" width="24" height="103.6" fill="#F78C6B"/><path d="M786.5,109.2V50.4Q786.5,46.4 790.5,46.4H806.5Q810.5,46.4 810.5,50.4V109.2Z" fill="#FFC145"/><rect class="hit" x="768.9" y="44" width="59.2" height="240" data-tip="Late: 3 deals, $1,980,000|Turbine maintenance contract, $880,000, Proposal|Atlas Freight renewal, $560,000, Negotiation|Precast panel contract, $540,000, Qualified"/><text class="lbl" x="798.5" y="37.4" text-anchor="middle">$2.0M</text><rect x="845.7" y="170" width="24" height="114" fill="#073B4C"/><path d="M845.7,168V126Q845.7,122 849.7,122H865.7Q869.7,122 869.7,126V168Z" fill="#F78C6B"/><rect class="hit" x="828.1" y="44" width="59.2" height="240" data-tip="December 2026: 2 deals, $1,350,000|Steel supply agreement 2027, $950,000, Negotiation|Lab automation, $400,000, Proposal"/><text class="lbl" x="857.7" y="113" text-anchor="middle">$1.4M</text><rect x="905" y="240.8" width="24" height="43.2" fill="#073B4C"/><path d="M905,238.8V170.4Q905,166.4 909,166.4H925Q929,166.4 929,170.4V238.8Z" fill="#F78C6B"/><rect class="hit" x="887.3" y="44" width="59.2" height="240" data-tip="January 2027: 2 deals, $980,000|Fleet telematics, $620,000, Proposal|Imaging equipment lease, $360,000, Negotiation"/><rect x="964.2" y="226.4" width="24" height="57.6" fill="#F78C6B"/><path d="M964.2,224.4V184.8Q964.2,180.8 968.2,180.8H984.2Q988.2,180.8 988.2,184.8V224.4Z" fill="#FFC145"/><rect class="hit" x="946.6" y="44" width="59.2" height="240" data-tip="February 2027: 2 deals, $860,000|ERP rollout, $480,000, Proposal|Yard management software, $380,000, Qualified"/><path d="M1023.4,284V148.8Q1023.4,144.8 1027.4,144.8H1043.4Q1047.4,144.8 1047.4,148.8V284Z" fill="#FFC145"/><rect class="hit" x="1005.8" y="44" width="59.2" height="240" data-tip="March 2027: 2 deals, $1,160,000|Patient records system, $760,000, Qualified|Furnace controls upgrade, $400,000, Qualified"/><rect x="1082.7" y="206" width="24" height="78" fill="#FFC145"/><path d="M1082.7,204V160.8Q1082.7,156.8 1086.7,156.8H1102.7Q1106.7,156.8 1106.7,160.8V204Z" fill="#118AB2"/><rect class="hit" x="1065" y="44" width="59.2" height="240" data-tip="April 2027: 2 deals, $1,060,000|Data center refresh, $650,000, Qualified|Claims platform upgrade, $410,000, New"/><path d="M1141.9,284V253.2Q1141.9,249.2 1145.9,249.2H1161.9Q1165.9,249.2 1165.9,253.2V284Z" fill="#118AB2"/><rect class="hit" x="1124.3" y="44" width="59.2" height="240" data-tip="May 2027: 1 deal, $290,000|Packaging line retrofit, $290,000, New"/><path d="M1201.1,284V187.2Q1201.1,183.2 1205.1,183.2H1221.1Q1225.1,183.2 1225.1,187.2V284Z" fill="#118AB2"/><rect class="hit" x="1183.5" y="44" width="59.2" height="240" data-tip="June 2027: 2 deals, $840,000|Cold storage expansion, $500,000, New|Robotic welding cell, $340,000, New"/><path d="M1260.4,284V225.6Q1260.4,221.6 1264.4,221.6H1280.4Q1284.4,221.6 1284.4,225.6V284Z" fill="#118AB2"/><rect class="hit" x="1242.8" y="44" width="59.2" height="240" data-tip="July 2027: 1 deal, $520,000|Grid sensor rollout, $520,000, New"/><line x1="768.9" x2="768.9" y1="20" y2="284" stroke="#073B4C" stroke-width="1.5"/><rect x="738.9" y="2" width="60" height="22" rx="11" fill="#073B4C"/><text x="768.9" y="17" text-anchor="middle" class="today-t">Today</text></svg></div>
+  <div class="key" aria-hidden="true">
+    <span><svg width="22" height="10"><path d="M1 5h20" stroke="#047A5C" stroke-width="2"/><circle cx="11" cy="5" r="3.5" fill="#047A5C" stroke="#fff" stroke-width="1.5"/></svg>Revenue won</span>
+    <span><i style="background:#118AB2"></i>New</span><span><i style="background:#FFC145"></i>Qualified</span><span><i style="background:#F78C6B"></i>Proposal</span><span><i style="background:#073B4C"></i>Negotiation</span>
+    <span class="key-late">Late: past its close date and still open</span>
+  </div>
+  <div class="split strip" style="grid-template-columns:768.9fr 543.1fr">
+    <div class="strip-bars">
+      <h3>Deals won by month</h3>
+      <p class="sub">16 deals in the last 12 months. None in March or August.</p>
+      <svg class="chart" viewBox="0 0 768.9 128" role="img" aria-label="Deals won by month, December 2025 to November 2026: December 1, January 2, February 1, March 0, April 2, May 1, June 2, July 1, August 0, September 2, October 2, November 2."><line class="base" x1="58" x2="766.9" y1="120" y2="120"/><text x="46" y="124" text-anchor="end">0</text><line class="grid" x1="58" x2="766.9" y1="67" y2="67"/><text x="46" y="71" text-anchor="end">1</text><line class="grid" x1="58" x2="766.9" y1="14" y2="14"/><text x="46" y="18" text-anchor="end">2</text><path d="M75.6,120V71Q75.6,67 79.6,67H95.6Q99.6,67 99.6,71V120Z" fill="#FFC145"/><rect class="hit" x="58" y="14" width="59.2" height="106" data-tip="December 2025|1 deal won"/><path d="M134.9,120V18Q134.9,14 138.9,14H154.9Q158.9,14 158.9,18V120Z" fill="#FFC145"/><rect class="hit" x="117.2" y="14" width="59.2" height="106" data-tip="January 2026|2 deals won"/><path d="M194.1,120V71Q194.1,67 198.1,67H214.1Q218.1,67 218.1,71V120Z" fill="#FFC145"/><rect class="hit" x="176.5" y="14" width="59.2" height="106" data-tip="February 2026|1 deal won"/><rect class="hit" x="235.7" y="14" width="59.2" height="106" data-tip="March 2026|0 deals won"/><path d="M312.6,120V18Q312.6,14 316.6,14H332.6Q336.6,14 336.6,18V120Z" fill="#FFC145"/><rect class="hit" x="295" y="14" width="59.2" height="106" data-tip="April 2026|2 deals won"/><path d="M371.8,120V71Q371.8,67 375.8,67H391.8Q395.8,67 395.8,71V120Z" fill="#FFC145"/><rect class="hit" x="354.2" y="14" width="59.2" height="106" data-tip="May 2026|1 deal won"/><path d="M431,120V18Q431,14 435,14H451Q455,14 455,18V120Z" fill="#FFC145"/><rect class="hit" x="413.4" y="14" width="59.2" height="106" data-tip="June 2026|2 deals won"/><path d="M490.3,120V71Q490.3,67 494.3,67H510.3Q514.3,67 514.3,71V120Z" fill="#FFC145"/><rect class="hit" x="472.7" y="14" width="59.2" height="106" data-tip="July 2026|1 deal won"/><rect class="hit" x="531.9" y="14" width="59.2" height="106" data-tip="August 2026|0 deals won"/><path d="M608.8,120V18Q608.8,14 612.8,14H628.8Q632.8,14 632.8,18V120Z" fill="#FFC145"/><rect class="hit" x="591.1" y="14" width="59.2" height="106" data-tip="September 2026|2 deals won"/><path d="M668,120V18Q668,14 672,14H688Q692,14 692,18V120Z" fill="#FFC145"/><rect class="hit" x="650.4" y="14" width="59.2" height="106" data-tip="October 2026|2 deals won"/><path d="M727.2,120V18Q727.2,14 731.2,14H747.2Q751.2,14 751.2,18V120Z" fill="#FFC145"/><rect class="hit" x="709.6" y="14" width="59.2" height="106" data-tip="November 2026|2 deals won"/></svg>
+    </div>
+    <div class="strip-stages">
+      <h3>Open pipeline by stage</h3>
+      <p class="sub">Most of the expected revenue sits in Proposal and Negotiation.</p>
+      <table class="stages">
+        <thead><tr><th scope="col">Stage</th><th scope="col">Deals</th><th scope="col">Value</th><th scope="col">Expected</th></tr></thead>
+        <tbody><tr><th scope="row"><i style="background:#118AB2"></i>New</th><td class="num">5</td><td class="num">$2,060,000</td><td class="num">$206,000</td></tr><tr><th scope="row"><i style="background:#FFC145"></i>Qualified</th><td class="num">5</td><td class="num">$2,730,000</td><td class="num">$682,500</td></tr><tr><th scope="row"><i style="background:#F78C6B"></i>Proposal</th><td class="num">4</td><td class="num">$2,380,000</td><td class="num">$1,190,000</td></tr><tr><th scope="row"><i style="background:#073B4C"></i>Negotiation</th><td class="num">3</td><td class="num">$1,870,000</td><td class="num">$1,402,500</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+  <section class="panel week" aria-labelledby="fu-h">
+  <div class="ph"><div><h2 id="fu-h">Follow-ups</h2><p class="sub">Overdue first, then the next 7 days. Tick one when it's done and it leaves the list.</p></div><p class="ph-meta"><span data-total>9</span> to do</p></div>
+  <div class="wk-over" data-group>
+    <h3 class="grp-h over">Overdue <span class="badge badge-over" data-count="over">4</span><span class="grp-note">oldest first</span></h3>
+    <ol class="wk-row" style="grid-template-columns:repeat(4,minmax(0,1fr))"><li class="wk-i" data-fu data-in="over">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-0" aria-label="Done: Send revised pricing for year two"><p class="wk-t">Send revised pricing for year two</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Marcus Hale</a>, <a class="link" href="#deals">Turbine maintenance contract</a></p>
+    <p class="wk-when over">9 days overdue</p>
+  </li><li class="wk-i" data-fu data-in="over">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-1" aria-label="Done: Chase the signed NDA"><p class="wk-t">Chase the signed NDA</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Ben Adler</a>, <a class="link" href="#deals">Yard management software</a></p>
+    <p class="wk-when over">6 days overdue</p>
+  </li><li class="wk-i" data-fu data-in="over">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-2" aria-label="Done: Call back about the delivery schedule"><p class="wk-t">Call back about the delivery schedule</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Dana Ortiz</a>, <a class="link" href="#deals">Atlas Freight renewal</a></p>
+    <p class="wk-when over">3 days overdue</p>
+  </li><li class="wk-i" data-fu data-in="over">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-3" aria-label="Done: Book a site visit"><p class="wk-t">Book a site visit</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Olivia Grant</a>, <a class="link" href="#deals">Precast panel contract</a></p>
+    <p class="wk-when over">1 day overdue</p>
+  </li></ol>
+    <p class="empty">Nothing overdue.</p>
+  </div>
+  <div class="wk-next" data-group>
+    <h3 class="grp-h">Next 7 days <span class="badge" data-count="next">5</span></h3>
+    <div class="wk-days" style="grid-template-columns:repeat(5,minmax(0,1fr))"><div class="wk-day is-today" data-group>
+      <p class="wk-dh"><span>Today</span><span class="num">Nov 16</span></p>
+      <ol class="wk-list"><li class="wk-i" data-fu data-in="next">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-2026-11-16-0" aria-label="Done: Confirm the legal review date"><p class="wk-t">Confirm the legal review date</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Priya Shah</a>, <a class="link" href="#deals">Steel supply agreement 2027</a></p>
+    <p class="wk-when today">Due today</p>
+  </li></ol>
+      <p class="empty">Nothing due</p>
+    </div><div class="wk-day" data-group>
+      <p class="wk-dh"><span>Tomorrow</span><span class="num">Nov 17</span></p>
+      <ol class="wk-list"><li class="wk-i" data-fu data-in="next">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-2026-11-17-0" aria-label="Done: Send the records migration case study"><p class="wk-t">Send the records migration case study</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Lena Moreau</a>, <a class="link" href="#deals">Patient records system</a></p>
+    <p class="wk-when ">Due tomorrow</p>
+  </li></ol>
+      <p class="empty">Nothing due</p>
+    </div><div class="wk-day" data-group>
+      <p class="wk-dh"><span>Thu</span><span class="num">Nov 19</span></p>
+      <ol class="wk-list"><li class="wk-i" data-fu data-in="next">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-2026-11-19-0" aria-label="Done: Demo for the operations team"><p class="wk-t">Demo for the operations team</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Henry Liu</a>, <a class="link" href="#deals">Data center refresh</a></p>
+    <p class="wk-when ">Due in 3 days</p>
+  </li></ol>
+      <p class="empty">Nothing due</p>
+    </div><div class="wk-day" data-group>
+      <p class="wk-dh"><span>Sat</span><span class="num">Nov 21</span></p>
+      <ol class="wk-list"><li class="wk-i" data-fu data-in="next">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-2026-11-21-0" aria-label="Done: Send the revised proposal"><p class="wk-t">Send the revised proposal</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Aisha Rahman</a>, <a class="link" href="#deals">Lab automation</a></p>
+    <p class="wk-when ">Due in 5 days</p>
+  </li></ol>
+      <p class="empty">Nothing due</p>
+    </div><div class="wk-day" data-group>
+      <p class="wk-dh"><span>Mon</span><span class="num">Nov 23</span></p>
+      <ol class="wk-list"><li class="wk-i" data-fu data-in="next">
+    <div class="wk-top"><input type="checkbox" class="cb js-done" id="fu4-2026-11-23-0" aria-label="Done: Check budget approval"><p class="wk-t">Check budget approval</p></div>
+    <p class="wk-links"><a class="link" href="#contacts">Grace Kim</a>, <a class="link" href="#deals">ERP rollout</a></p>
+    <p class="wk-when ">Due in 7 days</p>
+  </li></ol>
+      <p class="empty">Nothing due</p>
+    </div></div>
+    <p class="empty">No follow-ups due in the next 7 days.</p>
+  </div>
+</section>
+  <section class="panel funnel" aria-labelledby="fn-h">
+  <div class="ph"><div><h2 id="fn-h">Sales funnel</h2><p class="sub">How far deals got in the last 12 months. 38% of the value that reached New went on to be won.</p></div></div>
+  <ol class="steps"><li class="step">
+    <div class="step-l"><p class="step-n">New</p><p class="num step-v">$20,170,000</p><p class="step-s">40 deals</p></div>
+    <div class="step-b" style="height:120px;background:#118AB2" data-tip="New|$20,170,000 reached New|40 deals"></div>
+  </li><li class="step">
+    <div class="step-l"><p class="step-n">Qualified</p><p class="num step-v">$17,390,000</p><p class="step-s">34 deals, 86% of New</p></div>
+    <div class="step-b" style="height:103px;background:#FFC145" data-tip="Qualified|$17,390,000 reached Qualified|34 deals"></div>
+  </li><li class="step">
+    <div class="step-l"><p class="step-n">Proposal</p><p class="num step-v">$13,970,000</p><p class="step-s">27 deals, 80% of Qualified</p></div>
+    <div class="step-b" style="height:83px;background:#F78C6B" data-tip="Proposal|$13,970,000 reached Proposal|27 deals"></div>
+  </li><li class="step">
+    <div class="step-l"><p class="step-n">Negotiation</p><p class="num step-v">$10,610,000</p><p class="step-s">21 deals, 76% of Proposal</p></div>
+    <div class="step-b" style="height:63px;background:#073B4C" data-tip="Negotiation|$10,610,000 reached Negotiation|21 deals"></div>
+  </li><li class="step">
+    <div class="step-l"><p class="step-n">Won</p><p class="num step-v">$7,710,000</p><p class="step-s">16 deals, 73% of Negotiation</p></div>
+    <div class="step-b" style="height:46px;background:#06D6A0" data-tip="Won|$7,710,000 reached Won|16 deals"></div>
+  </li></ol>
+</section>
+  <section class="panel act" aria-labelledby="act-h">
+  <div class="ph"><div><h2 id="act-h">Recent activity</h2><p class="sub">The latest calls, emails, notes and stage changes, newest first.</p></div></div>
+  <ol class="act-cols"><li class="act-i is-stage"><div class="act-when"><span>Today</span><span class="num">11:20 AM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-move"/></svg></span><div class="act-b"><p class="act-t"><a class="link" href="#deals">Steel supply agreement 2027</a></p><p class="act-move">Moved from <span class="chip" style="background:#F78C6B;color:#073B4C">Proposal</span> to <span class="chip" style="background:#073B4C;color:#FFFFFF">Negotiation</span></p></div></li><li class="act-i"><div class="act-when"><span>Today</span><span class="num">9:15 AM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-phone"/></svg></span><div class="act-b"><p class="act-t"><span class="act-k">Call</span> with <a class="link" href="#contacts">Priya Shah</a></p><p class="act-d">Agreed volumes for Q1. Legal will review the terms this week. <a class="link" href="#deals">Steel supply agreement 2027</a></p></div></li><li class="act-i"><div class="act-when"><span>Nov 13</span><span class="num">4:40 PM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-mail"/></svg></span><div class="act-b"><p class="act-t"><span class="act-k">Email</span> with <a class="link" href="#contacts">Henry Liu</a></p><p class="act-d">Sent the signed order form and kickoff dates. <a class="link" href="#deals">Branch network upgrade</a></p></div></li><li class="act-i is-stage"><div class="act-when"><span>Nov 12</span><span class="num">3:05 PM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-move"/></svg></span><div class="act-b"><p class="act-t"><a class="link" href="#deals">Branch network upgrade</a></p><p class="act-move">Moved from <span class="chip" style="background:#073B4C;color:#FFFFFF">Negotiation</span> to <span class="chip" style="background:#06D6A0;color:#073B4C">Won</span></p></div></li><li class="act-i"><div class="act-when"><span>Nov 12</span><span class="num">10:30 AM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-note"/></svg></span><div class="act-b"><p class="act-t"><span class="act-k">Note</span> with <a class="link" href="#contacts">Lena Moreau</a></p><p class="act-d">Board approved the budget for the records project. <a class="link" href="#deals">Patient records system</a></p></div></li><li class="act-i"><div class="act-when"><span>Nov 11</span><span class="num">2:00 PM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-phone"/></svg></span><div class="act-b"><p class="act-t"><span class="act-k">Call</span> with <a class="link" href="#contacts">Marcus Hale</a></p><p class="act-d">Wants a lower rate for year two of the contract. <a class="link" href="#deals">Turbine maintenance contract</a></p></div></li><li class="act-i is-stage"><div class="act-when"><span>Nov 9</span><span class="num">9:50 AM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-move"/></svg></span><div class="act-b"><p class="act-t"><a class="link" href="#deals">Policy admin migration</a></p><p class="act-move">Moved from <span class="chip" style="background:#073B4C;color:#FFFFFF">Negotiation</span> to <span class="chip" style="background:#56717A;color:#FFFFFF">Lost</span></p></div></li><li class="act-i"><div class="act-when"><span>Nov 6</span><span class="num">11:15 AM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-mail"/></svg></span><div class="act-b"><p class="act-t"><span class="act-k">Email</span> with <a class="link" href="#contacts">Aisha Rahman</a></p><p class="act-d">Asked for references from two other labs. <a class="link" href="#deals">Lab automation</a></p></div></li><li class="act-i is-stage"><div class="act-when"><span>Nov 5</span><span class="num">4:20 PM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-move"/></svg></span><div class="act-b"><p class="act-t"><a class="link" href="#deals">Lab automation</a></p><p class="act-move">Moved from <span class="chip" style="background:#FFC145;color:#073B4C">Qualified</span> to <span class="chip" style="background:#F78C6B;color:#073B4C">Proposal</span></p></div></li><li class="act-i"><div class="act-when"><span>Nov 4</span><span class="num">1:30 PM</span></div><span class="act-ic"><svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-phone"/></svg></span><div class="act-b"><p class="act-t"><span class="act-k">Call</span> with <a class="link" href="#contacts">Grace Kim</a></p><p class="act-d">Finance needs the ERP quote split by phase. <a class="link" href="#deals">ERP rollout</a></p></div></li></ol>
+</section>
+</section><section data-screen="pipeline" hidden aria-labelledby="pipe-h">
+  <div class="head">
+    <div><h1 id="pipe-h">Pipeline</h1><p class="ctx">17 open deals, 3 late. Drag a card or use its stage menu to move it.</p></div>
+    <div class="head-figs">
+      <div><p class="fig-l">Open pipeline</p><p class="num head-v">$9,040,000</p></div>
+      <div><p class="fig-l">Expected revenue</p><p class="num head-v">$3,481,000</p></div>
+      <a class="btn btn-primary" href="#add"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</a>
+    </div>
+  </div>
+  <div class="board"><section class="col" aria-labelledby="col-new">
+    <header class="col-h">
+      <h2 id="col-new"><i style="background:#118AB2"></i>New<span class="col-n">5</span></h2>
+      <p class="num col-v">$2,060,000</p>
+      <p class="col-s">Expected <span class="num">$206,000</span></p>
+    </header>
+    <ol class="cards"><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Jul 30, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Grid sensor rollout, now New" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Grid sensor rollout</a>
+    <p class="card-org">Solano Utilities<br>Nora Fitz</p>
+    <p class="card-v num">$520,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Jun 11, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Robotic welding cell, now New" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Robotic welding cell</a>
+    <p class="card-org">Ironwood Fabrication<br>Carlos Mendes</p>
+    <p class="card-v num">$340,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Apr 15, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Claims platform upgrade, now New" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Claims platform upgrade</a>
+    <p class="card-org">Brightline Insurance<br>Ethan Cole</p>
+    <p class="card-v num">$410,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Jun 30, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Cold storage expansion, now New" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Cold storage expansion</a>
+    <p class="card-org">Meridian Labs<br>Aisha Rahman</p>
+    <p class="card-v num">$500,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">May 20, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Packaging line retrofit, now New" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Packaging line retrofit</a>
+    <p class="card-org">Cedar Valley Foods<br>Grace Kim</p>
+    <p class="card-v num">$290,000</p>
+  </li></ol>
+    <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+  </section><section class="col" aria-labelledby="col-qualified">
+    <header class="col-h">
+      <h2 id="col-qualified"><i style="background:#FFC145"></i>Qualified<span class="col-n">5</span></h2>
+      <p class="num col-v">$2,730,000</p>
+      <p class="col-s">Expected <span class="num">$682,500</span></p>
+    </header>
+    <ol class="cards"><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Mar 31, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Patient records system, now Qualified" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Patient records system</a>
+    <p class="card-org">Harbor Health Partners<br>Lena Moreau</p>
+    <p class="card-v num">$760,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Nov 10, 2026</span><span class="chip chip-late">Late</span></p>
+      <button class="menu-btn" aria-label="Change stage of Precast panel contract, now Qualified" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Precast panel contract</a>
+    <p class="card-org">Granite Ridge Construction<br>Olivia Grant</p>
+    <p class="card-v num">$540,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Apr 9, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Data center refresh, now Qualified" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Data center refresh</a>
+    <p class="card-org">Keystone Capital<br>Henry Liu</p>
+    <p class="card-v num">$650,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Mar 2, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Furnace controls upgrade, now Qualified" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Furnace controls upgrade</a>
+    <p class="card-org">Northwind Metals<br>Tom Becker</p>
+    <p class="card-v num">$400,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Feb 26, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Yard management software, now Qualified" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Yard management software</a>
+    <p class="card-org">Summit Rail Logistics<br>Ben Adler</p>
+    <p class="card-v num">$380,000</p>
+  </li></ol>
+    <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+  </section><section class="col" aria-labelledby="col-proposal">
+    <header class="col-h">
+      <h2 id="col-proposal"><i style="background:#F78C6B"></i>Proposal<span class="col-n">4</span></h2>
+      <p class="num col-v">$2,380,000</p>
+      <p class="col-s">Expected <span class="num">$1,190,000</span></p>
+    </header>
+    <ol class="cards"><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Nov 4, 2026</span><span class="chip chip-late">Late</span></p>
+      <button class="menu-btn" aria-label="Change stage of Turbine maintenance contract, now Proposal" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Turbine maintenance contract</a>
+    <p class="card-org">Bluepeak Energy<br>Marcus Hale</p>
+    <p class="card-v num">$880,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Jan 22, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Fleet telematics, now Proposal" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Fleet telematics</a>
+    <p class="card-org">Atlas Freight<br>Sam Whitfield</p>
+    <p class="card-v num">$620,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Feb 12, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of ERP rollout, now Proposal" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">ERP rollout</a>
+    <p class="card-org">Cedar Valley Foods<br>Grace Kim</p>
+    <p class="card-v num">$480,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Dec 18, 2026</span></p>
+      <button class="menu-btn" aria-label="Change stage of Lab automation, now Proposal" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Lab automation</a>
+    <p class="card-org">Meridian Labs<br>Aisha Rahman</p>
+    <p class="card-v num">$400,000</p>
+  </li></ol>
+    <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+  </section><section class="col" aria-labelledby="col-negotiation">
+    <header class="col-h">
+      <h2 id="col-negotiation"><i style="background:#073B4C"></i>Negotiation<span class="col-n">3</span></h2>
+      <p class="num col-v">$1,870,000</p>
+      <p class="col-s">Expected <span class="num">$1,402,500</span></p>
+    </header>
+    <ol class="cards"><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Dec 11, 2026</span></p>
+      <button class="menu-btn" aria-label="Change stage of Steel supply agreement 2027, now Negotiation" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Steel supply agreement 2027</a>
+    <p class="card-org">Northwind Metals<br>Priya Shah</p>
+    <p class="card-v num">$950,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Oct 30, 2026</span><span class="chip chip-late">Late</span></p>
+      <button class="menu-btn" aria-label="Change stage of Atlas Freight renewal, now Negotiation" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Atlas Freight renewal</a>
+    <p class="card-org">Atlas Freight<br>Dana Ortiz</p>
+    <p class="card-v num">$560,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-calendar"/></svg><span class="num">Jan 15, 2027</span></p>
+      <button class="menu-btn" aria-label="Change stage of Imaging equipment lease, now Negotiation" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Imaging equipment lease</a>
+    <p class="card-org">Harbor Health Partners<br>Raj Patel</p>
+    <p class="card-v num">$360,000</p>
+  </li></ol>
+    <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+  </section><section class="col" aria-labelledby="col-won">
+    <header class="col-h">
+      <h2 id="col-won"><i style="background:#06D6A0"></i>Won<span class="col-w">last 30 days</span><span class="col-n">3</span></h2>
+      <p class="num col-v">$1,600,000</p>
+      <p class="col-s">Expected <span class="num">$1,600,000</span></p>
+    </header>
+    <ol class="cards"><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg><span class="num"><span class="sr-only">Closed </span>Nov 12, 2026</span></p>
+      <button class="menu-btn" aria-label="Change stage of Branch network upgrade, now Won" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Branch network upgrade</a>
+    <p class="card-org">Keystone Capital<br>Henry Liu</p>
+    <p class="card-v num">$640,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg><span class="num"><span class="sr-only">Closed </span>Nov 3, 2026</span></p>
+      <button class="menu-btn" aria-label="Change stage of Substation maintenance, now Won" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Substation maintenance</a>
+    <p class="card-org">Solano Utilities<br>Nora Fitz</p>
+    <p class="card-v num">$440,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg><span class="num"><span class="sr-only">Closed </span>Oct 21, 2026</span></p>
+      <button class="menu-btn" aria-label="Change stage of Site safety systems, now Won" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Site safety systems</a>
+    <p class="card-org">Granite Ridge Construction<br>Olivia Grant</p>
+    <p class="card-v num">$520,000</p>
+  </li></ol>
+    <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+  </section><section class="col" aria-labelledby="col-lost">
+    <header class="col-h">
+      <h2 id="col-lost"><i style="background:#56717A"></i>Lost<span class="col-w">last 30 days</span><span class="col-n">2</span></h2>
+      <p class="num col-v">$1,030,000</p>
+      <p class="col-s">Expected <span class="num">$0</span></p>
+    </header>
+    <ol class="cards"><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg><span class="num"><span class="sr-only">Closed </span>Nov 9, 2026</span></p>
+      <button class="menu-btn" aria-label="Change stage of Policy admin migration, now Lost" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Policy admin migration</a>
+    <p class="card-org">Brightline Insurance<br>Ethan Cole</p>
+    <p class="card-v num">$720,000</p>
+  </li><li class="card">
+    <div class="card-top">
+      <p class="card-date"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg><span class="num"><span class="sr-only">Closed </span>Oct 28, 2026</span></p>
+      <button class="menu-btn" aria-label="Change stage of Rail car tracking, now Lost" aria-haspopup="menu"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    </div>
+    <a class="card-name" href="#deals">Rail car tracking</a>
+    <p class="card-org">Summit Rail Logistics<br>Ben Adler</p>
+    <p class="card-v num">$310,000</p>
+  </li></ol>
+    <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+  </section></div>
+</section></main><script>
+(function(){
+  var tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; tip.setAttribute('role','presentation'); document.body.appendChild(tip);
+  function place(t){
+    var lines = t.getAttribute('data-tip').split('|');
+    tip.innerHTML = '';
+    lines.forEach(function(l, i){ var d = document.createElement('div'); d.textContent = l; if (!i) d.className = 'tip-h'; tip.appendChild(d); });
+    tip.hidden = false;
+    var r = t.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8);
+    var y = r.top - h - 10; if (y < 8) y = r.bottom + 10;
+    tip.style.left = (x + scrollX) + 'px'; tip.style.top = (y + scrollY) + 'px';
+  }
+  document.addEventListener('pointerover', function(e){ var t = e.target.closest && e.target.closest('[data-tip]'); if (t) place(t); });
+  document.addEventListener('pointerout', function(e){ var t = e.target.closest && e.target.closest('[data-tip]'); if (t && !t.contains(e.relatedTarget)) tip.hidden = true; });
+  document.addEventListener('change', function(e){
+    var cb = e.target; if (!cb.matches('.js-done') || !cb.checked) return;
+    var item = cb.closest('[data-fu]');
+    item.classList.add('is-done');
+    setTimeout(function(){
+      item.remove();
+      document.querySelectorAll('[data-count]').forEach(function(c){ c.textContent = document.querySelectorAll('[data-fu][data-in~="' + c.getAttribute('data-count') + '"]').length; });
+      document.querySelectorAll('[data-group]').forEach(function(g){ g.classList.toggle('is-empty', !g.querySelector('[data-fu]')); });
+      var total = document.querySelectorAll('[data-fu]').length;
+      document.querySelectorAll('[data-total]').forEach(function(c){ c.textContent = total; });
+    }, 260);
+  });
+})();
+</script>
+<script>
+(function(){
+  function show(){
+    var s = location.hash === '#pipeline' ? 'pipeline' : 'dashboard';
+    document.querySelectorAll('[data-screen]').forEach(function(e){ e.hidden = e.dataset.screen !== s; });
+    document.querySelectorAll('[data-nav]').forEach(function(a){
+      var on = a.dataset.nav === s;
+      a.classList.toggle('is-current', on);
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    document.title = (s === 'pipeline' ? 'Pipeline' : 'Dashboard') + ' - ' + document.body.dataset.name;
+  }
+  addEventListener('hashchange', show); show();
+})();
+</script>
+</body>
+</html>

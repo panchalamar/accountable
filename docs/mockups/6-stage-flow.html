@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accountable, mockup 6: Stage flow</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F0F4F5;--panel:#FFFFFF;--ink:#073B4C;--ink-muted:#56717A;--divider:#E3EAEC;--column:#F5F8F9;
+--primary:#06D6A0;--primary-text:#047A5C;--secondary:#FFC145;--secondary-text:#8A5A00;--tertiary:#F78C6B;--tertiary-text:#B54A2A;
+--info:#118AB2;--info-strong:#0B6E8E;--alert:#EF476F;--alert-strong:#C9184A;--sea-mist:#CDD8DB;
+--sans:'Instrument Sans',system-ui,sans-serif;--serif:'Instrument Serif',Georgia,serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font:15px/1.5 var(--sans);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol{margin:0}
+ul,ol{padding:0;list-style:none}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--info-strong);outline-offset:2px}
+.icon{flex:none;display:block}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:16px;top:-48px;z-index:10;background:var(--ink);color:#fff;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+.skip:focus{top:16px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.chip{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;line-height:1;white-space:nowrap}
+.chip-late{background:var(--alert-strong);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:10px;font-weight:600;font-size:14.5px;text-decoration:none;white-space:nowrap;transition:background-color .15s,box-shadow .15s}
+.btn-primary{background:var(--primary);color:var(--ink)}
+.btn-primary:hover{background:#05c493}
+.link{color:var(--info-strong);text-decoration:none}
+.link:hover{text-decoration:underline}
+.chart{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--mono);font-size:11px;fill:var(--ink-muted)}
+.chart .lbl{fill:var(--ink);font-weight:600}
+.chart .grid{stroke:var(--divider);stroke-width:1}
+.chart .base{stroke:#C9D5D8;stroke-width:1}
+.cb{appearance:none;-webkit-appearance:none;flex:none;width:20px;height:20px;margin:0;border:2px solid var(--ink-muted);border-radius:6px;background:#fff;cursor:pointer;display:grid;place-items:center;transition:background-color .15s,border-color .15s}
+.cb:hover{border-color:var(--primary-text)}
+.cb:checked{background:var(--primary-text);border-color:var(--primary-text)}
+.cb:checked::after{content:'';width:10px;height:6px;border:2px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.tip{position:absolute;z-index:50;pointer-events:none;background:#073B4C;color:#fff;font:12.5px/1.45 var(--sans);padding:8px 11px;border-radius:8px;box-shadow:0 6px 18px rgba(7,59,76,.22);max-width:260px}
+.tip .tip-h{font-weight:600}
+.tip div:not(.tip-h){color:#CDD8DB;font-family:var(--mono);font-size:12px}
+[data-fu]{transition:opacity .25s ease}
+[data-fu].is-done{opacity:0}
+[data-group] .empty{display:none}
+[data-group].is-empty>.empty{display:block}
+.app{display:grid;grid-template-columns:92px 1fr;min-height:100vh}
+.rail{position:sticky;top:0;align-self:start;height:100vh;display:flex;flex-direction:column;align-items:center;gap:26px;padding:20px 0}
+.mark{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;font-size:10.5px;font-weight:650;letter-spacing:.01em}
+.rail ul{display:flex;flex-direction:column;gap:6px}
+.rail a[data-nav]{display:flex;flex-direction:column;align-items:center;gap:4px;width:80px;padding:4px 0;text-decoration:none;border-radius:12px}
+.ri{width:44px;height:36px;border-radius:12px;display:grid;place-items:center;color:var(--ink-muted);transition:background-color .15s}
+.rl{font-size:11.5px;font-weight:500}
+.rail a[data-nav]:hover .ri{background:#E1E9EB;color:var(--ink)}
+.rail a.is-current .ri{background:var(--ink);color:var(--primary)}
+.rail a.is-current .rl{font-weight:650}
+main{min-width:0}
+.dash:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;padding:0 0 0 8px}
+.dash-main{padding:26px 0 40px}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+h1{font-size:28px;font-weight:600;letter-spacing:-.015em;line-height:1.2}
+.ctx{color:var(--ink-muted);font-size:14.5px;margin-top:2px}
+.lede{margin:26px 0 24px;font-size:21px;line-height:1.5;color:var(--ink-muted);letter-spacing:-.005em}
+.lede .num{font-size:27px;font-weight:500;color:var(--ink);letter-spacing:-.03em}
+.panel{background:var(--panel);border-radius:22px;padding:26px 28px}
+h2{font-size:17px;font-weight:600}
+.sub{color:var(--ink-muted);font-size:13.5px;margin-top:2px}
+/* flow */
+.flow-p h2{font-size:20px;letter-spacing:-.01em}
+.flow-key{display:flex;gap:20px;margin:16px 0 6px;font-size:13px}
+.flow-key li{display:flex;align-items:center;gap:7px}
+.flow-key i{width:14px;height:14px;border-radius:4px}
+.k-open{background:#F78C6B}
+.k-moved{background:rgba(247,140,107,.38)}
+.k-lost{background:#B3C2C7}
+.flow{margin-top:4px}
+.flow .seg:hover,.flow path[data-tip]:hover{filter:brightness(.94)}
+.flow-cols{display:grid;grid-template-columns:repeat(5,1fr);margin-top:14px}
+.fc{padding-right:14px}
+.fc h3{font-size:15px;font-weight:600}
+.fc-r{font-size:13px;color:var(--ink-muted);margin-top:2px}
+.fc-r .num{font-size:14px;color:var(--ink);font-weight:500}
+.fc-s{font-size:12.5px;color:var(--ink-muted)}
+.fc-b{margin-top:12px;padding-top:12px;box-shadow:inset 0 1px 0 var(--divider)}
+.fc-l{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600}
+.fc-l i{width:10px;height:10px;border-radius:3px;flex:none}
+.fc-v{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.fc-lost{margin-top:8px;font-weight:500;color:var(--ink-muted)}
+.fc-lost i{background:#B3C2C7}
+.fc-lost .num{color:var(--ink)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+.duo .chart{margin-top:12px}
+.chart .hit{fill:transparent}
+/* today column */
+.today{background:var(--ink);color:#fff;border-radius:0}
+.today-in{position:sticky;top:0;padding:28px 26px 36px}
+.today h2{font-size:19px;font-weight:600;color:#fff}
+.td-sub{color:var(--sea-mist);font-size:13.5px;margin-top:2px}
+.td-g{margin-top:22px}
+.td-g h3{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;margin-bottom:6px;color:#fff}
+.today .td-over{color:#FF9DB1}
+.badge{display:inline-grid;place-items:center;min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:rgba(205,216,219,.18);color:#fff;font-size:12px;font-weight:600;font-family:var(--mono)}
+.b-over{background:#FF9DB1;color:var(--ink)}
+.fu-i{display:grid;grid-template-columns:22px 1fr auto;gap:12px;padding:12px 0;align-items:start}
+.fu-i+.fu-i{box-shadow:inset 0 1px 0 rgba(205,216,219,.16)}
+.cb-dark{background:transparent;border-color:var(--sea-mist)}
+.cb-dark:hover{border-color:var(--primary)}
+.cb-dark:checked{background:var(--primary);border-color:var(--primary)}
+.cb-dark:checked::after{border-color:var(--ink)}
+.today :focus-visible{outline-color:var(--primary)}
+.fu-t{font-size:14.5px;font-weight:500;line-height:1.4}
+.today a{color:var(--primary);text-decoration:none}
+.today a:hover{text-decoration:underline}
+.fu-l{font-size:13px;margin-top:2px;line-height:1.4}
+.fu-w{font-size:12.5px;color:var(--sea-mist);text-align:right;line-height:1.35;padding-top:2px;white-space:nowrap}
+.fu-w.over{color:#FF9DB1;font-weight:600}
+.fu-w.today{color:var(--secondary);font-weight:600}
+.today .empty{color:var(--sea-mist);font-size:13.5px;padding:6px 0}
+.td-h2{margin-top:30px}
+.ra{margin-top:10px}
+.ra-i{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:9px 0}
+.ra-i+.ra-i{box-shadow:inset 0 1px 0 rgba(205,216,219,.16)}
+.ra-ic{width:28px;height:28px;border-radius:999px;background:rgba(205,216,219,.12);display:grid;place-items:center;color:var(--sea-mist)}
+.ra-i p{font-size:13.5px;line-height:1.45;color:#fff}
+.ra-d{color:var(--sea-mist)!important}
+.ra-m{display:flex;align-items:center;gap:6px;margin-top:4px;color:var(--sea-mist)!important}
+.nw{white-space:nowrap}
+.ra-i p.ra-w2{font-size:12px;color:#9DB4BA;margin-top:3px}
+.ra-w{font-size:12px;color:#9DB4BA;white-space:nowrap;margin-left:auto;padding-left:8px}
+.ra-i p>.ra-w{margin-left:0;display:block;padding-left:0}
+.chip{height:20px;padding:0 8px;font-size:11.5px}
+.today .chip-negotiation{box-shadow:inset 0 0 0 1.5px var(--sea-mist)}
+/* pipeline */
+.pipe-wrap{padding:26px 28px 40px 8px}
+.pipe-wrap .head{margin-bottom:22px}
+.pipe-wrap .ctx .num{color:var(--ink);font-weight:600}
+.board{display:grid;grid-template-columns:repeat(6,minmax(196px,1fr));gap:10px;align-items:start}
+.cap{position:relative;padding:12px 26px 13px 24px;border-radius:12px 0 0 12px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%,16px 50%)}
+.cap-first{clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%);padding-left:16px}
+.cap h2{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:15px}
+.cap-n{font-size:12.5px;font-weight:600;opacity:.9}
+.cap-v{font-size:17px;font-weight:600;letter-spacing:-.01em;margin-top:2px}
+.cap-s{font-size:12.5px}
+.col-note{font-size:12.5px;color:var(--ink-muted);padding:8px 4px 6px;min-height:34px}
+.cards{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--panel);border-radius:12px;padding:11px 12px 11px;box-shadow:0 1px 2px rgba(7,59,76,.06);transition:box-shadow .15s}
+.card:hover{box-shadow:0 4px 14px rgba(7,59,76,.1)}
+.card-r1{display:flex;justify-content:space-between;align-items:flex-start;gap:4px}
+.card-name{font-weight:600;font-size:14.5px;line-height:1.35;text-decoration:none}
+.card-name:hover{text-decoration:underline}
+.menu-btn{flex:none;width:28px;height:28px;margin:-4px -6px 0 0;border:0;border-radius:8px;background:transparent;display:grid;place-items:center;color:var(--ink-muted)}
+.menu-btn:hover{background:var(--bg);color:var(--ink)}
+.card-org{font-size:13px;color:var(--ink-muted);margin-top:2px}
+.card-p{display:flex;align-items:center;gap:7px;font-size:13px;margin-top:8px}
+.av{width:22px;height:22px;border-radius:999px;background:var(--bg);display:grid;place-items:center;font-size:10px;font-weight:700;letter-spacing:.02em;flex:none}
+.card-r4{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:10px}
+.card-v{font-weight:600;font-size:14px}
+.card-d{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-muted);white-space:nowrap}
+.card-p .chip{height:18px;padding:0 7px;font-size:11px;margin-left:auto}
+.card-d.is-late{color:var(--alert-strong);font-weight:600}
+.add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:38px;margin-top:8px;border:0;border-radius:10px;background:#E4EBED;color:var(--ink);font-weight:600;font-size:13.5px}
+.add .icon{color:var(--ink-muted)}
+.add:hover{background:#D9E3E6}
+</style>
+</head>
+<body data-name="Accountable, mockup 6: Stage flow">
+<a class="skip" href="#main">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol><symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol><symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol><symbol id="i-deals" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></symbol><symbol id="i-pipeline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 7v7"/><path d="M12 7v4"/><path d="M16 7v9"/></symbol><symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></symbol><symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-updown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol><symbol id="i-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol><symbol id="i-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 13H8"/><path d="M16 17H8"/><path d="M16 13h-2"/></symbol><symbol id="i-move" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol><symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol><symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol><symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol></svg>
+<div class="app"><aside class="rail">
+  <a class="mark" href="#dashboard" aria-label="Accountable, go to the dashboard">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M4 9h8l5 8-5 8H4l5-8z" fill="#118AB2"/><path d="M14 9h7l5 8-5 8h-7l5-8z" fill="#FFC145"/><path d="M23 9h7l-0 0 0 16h-7l5-8z" fill="#06D6A0"/></svg>
+    <span>Accountable</span>
+  </a>
+  <nav aria-label="Sections"><ul><li><a href="#dashboard" data-nav="dashboard"><span class="ri"><svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-dashboard"/></svg></span><span class="rl">Dashboard</span></a></li><li><a href="#organizations" data-nav="organizations"><span class="ri"><svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-building"/></svg></span><span class="rl">Organizations</span></a></li><li><a href="#contacts" data-nav="contacts"><span class="ri"><svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-users"/></svg></span><span class="rl">Contacts</span></a></li><li><a href="#deals" data-nav="deals"><span class="ri"><svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-deals"/></svg></span><span class="rl">Deals</span></a></li><li><a href="#pipeline" data-nav="pipeline"><span class="ri"><svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-pipeline"/></svg></span><span class="rl">Pipeline</span></a></li></ul></nav>
+</aside><main id="main"><section data-screen="dashboard" class="dash" aria-labelledby="dash-h">
+  <div class="dash-main">
+    <div class="head">
+      <div><h1 id="dash-h">Dashboard</h1><p class="ctx">Monday, Nov 16, 2026</p></div>
+      <a class="btn btn-primary" href="#add"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</a>
+    </div>
+    <div class="lede">
+  <p><span class="num">$9,040,000</span> open across 17 deals, with <span class="num">$3,481,000</span> expected.</p>
+  <p><span class="num">$1,080,000</span> won this month, and <span class="num">$7,710,000</span> in the last 12 months.</p>
+</div>
+    <section class="panel flow-p" aria-labelledby="fl-h">
+  <div class="ph"><div><h2 id="fl-h">Where the money went</h2><p class="sub">Every deal that was open in the last 12 months, by the furthest stage it reached. 38% of the value that reached New was won.</p></div></div>
+  <ul class="flow-key" aria-hidden="true"><li><i class="k-open"></i>Open now</li><li><i class="k-moved"></i>Moved on to the next stage</li><li><i class="k-lost"></i>Lost at this stage</li></ul>
+  <svg class="chart flow" viewBox="0 0 840 412" role="img" aria-label="Sales flow for the last 12 months. New: $20,170,000 reached, $2,060,000 still open, $720,000 lost. Qualified: $17,390,000 reached, $2,730,000 still open, $690,000 lost. Proposal: $13,970,000 reached, $2,380,000 still open, $980,000 lost. Negotiation: $10,610,000 reached, $1,870,000 still open, $1,030,000 lost. Won: $7,710,000 reached."><path d="M44,16C106,16 106,42.2 168,42.2V369.8C106,369.8 106,343.6 44,343.6Z" fill="#118AB2" fill-opacity=".16" data-tip="New to Qualified|$17,390,000 moved on, 86%"/><path d="M212,42.2C274,42.2 274,74.4 336,74.4V337.6C274,337.6 274,305.4 212,305.4Z" fill="#FFC145" fill-opacity=".16" data-tip="Qualified to Proposal|$13,970,000 moved on, 80%"/><path d="M380,74.4C442,74.4 442,106.1 504,106.1V305.9C442,305.9 442,274.3 380,274.3Z" fill="#F78C6B" fill-opacity=".16" data-tip="Proposal to Negotiation|$10,610,000 moved on, 76%"/><path d="M548,106.1C610,106.1 610,133.4 672,133.4V278.6C610,278.6 610,251.3 548,251.3Z" fill="#073B4C" fill-opacity=".16" data-tip="Negotiation to Won|$7,710,000 moved on, 73%"/><path d="M6,16H38Q44,16 44,22V343.6Q44,343.6 44,343.6H0Q0,343.6 0,343.6V22Q0,16 6,16Z" fill="#118AB2" fill-opacity="0.38" class="seg" data-tip="New, moved on|$17,390,000, 34 deals"/><path d="M0,345.6H44Q44,345.6 44,345.6V382.4Q44,382.4 44,382.4H0Q0,382.4 0,382.4V345.6Q0,345.6 0,345.6Z" fill="#118AB2" fill-opacity="1" class="seg" data-tip="New, open now|$2,060,000, 5 deals|$206,000 expected"/><path d="M0,384.4H44Q44,384.4 44,384.4V390Q44,396 38,396H6Q0,396 0,390V384.4Q0,384.4 0,384.4Z" fill="#B3C2C7" fill-opacity="1" class="seg" data-tip="New, lost here|$720,000, 1 deal"/><path d="M174,42.2H206Q212,42.2 212,48.2V305.4Q212,305.4 212,305.4H168Q168,305.4 168,305.4V48.2Q168,42.2 174,42.2Z" fill="#FFC145" fill-opacity="0.38" class="seg" data-tip="Qualified, moved on|$13,970,000, 27 deals"/><path d="M168,307.4H212Q212,307.4 212,307.4V356.8Q212,356.8 212,356.8H168Q168,356.8 168,356.8V307.4Q168,307.4 168,307.4Z" fill="#FFC145" fill-opacity="1" class="seg" data-tip="Qualified, open now|$2,730,000, 5 deals|$682,500 expected"/><path d="M168,358.8H212Q212,358.8 212,358.8V363.8Q212,369.8 206,369.8H174Q168,369.8 168,363.8V358.8Q168,358.8 168,358.8Z" fill="#B3C2C7" fill-opacity="1" class="seg" data-tip="Qualified, lost here|$690,000, 2 deals"/><path d="M342,74.4H374Q380,74.4 380,80.4V274.3Q380,274.3 380,274.3H336Q336,274.3 336,274.3V80.4Q336,74.4 342,74.4Z" fill="#F78C6B" fill-opacity="0.38" class="seg" data-tip="Proposal, moved on|$10,610,000, 21 deals"/><path d="M336,276.3H380Q380,276.3 380,276.3V319.1Q380,319.1 380,319.1H336Q336,319.1 336,319.1V276.3Q336,276.3 336,276.3Z" fill="#F78C6B" fill-opacity="1" class="seg" data-tip="Proposal, open now|$2,380,000, 4 deals|$1,190,000 expected"/><path d="M336,321.1H380Q380,321.1 380,321.1V331.6Q380,337.6 374,337.6H342Q336,337.6 336,331.6V321.1Q336,321.1 336,321.1Z" fill="#B3C2C7" fill-opacity="1" class="seg" data-tip="Proposal, lost here|$980,000, 2 deals"/><path d="M510,106.1H542Q548,106.1 548,112.1V251.3Q548,251.3 548,251.3H504Q504,251.3 504,251.3V112.1Q504,106.1 510,106.1Z" fill="#073B4C" fill-opacity="0.38" class="seg" data-tip="Negotiation, moved on|$7,710,000, 16 deals"/><path d="M504,253.3H548Q548,253.3 548,253.3V286.5Q548,286.5 548,286.5H504Q504,286.5 504,286.5V253.3Q504,253.3 504,253.3Z" fill="#073B4C" fill-opacity="1" class="seg" data-tip="Negotiation, open now|$1,870,000, 3 deals|$1,402,500 expected"/><path d="M504,288.5H548Q548,288.5 548,288.5V299.9Q548,305.9 542,305.9H510Q504,305.9 504,299.9V288.5Q504,288.5 504,288.5Z" fill="#B3C2C7" fill-opacity="1" class="seg" data-tip="Negotiation, lost here|$1,030,000, 2 deals"/><path d="M678,133.4H710Q716,133.4 716,139.4V272.6Q716,278.6 710,278.6H678Q672,278.6 672,272.6V139.4Q672,133.4 678,133.4Z" fill="#06D6A0" fill-opacity="1" class="seg" data-tip="Won|$7,710,000, 16 deals"/></svg>
+  <div class="flow-cols"><div class="fc">
+    <h3>New</h3>
+    <p class="fc-r"><span class="num">$20,170,000</span> reached</p>
+    <p class="fc-s">40 deals</p>
+    <div class="fc-b">
+      <p class="fc-l"><i style="background:#118AB2"></i>Open now</p>
+      <p class="num fc-v">$2,060,000</p>
+      <p class="fc-s">5 deals, <span class="num">$206,000</span> expected</p>
+      <p class="fc-l fc-lost"><i></i>Lost <span class="num">$720,000</span></p>
+    </div>
+  </div><div class="fc">
+    <h3>Qualified</h3>
+    <p class="fc-r"><span class="num">$17,390,000</span> reached</p>
+    <p class="fc-s">34 deals, 86% of New</p>
+    <div class="fc-b">
+      <p class="fc-l"><i style="background:#FFC145"></i>Open now</p>
+      <p class="num fc-v">$2,730,000</p>
+      <p class="fc-s">5 deals, <span class="num">$682,500</span> expected</p>
+      <p class="fc-l fc-lost"><i></i>Lost <span class="num">$690,000</span></p>
+    </div>
+  </div><div class="fc">
+    <h3>Proposal</h3>
+    <p class="fc-r"><span class="num">$13,970,000</span> reached</p>
+    <p class="fc-s">27 deals, 80% of Qualified</p>
+    <div class="fc-b">
+      <p class="fc-l"><i style="background:#F78C6B"></i>Open now</p>
+      <p class="num fc-v">$2,380,000</p>
+      <p class="fc-s">4 deals, <span class="num">$1,190,000</span> expected</p>
+      <p class="fc-l fc-lost"><i></i>Lost <span class="num">$980,000</span></p>
+    </div>
+  </div><div class="fc">
+    <h3>Negotiation</h3>
+    <p class="fc-r"><span class="num">$10,610,000</span> reached</p>
+    <p class="fc-s">21 deals, 76% of Proposal</p>
+    <div class="fc-b">
+      <p class="fc-l"><i style="background:#073B4C"></i>Open now</p>
+      <p class="num fc-v">$1,870,000</p>
+      <p class="fc-s">3 deals, <span class="num">$1,402,500</span> expected</p>
+      <p class="fc-l fc-lost"><i></i>Lost <span class="num">$1,030,000</span></p>
+    </div>
+  </div><div class="fc">
+    <h3>Won</h3>
+    <p class="fc-r"><span class="num">$7,710,000</span> reached</p>
+    <p class="fc-s">16 deals, 73% of Negotiation</p>
+    <div class="fc-b"><p class="fc-l">This month</p><p class="num fc-v">$1,080,000</p><p class="fc-s">2 deals</p></div>
+  </div></div>
+</section>
+    <div class="duo">
+      <section class="panel" aria-labelledby="rv-h"><h2 id="rv-h">Revenue won by month</h2><p class="sub">$7.7M in the last 12 months. Best month September, $1,320,000.</p><svg class="chart" viewBox="0 0 420 320" role="img" aria-label="Revenue won by month, December 2025 to November 2026. December $420,000, January $780,000, February $260,000, March $0, April $1,150,000, May $540,000, June $890,000, July $310,000, August $0, September $1,320,000, October $960,000, November $1,080,000."><line class="base" x1="46" x2="404" y1="292" y2="292"/><text x="37" y="296" text-anchor="end">$0</text><line class="grid" x1="46" x2="404" y1="202.7" y2="202.7"/><text x="37" y="206.7" text-anchor="end">$500K</text><line class="grid" x1="46" x2="404" y1="113.3" y2="113.3"/><text x="37" y="117.3" text-anchor="end">$1M</text><line class="grid" x1="46" x2="404" y1="24" y2="24"/><text x="37" y="28" text-anchor="end">$1.5M</text><text x="46" y="312" text-anchor="middle">D</text><text x="78.5" y="312" text-anchor="middle">J</text><text x="111.1" y="312" text-anchor="middle">F</text><text x="143.6" y="312" text-anchor="middle">M</text><text x="176.2" y="312" text-anchor="middle">A</text><text x="208.7" y="312" text-anchor="middle">M</text><text x="241.3" y="312" text-anchor="middle">J</text><text x="273.8" y="312" text-anchor="middle">J</text><text x="306.4" y="312" text-anchor="middle">A</text><text x="338.9" y="312" text-anchor="middle">S</text><text x="371.5" y="312" text-anchor="middle">O</text><text x="404" y="312" text-anchor="middle">N</text><path d="M46,217L78.5,152.6L111.1,245.5L143.6,292L176.2,86.5L208.7,195.5L241.3,133L273.8,236.6L306.4,292L338.9,56.2L371.5,120.5L404,99L404,292L46,292Z" fill="#06D6A0" fill-opacity=".14"/><path d="M46,217L78.5,152.6L111.1,245.5L143.6,292L176.2,86.5L208.7,195.5L241.3,133L273.8,236.6L306.4,292L338.9,56.2L371.5,120.5L404,99" fill="none" stroke="#047A5C" stroke-width="2" stroke-linejoin="round"/><circle cx="46" cy="217" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="46" cy="217" r="13" data-tip="December 2025|$420,000 won, 1 deal"/><circle cx="78.5" cy="152.6" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="78.5" cy="152.6" r="13" data-tip="January 2026|$780,000 won, 2 deals"/><circle cx="111.1" cy="245.5" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="111.1" cy="245.5" r="13" data-tip="February 2026|$260,000 won, 1 deal"/><circle cx="143.6" cy="292" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="143.6" cy="292" r="13" data-tip="March 2026|$0 won, 0 deals"/><circle cx="176.2" cy="86.5" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="176.2" cy="86.5" r="13" data-tip="April 2026|$1,150,000 won, 2 deals"/><circle cx="208.7" cy="195.5" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="208.7" cy="195.5" r="13" data-tip="May 2026|$540,000 won, 1 deal"/><circle cx="241.3" cy="133" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="241.3" cy="133" r="13" data-tip="June 2026|$890,000 won, 2 deals"/><circle cx="273.8" cy="236.6" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="273.8" cy="236.6" r="13" data-tip="July 2026|$310,000 won, 1 deal"/><circle cx="306.4" cy="292" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="306.4" cy="292" r="13" data-tip="August 2026|$0 won, 0 deals"/><circle cx="338.9" cy="56.2" r="4.5" fill="#047A5C" stroke="#fff" stroke-width="2"/><circle class="hit" cx="338.9" cy="56.2" r="13" data-tip="September 2026|$1,320,000 won, 2 deals"/><circle cx="371.5" cy="120.5" r="3" fill="#047A5C" stroke="#fff" stroke-width="0"/><circle class="hit" cx="371.5" cy="120.5" r="13" data-tip="October 2026|$960,000 won, 2 deals"/><circle cx="404" cy="99" r="4.5" fill="#047A5C" stroke="#fff" stroke-width="2"/><circle class="hit" cx="404" cy="99" r="13" data-tip="November 2026|$1,080,000 won, 2 deals"/><text class="lbl" x="338.9" y="45.2" text-anchor="middle">$1.3M</text><text class="lbl" x="404" y="88" text-anchor="end">$1.1M</text></svg></section>
+      <section class="panel" aria-labelledby="dw-h"><h2 id="dw-h">Deals won by month</h2><p class="sub">16 deals, with a win in 10 of the 12 months.</p><svg class="chart" viewBox="0 0 420 320" role="img" aria-label="Deals won by month, December 2025 to November 2026. December 1, January 2, February 1, March 0, April 2, May 1, June 2, July 1, August 0, September 2, October 2, November 2."><line class="base" x1="28" x2="412" y1="292" y2="292"/><text x="19" y="296" text-anchor="end">0</text><line class="grid" x1="28" x2="412" y1="202.7" y2="202.7"/><text x="19" y="206.7" text-anchor="end">1</text><line class="grid" x1="28" x2="412" y1="113.3" y2="113.3"/><text x="19" y="117.3" text-anchor="end">2</text><line class="grid" x1="28" x2="412" y1="24" y2="24"/><text x="19" y="28" text-anchor="end">3</text><text x="44" y="312" text-anchor="middle">D</text><path d="M35,292V206.7Q35,202.7 39,202.7H49Q53,202.7 53,206.7V292Z" fill="#FFC145"/><rect class="hit" x="28" y="24" width="32" height="268" data-tip="December 2025|1 deal won"/><text x="76" y="312" text-anchor="middle">J</text><path d="M67,292V117.3Q67,113.3 71,113.3H81Q85,113.3 85,117.3V292Z" fill="#FFC145"/><rect class="hit" x="60" y="24" width="32" height="268" data-tip="January 2026|2 deals won"/><text x="108" y="312" text-anchor="middle">F</text><path d="M99,292V206.7Q99,202.7 103,202.7H113Q117,202.7 117,206.7V292Z" fill="#FFC145"/><rect class="hit" x="92" y="24" width="32" height="268" data-tip="February 2026|1 deal won"/><text x="140" y="312" text-anchor="middle">M</text><rect class="hit" x="124" y="24" width="32" height="268" data-tip="March 2026|0 deals won"/><text x="172" y="312" text-anchor="middle">A</text><path d="M163,292V117.3Q163,113.3 167,113.3H177Q181,113.3 181,117.3V292Z" fill="#FFC145"/><rect class="hit" x="156" y="24" width="32" height="268" data-tip="April 2026|2 deals won"/><text x="204" y="312" text-anchor="middle">M</text><path d="M195,292V206.7Q195,202.7 199,202.7H209Q213,202.7 213,206.7V292Z" fill="#FFC145"/><rect class="hit" x="188" y="24" width="32" height="268" data-tip="May 2026|1 deal won"/><text x="236" y="312" text-anchor="middle">J</text><path d="M227,292V117.3Q227,113.3 231,113.3H241Q245,113.3 245,117.3V292Z" fill="#FFC145"/><rect class="hit" x="220" y="24" width="32" height="268" data-tip="June 2026|2 deals won"/><text x="268" y="312" text-anchor="middle">J</text><path d="M259,292V206.7Q259,202.7 263,202.7H273Q277,202.7 277,206.7V292Z" fill="#FFC145"/><rect class="hit" x="252" y="24" width="32" height="268" data-tip="July 2026|1 deal won"/><text x="300" y="312" text-anchor="middle">A</text><rect class="hit" x="284" y="24" width="32" height="268" data-tip="August 2026|0 deals won"/><text x="332" y="312" text-anchor="middle">S</text><path d="M323,292V117.3Q323,113.3 327,113.3H337Q341,113.3 341,117.3V292Z" fill="#FFC145"/><rect class="hit" x="316" y="24" width="32" height="268" data-tip="September 2026|2 deals won"/><text x="364" y="312" text-anchor="middle">O</text><path d="M355,292V117.3Q355,113.3 359,113.3H369Q373,113.3 373,117.3V292Z" fill="#FFC145"/><rect class="hit" x="348" y="24" width="32" height="268" data-tip="October 2026|2 deals won"/><text x="396" y="312" text-anchor="middle">N</text><path d="M387,292V117.3Q387,113.3 391,113.3H401Q405,113.3 405,117.3V292Z" fill="#FFC145"/><rect class="hit" x="380" y="24" width="32" height="268" data-tip="November 2026|2 deals won"/></svg></section>
+    </div>
+  </div>
+  <aside class="today" aria-labelledby="td-h">
+  <div class="today-in">
+    <h2 id="td-h">Follow-ups</h2>
+    <p class="td-sub"><span data-total>9</span> to do. Tick one when it's done.</p>
+    <div class="td-g" data-group>
+      <h3 class="td-over">Overdue <span class="badge b-over" data-count="over">4</span></h3>
+      <ol><li class="fu-i" data-fu data-in="over">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-over-0" aria-label="Done: Send revised pricing for year two">
+  <div><p class="fu-t">Send revised pricing for year two</p><p class="fu-l"><a href="#contacts">Marcus Hale</a>, <a href="#deals">Turbine maintenance contract</a></p></div>
+  <p class="fu-w over">9 days<br>overdue</p>
+</li><li class="fu-i" data-fu data-in="over">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-over-1" aria-label="Done: Chase the signed NDA">
+  <div><p class="fu-t">Chase the signed NDA</p><p class="fu-l"><a href="#contacts">Ben Adler</a>, <a href="#deals">Yard management software</a></p></div>
+  <p class="fu-w over">6 days<br>overdue</p>
+</li><li class="fu-i" data-fu data-in="over">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-over-2" aria-label="Done: Call back about the delivery schedule">
+  <div><p class="fu-t">Call back about the delivery schedule</p><p class="fu-l"><a href="#contacts">Dana Ortiz</a>, <a href="#deals">Atlas Freight renewal</a></p></div>
+  <p class="fu-w over">3 days<br>overdue</p>
+</li><li class="fu-i" data-fu data-in="over">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-over-3" aria-label="Done: Book a site visit">
+  <div><p class="fu-t">Book a site visit</p><p class="fu-l"><a href="#contacts">Olivia Grant</a>, <a href="#deals">Precast panel contract</a></p></div>
+  <p class="fu-w over">1 day<br>overdue</p>
+</li></ol>
+      <p class="empty">Nothing overdue.</p>
+    </div>
+    <div class="td-g" data-group>
+      <h3>Next 7 days <span class="badge" data-count="next">5</span></h3>
+      <ol><li class="fu-i" data-fu data-in="next">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-next-0" aria-label="Done: Confirm the legal review date">
+  <div><p class="fu-t">Confirm the legal review date</p><p class="fu-l"><a href="#contacts">Priya Shah</a>, <a href="#deals">Steel supply agreement 2027</a></p></div>
+  <p class="fu-w today">Due today</p>
+</li><li class="fu-i" data-fu data-in="next">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-next-1" aria-label="Done: Send the records migration case study">
+  <div><p class="fu-t">Send the records migration case study</p><p class="fu-l"><a href="#contacts">Lena Moreau</a>, <a href="#deals">Patient records system</a></p></div>
+  <p class="fu-w ">Due<br>tomorrow</p>
+</li><li class="fu-i" data-fu data-in="next">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-next-2" aria-label="Done: Demo for the operations team">
+  <div><p class="fu-t">Demo for the operations team</p><p class="fu-l"><a href="#contacts">Henry Liu</a>, <a href="#deals">Data center refresh</a></p></div>
+  <p class="fu-w ">Due<br>in 3 days</p>
+</li><li class="fu-i" data-fu data-in="next">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-next-3" aria-label="Done: Send the revised proposal">
+  <div><p class="fu-t">Send the revised proposal</p><p class="fu-l"><a href="#contacts">Aisha Rahman</a>, <a href="#deals">Lab automation</a></p></div>
+  <p class="fu-w ">Due<br>in 5 days</p>
+</li><li class="fu-i" data-fu data-in="next">
+  <input type="checkbox" class="cb cb-dark js-done" id="fu6-next-4" aria-label="Done: Check budget approval">
+  <div><p class="fu-t">Check budget approval</p><p class="fu-l"><a href="#contacts">Grace Kim</a>, <a href="#deals">ERP rollout</a></p></div>
+  <p class="fu-w ">Due<br>in 7 days</p>
+</li></ol>
+      <p class="empty">No follow-ups due in the next 7 days.</p>
+    </div>
+    <h2 class="td-h2" id="ra-h">Recent activity</h2>
+    <ol class="ra" aria-labelledby="ra-h"><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-move"/></svg></span>
+      <div><p><a href="#deals">Steel supply agreement 2027</a></p><p class="ra-m"><span class="nw">Moved from</span> <span class="chip chip-proposal" style="background:#F78C6B;color:#073B4C">Proposal</span> to <span class="chip chip-negotiation" style="background:#073B4C;color:#FFFFFF">Negotiation</span></p><p class="ra-w2">Today, 11:20 AM</p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-phone"/></svg></span>
+      <div><p>Call with <a href="#contacts">Priya Shah</a> about <a href="#deals">Steel supply agreement 2027</a> <span class="ra-w">Today, 9:15 AM</span></p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-mail"/></svg></span>
+      <div><p>Email with <a href="#contacts">Henry Liu</a> about <a href="#deals">Branch network upgrade</a> <span class="ra-w">Nov 13, 4:40 PM</span></p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-move"/></svg></span>
+      <div><p><a href="#deals">Branch network upgrade</a></p><p class="ra-m"><span class="nw">Moved from</span> <span class="chip chip-negotiation" style="background:#073B4C;color:#FFFFFF">Negotiation</span> to <span class="chip chip-won" style="background:#06D6A0;color:#073B4C">Won</span></p><p class="ra-w2">Nov 12, 3:05 PM</p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-note"/></svg></span>
+      <div><p>Note with <a href="#contacts">Lena Moreau</a> about <a href="#deals">Patient records system</a> <span class="ra-w">Nov 12, 10:30 AM</span></p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-phone"/></svg></span>
+      <div><p>Call with <a href="#contacts">Marcus Hale</a> about <a href="#deals">Turbine maintenance contract</a> <span class="ra-w">Nov 11, 2:00 PM</span></p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-move"/></svg></span>
+      <div><p><a href="#deals">Policy admin migration</a></p><p class="ra-m"><span class="nw">Moved from</span> <span class="chip chip-negotiation" style="background:#073B4C;color:#FFFFFF">Negotiation</span> to <span class="chip chip-lost" style="background:#56717A;color:#FFFFFF">Lost</span></p><p class="ra-w2">Nov 9, 9:50 AM</p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-mail"/></svg></span>
+      <div><p>Email with <a href="#contacts">Aisha Rahman</a> about <a href="#deals">Lab automation</a> <span class="ra-w">Nov 6, 11:15 AM</span></p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-move"/></svg></span>
+      <div><p><a href="#deals">Lab automation</a></p><p class="ra-m"><span class="nw">Moved from</span> <span class="chip chip-qualified" style="background:#FFC145;color:#073B4C">Qualified</span> to <span class="chip chip-proposal" style="background:#F78C6B;color:#073B4C">Proposal</span></p><p class="ra-w2">Nov 5, 4:20 PM</p></div>
+    </li><li class="ra-i">
+      <span class="ra-ic"><svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-phone"/></svg></span>
+      <div><p>Call with <a href="#contacts">Grace Kim</a> about <a href="#deals">ERP rollout</a> <span class="ra-w">Nov 4, 1:30 PM</span></p></div>
+    </li></ol>
+  </div>
+</aside>
+</section><section data-screen="pipeline" hidden aria-labelledby="pipe-h">
+  <div class="pipe-wrap">
+    <div class="head">
+      <div><h1 id="pipe-h">Pipeline</h1><p class="ctx"><span class="num">$9,040,000</span> open across 17 deals, with <span class="num">$3,481,000</span> expected. 3 are late.</p></div>
+      <a class="btn btn-primary" href="#add"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</a>
+    </div>
+    <div class="board"><section class="col" aria-labelledby="col-new">
+      <header class="cap cap-first" style="background:#0B6E8E;color:#FFFFFF">
+        <h2 id="col-new">New<span class="num cap-n">5</span></h2>
+        <p class="num cap-v">$2,060,000</p>
+        <p class="cap-s">Expected <span class="num">$206,000</span></p>
+      </header>
+      <p class="col-note">&nbsp;</p>
+      <ol class="cards"><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Grid sensor rollout</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Grid sensor rollout, now New"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Solano Utilities</p>
+    <p class="card-p"><span class="av" aria-hidden="true">NF</span>Nora Fitz</p>
+    <div class="card-r4"><span class="num card-v">$520,000</span><span class="card-d num">Jul 30, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Robotic welding cell</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Robotic welding cell, now New"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Ironwood Fabrication</p>
+    <p class="card-p"><span class="av" aria-hidden="true">CM</span>Carlos Mendes</p>
+    <div class="card-r4"><span class="num card-v">$340,000</span><span class="card-d num">Jun 11, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Claims platform upgrade</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Claims platform upgrade, now New"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Brightline Insurance</p>
+    <p class="card-p"><span class="av" aria-hidden="true">EC</span>Ethan Cole</p>
+    <div class="card-r4"><span class="num card-v">$410,000</span><span class="card-d num">Apr 15, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Cold storage expansion</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Cold storage expansion, now New"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Meridian Labs</p>
+    <p class="card-p"><span class="av" aria-hidden="true">AR</span>Aisha Rahman</p>
+    <div class="card-r4"><span class="num card-v">$500,000</span><span class="card-d num">Jun 30, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Packaging line retrofit</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Packaging line retrofit, now New"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Cedar Valley Foods</p>
+    <p class="card-p"><span class="av" aria-hidden="true">GK</span>Grace Kim</p>
+    <div class="card-r4"><span class="num card-v">$290,000</span><span class="card-d num">May 20, 2027</span></div>
+  </li></ol>
+      <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+    </section><section class="col" aria-labelledby="col-qualified">
+      <header class="cap" style="background:#FFC145;color:#073B4C">
+        <h2 id="col-qualified">Qualified<span class="num cap-n">5</span></h2>
+        <p class="num cap-v">$2,730,000</p>
+        <p class="cap-s">Expected <span class="num">$682,500</span></p>
+      </header>
+      <p class="col-note">&nbsp;</p>
+      <ol class="cards"><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Patient records system</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Patient records system, now Qualified"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Harbor Health Partners</p>
+    <p class="card-p"><span class="av" aria-hidden="true">LM</span>Lena Moreau</p>
+    <div class="card-r4"><span class="num card-v">$760,000</span><span class="card-d num">Mar 31, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Precast panel contract</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Precast panel contract, now Qualified"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Granite Ridge Construction</p>
+    <p class="card-p"><span class="av" aria-hidden="true">OG</span>Olivia Grant<span class="chip chip-late">Late</span></p>
+    <div class="card-r4"><span class="num card-v">$540,000</span><span class="card-d num is-late">Nov 10, 2026</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Data center refresh</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Data center refresh, now Qualified"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Keystone Capital</p>
+    <p class="card-p"><span class="av" aria-hidden="true">HL</span>Henry Liu</p>
+    <div class="card-r4"><span class="num card-v">$650,000</span><span class="card-d num">Apr 9, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Furnace controls upgrade</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Furnace controls upgrade, now Qualified"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Northwind Metals</p>
+    <p class="card-p"><span class="av" aria-hidden="true">TB</span>Tom Becker</p>
+    <div class="card-r4"><span class="num card-v">$400,000</span><span class="card-d num">Mar 2, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Yard management software</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Yard management software, now Qualified"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Summit Rail Logistics</p>
+    <p class="card-p"><span class="av" aria-hidden="true">BA</span>Ben Adler</p>
+    <div class="card-r4"><span class="num card-v">$380,000</span><span class="card-d num">Feb 26, 2027</span></div>
+  </li></ol>
+      <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+    </section><section class="col" aria-labelledby="col-proposal">
+      <header class="cap" style="background:#F78C6B;color:#073B4C">
+        <h2 id="col-proposal">Proposal<span class="num cap-n">4</span></h2>
+        <p class="num cap-v">$2,380,000</p>
+        <p class="cap-s">Expected <span class="num">$1,190,000</span></p>
+      </header>
+      <p class="col-note">&nbsp;</p>
+      <ol class="cards"><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Turbine maintenance contract</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Turbine maintenance contract, now Proposal"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Bluepeak Energy</p>
+    <p class="card-p"><span class="av" aria-hidden="true">MH</span>Marcus Hale<span class="chip chip-late">Late</span></p>
+    <div class="card-r4"><span class="num card-v">$880,000</span><span class="card-d num is-late">Nov 4, 2026</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Fleet telematics</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Fleet telematics, now Proposal"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Atlas Freight</p>
+    <p class="card-p"><span class="av" aria-hidden="true">SW</span>Sam Whitfield</p>
+    <div class="card-r4"><span class="num card-v">$620,000</span><span class="card-d num">Jan 22, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">ERP rollout</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for ERP rollout, now Proposal"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Cedar Valley Foods</p>
+    <p class="card-p"><span class="av" aria-hidden="true">GK</span>Grace Kim</p>
+    <div class="card-r4"><span class="num card-v">$480,000</span><span class="card-d num">Feb 12, 2027</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Lab automation</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Lab automation, now Proposal"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Meridian Labs</p>
+    <p class="card-p"><span class="av" aria-hidden="true">AR</span>Aisha Rahman</p>
+    <div class="card-r4"><span class="num card-v">$400,000</span><span class="card-d num">Dec 18, 2026</span></div>
+  </li></ol>
+      <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+    </section><section class="col" aria-labelledby="col-negotiation">
+      <header class="cap" style="background:#073B4C;color:#FFFFFF">
+        <h2 id="col-negotiation">Negotiation<span class="num cap-n">3</span></h2>
+        <p class="num cap-v">$1,870,000</p>
+        <p class="cap-s">Expected <span class="num">$1,402,500</span></p>
+      </header>
+      <p class="col-note">&nbsp;</p>
+      <ol class="cards"><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Steel supply agreement 2027</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Steel supply agreement 2027, now Negotiation"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Northwind Metals</p>
+    <p class="card-p"><span class="av" aria-hidden="true">PS</span>Priya Shah</p>
+    <div class="card-r4"><span class="num card-v">$950,000</span><span class="card-d num">Dec 11, 2026</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Atlas Freight renewal</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Atlas Freight renewal, now Negotiation"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Atlas Freight</p>
+    <p class="card-p"><span class="av" aria-hidden="true">DO</span>Dana Ortiz<span class="chip chip-late">Late</span></p>
+    <div class="card-r4"><span class="num card-v">$560,000</span><span class="card-d num is-late">Oct 30, 2026</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Imaging equipment lease</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Imaging equipment lease, now Negotiation"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Harbor Health Partners</p>
+    <p class="card-p"><span class="av" aria-hidden="true">RP</span>Raj Patel</p>
+    <div class="card-r4"><span class="num card-v">$360,000</span><span class="card-d num">Jan 15, 2027</span></div>
+  </li></ol>
+      <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+    </section><section class="col" aria-labelledby="col-won">
+      <header class="cap" style="background:#06D6A0;color:#073B4C">
+        <h2 id="col-won">Won<span class="num cap-n">3</span></h2>
+        <p class="num cap-v">$1,600,000</p>
+        <p class="cap-s">Expected <span class="num">$1,600,000</span></p>
+      </header>
+      <p class="col-note">Closed in the last 30 days</p>
+      <ol class="cards"><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Branch network upgrade</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Branch network upgrade, now Won"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Keystone Capital</p>
+    <p class="card-p"><span class="av" aria-hidden="true">HL</span>Henry Liu</p>
+    <div class="card-r4"><span class="num card-v">$640,000</span><span class="card-d num">Nov 12, 2026</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Substation maintenance</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Substation maintenance, now Won"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Solano Utilities</p>
+    <p class="card-p"><span class="av" aria-hidden="true">NF</span>Nora Fitz</p>
+    <div class="card-r4"><span class="num card-v">$440,000</span><span class="card-d num">Nov 3, 2026</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Site safety systems</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Site safety systems, now Won"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Granite Ridge Construction</p>
+    <p class="card-p"><span class="av" aria-hidden="true">OG</span>Olivia Grant</p>
+    <div class="card-r4"><span class="num card-v">$520,000</span><span class="card-d num">Oct 21, 2026</span></div>
+  </li></ol>
+      <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+    </section><section class="col" aria-labelledby="col-lost">
+      <header class="cap" style="background:#56717A;color:#FFFFFF">
+        <h2 id="col-lost">Lost<span class="num cap-n">2</span></h2>
+        <p class="num cap-v">$1,030,000</p>
+        <p class="cap-s">Expected <span class="num">$0</span></p>
+      </header>
+      <p class="col-note">Closed in the last 30 days</p>
+      <ol class="cards"><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Policy admin migration</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Policy admin migration, now Lost"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Brightline Insurance</p>
+    <p class="card-p"><span class="av" aria-hidden="true">EC</span>Ethan Cole</p>
+    <div class="card-r4"><span class="num card-v">$720,000</span><span class="card-d num">Nov 9, 2026</span></div>
+  </li><li class="card">
+    <div class="card-r1"><a class="card-name" href="#deals">Rail car tracking</a><button class="menu-btn" aria-haspopup="menu" aria-label="Stage menu for Rail car tracking, now Lost"><svg class="icon" width="18" height="18" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+    <p class="card-org">Summit Rail Logistics</p>
+    <p class="card-p"><span class="av" aria-hidden="true">BA</span>Ben Adler</p>
+    <div class="card-r4"><span class="num card-v">$310,000</span><span class="card-d num">Oct 28, 2026</span></div>
+  </li></ol>
+      <button class="add"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add deal</button>
+    </section></div>
+  </div>
+</section></main></div><script>
+(function(){
+  var tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; tip.setAttribute('role','presentation'); document.body.appendChild(tip);
+  function place(t){
+    var lines = t.getAttribute('data-tip').split('|');
+    tip.innerHTML = '';
+    lines.forEach(function(l, i){ var d = document.createElement('div'); d.textContent = l; if (!i) d.className = 'tip-h'; tip.appendChild(d); });
+    tip.hidden = false;
+    var r = t.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8);
+    var y = r.top - h - 10; if (y < 8) y = r.bottom + 10;
+    tip.style.left = (x + scrollX) + 'px'; tip.style.top = (y + scrollY) + 'px';
+  }
+  document.addEventListener('pointerover', function(e){ var t = e.target.closest && e.target.closest('[data-tip]'); if (t) place(t); });
+  document.addEventListener('pointerout', function(e){ var t = e.target.closest && e.target.closest('[data-tip]'); if (t && !t.contains(e.relatedTarget)) tip.hidden = true; });
+  document.addEventListener('change', function(e){
+    var cb = e.target; if (!cb.matches('.js-done') || !cb.checked) return;
+    var item = cb.closest('[data-fu]');
+    item.classList.add('is-done');
+    setTimeout(function(){
+      item.remove();
+      document.querySelectorAll('[data-count]').forEach(function(c){ c.textContent = document.querySelectorAll('[data-fu][data-in~="' + c.getAttribute('data-count') + '"]').length; });
+      document.querySelectorAll('[data-group]').forEach(function(g){ g.classList.toggle('is-empty', !g.querySelector('[data-fu]')); });
+      var total = document.querySelectorAll('[data-fu]').length;
+      document.querySelectorAll('[data-total]').forEach(function(c){ c.textContent = total; });
+    }, 260);
+  });
+})();
+</script>
+<script>
+(function(){
+  function show(){
+    var s = location.hash === '#pipeline' ? 'pipeline' : 'dashboard';
+    document.querySelectorAll('[data-screen]').forEach(function(e){ e.hidden = e.dataset.screen !== s; });
+    document.querySelectorAll('[data-nav]').forEach(function(a){
+      var on = a.dataset.nav === s;
+      a.classList.toggle('is-current', on);
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    document.title = (s === 'pipeline' ? 'Pipeline' : 'Dashboard') + ' - ' + document.body.dataset.name;
+  }
+  addEventListener('hashchange', show); show();
+})();
+</script>
+</body>
+</html>

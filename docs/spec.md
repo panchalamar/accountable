@@ -2,7 +2,7 @@
 
 This spec turns `docs/intent.md` into requirements (Part 1) and a design (Part 2) for the MVP. It follows `docs/TECH_STACK.md` and the brand skill (`.claude/skills/brand/`). Where they disagree, the intent wins on behavior and the brand wins on looks.
 
-The next step is three mockups in `docs/mockups/`. The one you choose is recorded under "Chosen design" near the end.
+The chosen design is mockup 7 in `docs/mockups/`, recorded under "Chosen design" near the end. Choosing it changed a few requirements, and they're listed there.
 
 ## Concerns
 
@@ -17,6 +17,7 @@ The next step is three mockups in `docs/mockups/`. The one you choose is recorde
    - Raspberry stays free for late deals and errors, so warnings stand out.
    - Contact statuses reuse the same colors: Lead is Cerulean, Qualified Marigold and Customer Sea Green.
    - The brand's order puts Sea Green first. I've put it on Won because green reads as success.
+3. **Won and Lost columns don't show expected revenue.** On Won it would repeat the total, and on Lost it's always $0. They show "Closed in the last 30 days" in its place. Decided when choosing the design, and the intent was updated to match.
 
 ### Calls made where the intent was silent
 
@@ -58,7 +59,7 @@ The next step is three mockups in `docs/mockups/`. The one you choose is recorde
 - **Fonts are bundled.** Loading fonts from Google Fonts needs the internet, and the intent says Accountable works offline. So the same three Google fonts are installed from npm and served by the app.
 - **Adding a deal for a new company takes three steps:** add the organization, then a contact there, then the deal. A deal needs a main contact at its organization.
 - **The funnel remembers the furthest stage.** A deal moved to Won by mistake and moved back still counts as having reached Won.
-- **Six columns need about 1,500px.** On a smaller laptop screen, the board scrolls sideways inside its panel, and the page itself doesn't.
+- **The layout needs a window at least 1,280px wide**, which fits all six board columns. On a narrower window the whole page scrolls sideways, as the mockup does.
 - **Closed deals leave the board** 30 days after their close date. They stay in the Deals table and in the dashboard's figures.
 - **Reset while the app is running:** refresh the browser afterwards to see the sample data.
 - **No database migrations yet.** Tables are created on first start. If the data model changes during the build, reset the data. Migrations come with the shared database on Day 5.
@@ -82,7 +83,7 @@ The next step is three mockups in `docs/mockups/`. The one you choose is recorde
 
 ## App shell
 
-1. A sidebar lists the five sections in this order: Dashboard, Organizations, Contacts, Deals, Pipeline. The current section is marked.
+1. A bar across the top lists the five sections in this order: Dashboard, Organizations, Contacts, Deals, Pipeline. The current section is marked.
 2. The app opens on the Dashboard.
 3. Each record has its own address, such as `/deals/12`. The browser's back button and refresh keep you where you were.
 4. If the backend can't be reached, a message at the top of the page says so: "Can't reach Accountable's server. Check that `npm run dev` is still running."
@@ -211,9 +212,9 @@ Other cases:
 2. **Card.** Each card shows:
    - the deal's name (linking to its page)
    - organization and main contact
-   - value
-   - close date, with a Late chip if late
-   - a stage menu button
+   - value, in short form such as "$520K"
+   - close date, with a Late chip if late. An open deal that isn't late also says how soon it's due, such as "in 25 days" or "in 3 months".
+   - a "Stage" button that opens the stage menu
 3. **Dragging.** Drag a card to another column to change its stage, and it lands where it's dropped. Drag it within its column to change its place.
 4. **Stage menu.** The menu lists the stages. Choosing one moves the card to the top of that column.
    - The menu works by keyboard. Focus stays on the moved card.
@@ -221,7 +222,7 @@ Other cases:
 5. **Adding.** Each column has an "Add deal" button that opens the deal form at that stage. The new deal goes to the top of the column.
 6. **Totals.**
    - The board shows the total value, expected revenue and number of open deals.
-   - Each column shows its own count, total value and expected revenue.
+   - Each column shows its own count, total value and expected revenue. Won and Lost show "Closed in the last 30 days" in place of expected revenue (see "Concerns").
    - All of these, the card's place and its stage update the moment a card moves, before the server replies. If the server refuses, the card goes back and a message says why.
 7. **After a refresh** every card is where it was left.
 
@@ -234,7 +235,13 @@ All figures come from the data at the time the page loads.
    - Expected revenue: across open deals.
    - Won this month: the value and number of deals won with a close date this month.
    - Won in the last 12 months: value and number.
-2. **Revenue won by month**: a line chart of the value won in each of the last 12 months, by close date, ending with the current month. Months with nothing won show $0.
+2. **Revenue won by month**: a line chart of the value won in each of the last 12 months, by close date, ending with the current month. Months with nothing won show $0. The same chart goes on past today to show what's due to close: the value of open deals by the month of their close date, stacked by stage. After the Today marker, in this order:
+   - **"Late"**: deals past their close date. Shown only when some are.
+   - **"Rest of Nov"** (the current month): deals due from today to the end of this month. Shown only when there are some.
+   - **One bar per month**, from next month up to the month of the latest close date, at most 9 months ahead. Months in between with nothing due show no bar.
+   - **"Later"**: anything due more than 9 months ahead, in one bar. Shown only when there is some.
+
+   With no open deals, the future part says "No open deals" in place of the bars.
 3. **Deals won by month**: a bar chart of the number of deals won in each of the same 12 months.
 4. **Pipeline by stage**: a visual of the four open stages, each with its number of deals, value and expected revenue.
 5. **Sales funnel**: the stages from New to Won, each with the value that reached that stage or a later one, as defined in "Concerns".
@@ -246,7 +253,7 @@ All figures come from the data at the time the page loads.
 
    Ticking it saves at once and removes it from the list, and the figures refresh. With none due, it says "No follow-ups due in the next 7 days".
 7. **Recent activity**: the 10 latest activities and stage changes that have already happened, newest first. Each links to its contact or deal.
-8. The exact layout and styling of the charts is settled in the mockups.
+8. The layout and styling of the charts follow the chosen design, described under "Screens".
 
 ## Sample data
 
@@ -282,7 +289,7 @@ The sample data is made fresh from a fixed list each time, with every date count
 ## Accessibility
 
 1. Everything works by keyboard, apart from changing a card's place within its column:
-   - the sidebar, tables, sorting, search and filters
+   - the top bar, tables, sorting, search and filters
    - forms, dialogs and menus
    - follow-up checkboxes and the stage menu
 2. **Focus is always visible**, with a 2px ring in a color that stands out on the surface behind it.
@@ -520,19 +527,50 @@ Errors share one shape:
 
 ## Screens
 
-The three mockups explore the layout and feel. These are the parts every option must have.
+This is the chosen design, mockup 7. The Dashboard and Pipeline match it. Tables, record pages and dialogs weren't mocked up, so they follow these notes in the same style.
 
 ### Shell
 
-- A sidebar holds the Accountable wordmark and the five sections, each with an icon and a label.
+- A white bar across the top holds:
+  - the Accountable wordmark
+  - the five sections, each with an icon and a label, with the current one on `--nav-current`
+  - today's date on the right
 - The main area has a page header: the title, a short line of context such as "36 contacts", and the page's main button.
 - Content sits in white panels on the page background.
 
 ### Dashboard
 
-- A row of four headline figures, then the charts, then follow-ups and recent activity side by side.
-- Every chart sits in its own panel, with a title and a one-line summary such as "$4.2M won in the last 12 months".
-- Follow-ups put overdue items first, under an "Overdue" heading in `--alert-strong` with a count, then "Next 7 days".
+Two columns: the main column, and a dark Midnight column on the right. The dark column runs from under the top bar to the bottom of the page. It's 400px wide at a 1,440px window and about 356px at 1,280px.
+
+The main column has two panels:
+
+1. **"Revenue won, and what's due to close"**, the panel that sets the look:
+   - **The four headline figures in time order.** Won in the last 12 months and Won this month sit above the past part of the chart. Open pipeline and Expected revenue sit above the future part.
+   - **One chart with one money axis.**
+     - Revenue won for the last 12 months is a line over a light fill.
+     - A "Today" marker follows.
+     - Open deals are bars by close month, stacked by stage, with the Late bar first. The future part sits on `--forecast-bg`.
+     - Only a few values are labeled: the best month, the latest month, the Late bar and the biggest month ahead. A key under the chart names the series.
+   - **Under the chart**, two parts:
+     - Deals won by month as bars, lined up under the same months.
+     - "Open pipeline by stage" as a table under the future part, with stage, deals, value and expected revenue.
+   - **Hovering** shows a month's figures. A month ahead also lists its deals.
+2. **Sales funnel:**
+   - The shape: each band is as wide at the top as the value that reached its stage, and as wide at the bottom as the value that reached the next.
+   - Beside it, a table lists each stage's deals, value reached, share of New and share of the stage before. Its rows line up with the bands.
+
+The dark column:
+
+- **Follow-ups**, with a line saying how many are left, such as "9 to do. Tick one when it's done.":
+  - "Overdue" with a count comes first, then "Next 7 days" with a count.
+  - Each item has a checkbox, the description, links to the contact and deal, and its timing on the right ("9 days overdue", "Due today", "Due in 3 days").
+  - The Overdue heading and timings use `--alert-on-dark`, because `--alert-strong` is too dark to read on Midnight.
+- **Recent activity** sits below follow-ups:
+  - Each item has a type icon and a line such as "Call with Priya Shah about Steel supply agreement 2027", with its time underneath. An activity linked to only a contact or only a deal leaves out the missing part, such as "Call with Priya Shah".
+  - Stage changes read "Moved from" with two stage chips.
+  - Links are Sea Green, and times use `--muted-on-dark`. The Negotiation chip gets a thin Sea Mist outline so it shows on Midnight.
+
+Every chart has a title and a one-line summary, such as "$7.7M won in the last 12 months".
 
 ### Tables
 
@@ -548,9 +586,17 @@ The three mockups explore the layout and feel. These are the parts every option 
 
 ### Pipeline
 
-- The board totals sit in the page header.
-- Columns are panels about 240px wide, in a row that scrolls sideways when needed. Each column header has a stage color dot, the name, the count and the totals.
-- Cards are white on the `--column` background.
+- The board totals are a sentence under the page title: "$9,040,000 open across 17 deals, with $3,481,000 expected. 3 are late."
+- Six equal columns fill the width. They fit from 1,280px, the narrowest window the layout supports (see "Worth knowing").
+- **Column headers** are arrow shapes in the stage color, with the chip text color from the stage table. The first one is flat on its left side.
+  - Each shows the name, count and total value.
+  - Open stages also show expected revenue. Won and Lost show "Closed in the last 30 days".
+- Under each header is an outlined "Add deal" button, then the cards.
+- **Cards** are filled with their stage's tint, with small text in `--ink-on-tint`. Each card has:
+  - the name, with the short value on the right
+  - "organization, main contact"
+  - the close date, with "in 3 months" or a Late chip on the line under it
+  - a "Stage" button at the bottom right
 - When a card is dragged, a lifted copy follows the pointer, and a gap opens where it will land.
 - The reopen dialog, "Reopen Atlas Freight renewal", has a "New expected close date" field and the buttons "Reopen" and "Cancel".
 
@@ -572,7 +618,6 @@ Defined once as CSS variables. These are the light theme's values.
 | `--ink` | `#073B4C` Midnight | text, Negotiation |
 | `--ink-muted` | `#56717A` | secondary text, Lost (5.2:1 on white) |
 | `--divider` | `#E3EAEC` | lines between table rows only, never behind text |
-| `--column` | `#F5F8F9` | pipeline column background (every text color here passes 4.5:1 on it) |
 | `--primary` | `#06D6A0` Sea Green | main buttons (Midnight text, 6.4:1), Won, Customer |
 | `--primary-text` | `#047A5C` | Sea Green as text (5.3:1) |
 | `--secondary` | `#FFC145` Marigold | Qualified (Midnight text, 7.5:1) |
@@ -583,9 +628,22 @@ Defined once as CSS variables. These are the light theme's values.
 | `--info-strong` | `#0B6E8E` | behind small white text, and the focus ring (5.8:1) |
 | `--alert` | `#EF476F` Raspberry | large alerts, chart highlights |
 | `--alert-strong` | `#C9184A` | Late chip, Delete buttons, error text (5.7:1) |
-| `--sea-mist` | `#CDD8DB` | ink on dark surfaces |
+| `--sea-mist` | `#CDD8DB` | ink on dark surfaces (8.3:1 on Midnight) |
+| `--nav-current` | `#E6FBF5` | current section in the top bar (Midnight text 11.2:1, `--primary-text` icon 4.9:1) |
+| `--forecast-bg` | `#F3F7F8` | behind the future part of the dashboard chart |
+| `--tint-new` | `#DCEFF6` | New cards on the board |
+| `--tint-qualified` | `#FFF0CC` | Qualified cards |
+| `--tint-proposal` | `#FDE3DA` | Proposal cards |
+| `--tint-negotiation` | `#DDE6E9` | Negotiation cards |
+| `--tint-won` | `#D5F7EC` | Won cards |
+| `--tint-lost` | `#E6ECEE` | Lost cards |
+| `--ink-on-tint` | `#4A6670` | small text on the card tints (4.8:1 or more on each) |
+| `--alert-on-dark` | `#FF9DB1` | overdue on the Midnight column (6.2:1) |
+| `--muted-on-dark` | `#9DB4BA` | times on the Midnight column (5.6:1) |
 
-The focus ring is `--info-strong` on light surfaces. On any dark surface, such as a Midnight sidebar, it's Sea Green.
+On the Midnight column, links are Sea Green (6.4:1) and "Due today" is Marigold (7.5:1).
+
+The focus ring is `--info-strong` on light surfaces. On any dark surface, such as the dashboard's Midnight column, it's Sea Green.
 
 ### Stage, status and chart colors
 
@@ -608,7 +666,7 @@ On the charts:
 
 - Revenue won is Sea Green, with a `--primary-text` line over a light Sea Green fill.
 - Deals won is Marigold.
-- Pipeline and funnel use the stage colors.
+- Pipeline and funnel use the stage colors. So do the open-deal bars after Today, and the Late bar's label is `--alert-strong`.
 - Gradients are kept to that one light fill under the line.
 
 ### Type
@@ -619,8 +677,9 @@ On the charts:
 
 ### Shapes
 
-- Panels are rounded 16px with no outline, and at most a very soft shadow.
-- Cards and inputs are rounded 10px. Buttons are 10px, and chips are fully rounded.
+- Panels are rounded 16px with no outline, and at most a very soft shadow. The dashboard's chart panel is 20px.
+- Board cards are rounded 12px. Inputs and buttons are 10px, and chips are fully rounded.
+- The dashboard's dark column has square corners and runs to the edges of the window.
 - No borders on one edge of a panel, and no single-line border across the top of the page.
 
 ### Motion
@@ -635,7 +694,32 @@ Short transitions, 150 to 200ms. The board's drag uses dnd-kit's own animation. 
 
 ## Chosen design
 
-To be filled in once one of the three mockups in `docs/mockups/` is chosen. This section will name the mockup and list anything the build should take from it, such as the sidebar style or the dashboard layout.
+**Mockup 7, `docs/mockups/7-forecast-board.html`**, with a screenshot of each screen beside it. It combines parts of the earlier mockups:
+
+| Part | From |
+|---|---|
+| Top bar | 4, Forecast |
+| Dashboard chart with the figures above it, deals won by month and the stage table under it | 4, Forecast |
+| Sales funnel shape | 3, Big tickets |
+| Dark column with follow-ups and recent activity | 6, Stage flow |
+| Pipeline header sentence and arrow-shaped column headers | 6, Stage flow |
+| Board cards tinted by stage, with a Stage button | 5, Deal mosaic |
+
+"Screens" and "Visual design" above describe it. Take sizes, spacing and corner radii from the mockup's HTML. Its figures are the sample data's, and they add up.
+
+**What choosing it changed in this spec:**
+
+- A top bar replaces the sidebar (App shell 1).
+- Won and Lost columns show "Closed in the last 30 days" in place of expected revenue (Concerns, Pipeline 6).
+- Cards show the value in short form, and how soon an open deal is due (Pipeline 2).
+- The revenue chart goes on past today with open deals by close month, up to 9 months ahead (Dashboard 2).
+- Follow-ups and recent activity are stacked in a dark column, not side by side.
+- Six board columns fit from 1,280px wide, down from 1,500px.
+- New color tokens: the top bar's current section, the card tints, and the dark column's text colors. `--column` is gone, since columns no longer have a background.
+
+**In the mockup but not working:** dragging cards, the stage menu, the "Add deal" buttons and the links to records. Part 1 says how they work. The mockup loads its fonts from Google Fonts, but the app bundles them (see "Worth knowing").
+
+Mockups 1 to 6 stay in `docs/mockups/` for reference.
 
 ## Commands and first run
 
