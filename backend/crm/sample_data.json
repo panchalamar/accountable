@@ -1,0 +1,742 @@
+{
+  "about": [
+    "The sample records shown in the mockups (docs/mockups/), saved so the app can be built to match them. crm/sample_data.py turns these offsets into dates on the day the data is made, and adds what this file leaves out.",
+    "Made from the mockups dated Mon Nov 16, 2026. On that date these records give the mockups' figures: open pipeline $9,040,000 across 17 deals, expected revenue $3,481,000, won this month $1,080,000 from 2 deals, won in the last 12 months $7,710,000 from 16 deals, 3 deals late."
+  ],
+  "dates": {
+    "daysFromToday": "That many days after today, or before it when negative.",
+    "monthsAgoAndDay": "For won deals: that day of the month, monthsAgo calendar months before the current month. A day past the end of a short month becomes its last day, and a date after today becomes today. This keeps the right wins in each month on any date, including the 1st and the 31st.",
+    "time": "Local time of day, 24-hour. An entry dated today whose time is still to come is moved to a few minutes before the data is made, so recent activity never shows the future.",
+    "onCloseDate": "The stage change happens on the deal's close date, since moving a deal to Won or Lost sets its close date."
+  },
+  "boardOrder": "Deals are listed in board order within each stage: the first open deal at a stage is the top card in its column. Won and Lost are newest first.",
+  "stillToAdd": [
+    "About 21 more contacts, two to four per organization, so there are about 36, with Lead, Qualified and Customer all well represented. Each contact needs a status, job title, email under a made-up company domain ending in .example.com, and phone.",
+    "Each organization needs an industry (at least six across the twelve), a website and notes.",
+    "Stage history for every deal past New, between its start and today or its close, matching furthestStage, including the stage changes listed under recentActivity.",
+    "About 120 activities over the last 12 months, including the ones listed here, linked to a contact, a deal or both.",
+    "Each follow-up below needs its activity type and when it was logged. Add 4 more follow-ups due later than 7 days from today, and some marked done."
+  ],
+  "organizations": [
+    {
+      "name": "Atlas Freight"
+    },
+    {
+      "name": "Bluepeak Energy"
+    },
+    {
+      "name": "Brightline Insurance"
+    },
+    {
+      "name": "Cedar Valley Foods"
+    },
+    {
+      "name": "Granite Ridge Construction"
+    },
+    {
+      "name": "Harbor Health Partners"
+    },
+    {
+      "name": "Ironwood Fabrication"
+    },
+    {
+      "name": "Keystone Capital"
+    },
+    {
+      "name": "Meridian Labs"
+    },
+    {
+      "name": "Northwind Metals"
+    },
+    {
+      "name": "Solano Utilities"
+    },
+    {
+      "name": "Summit Rail Logistics"
+    }
+  ],
+  "contacts": [
+    {
+      "name": "Aisha Rahman",
+      "organization": "Meridian Labs"
+    },
+    {
+      "name": "Ben Adler",
+      "organization": "Summit Rail Logistics"
+    },
+    {
+      "name": "Carlos Mendes",
+      "organization": "Ironwood Fabrication"
+    },
+    {
+      "name": "Dana Ortiz",
+      "organization": "Atlas Freight"
+    },
+    {
+      "name": "Ethan Cole",
+      "organization": "Brightline Insurance"
+    },
+    {
+      "name": "Grace Kim",
+      "organization": "Cedar Valley Foods"
+    },
+    {
+      "name": "Henry Liu",
+      "organization": "Keystone Capital"
+    },
+    {
+      "name": "Lena Moreau",
+      "organization": "Harbor Health Partners"
+    },
+    {
+      "name": "Marcus Hale",
+      "organization": "Bluepeak Energy"
+    },
+    {
+      "name": "Nora Fitz",
+      "organization": "Solano Utilities"
+    },
+    {
+      "name": "Olivia Grant",
+      "organization": "Granite Ridge Construction"
+    },
+    {
+      "name": "Priya Shah",
+      "organization": "Northwind Metals"
+    },
+    {
+      "name": "Raj Patel",
+      "organization": "Harbor Health Partners"
+    },
+    {
+      "name": "Sam Whitfield",
+      "organization": "Atlas Freight"
+    },
+    {
+      "name": "Tom Becker",
+      "organization": "Northwind Metals"
+    }
+  ],
+  "deals": [
+    {
+      "name": "Grid sensor rollout",
+      "organization": "Solano Utilities",
+      "mainContact": "Nora Fitz",
+      "stage": "new",
+      "value": 520000,
+      "close": {
+        "daysFromToday": 256
+      },
+      "furthestStage": "new"
+    },
+    {
+      "name": "Robotic welding cell",
+      "organization": "Ironwood Fabrication",
+      "mainContact": "Carlos Mendes",
+      "stage": "new",
+      "value": 340000,
+      "close": {
+        "daysFromToday": 207
+      },
+      "furthestStage": "new"
+    },
+    {
+      "name": "Claims platform upgrade",
+      "organization": "Brightline Insurance",
+      "mainContact": "Ethan Cole",
+      "stage": "new",
+      "value": 410000,
+      "close": {
+        "daysFromToday": 150
+      },
+      "furthestStage": "new"
+    },
+    {
+      "name": "Cold storage expansion",
+      "organization": "Meridian Labs",
+      "mainContact": "Aisha Rahman",
+      "stage": "new",
+      "value": 500000,
+      "close": {
+        "daysFromToday": 226
+      },
+      "furthestStage": "new"
+    },
+    {
+      "name": "Packaging line retrofit",
+      "organization": "Cedar Valley Foods",
+      "mainContact": "Grace Kim",
+      "stage": "new",
+      "value": 290000,
+      "close": {
+        "daysFromToday": 185
+      },
+      "furthestStage": "new"
+    },
+    {
+      "name": "Patient records system",
+      "organization": "Harbor Health Partners",
+      "mainContact": "Lena Moreau",
+      "stage": "qualified",
+      "value": 760000,
+      "close": {
+        "daysFromToday": 135
+      },
+      "furthestStage": "qualified"
+    },
+    {
+      "name": "Precast panel contract",
+      "organization": "Granite Ridge Construction",
+      "mainContact": "Olivia Grant",
+      "stage": "qualified",
+      "value": 540000,
+      "close": {
+        "daysFromToday": -6
+      },
+      "furthestStage": "qualified"
+    },
+    {
+      "name": "Data center refresh",
+      "organization": "Keystone Capital",
+      "mainContact": "Henry Liu",
+      "stage": "qualified",
+      "value": 650000,
+      "close": {
+        "daysFromToday": 144
+      },
+      "furthestStage": "qualified"
+    },
+    {
+      "name": "Furnace controls upgrade",
+      "organization": "Northwind Metals",
+      "mainContact": "Tom Becker",
+      "stage": "qualified",
+      "value": 400000,
+      "close": {
+        "daysFromToday": 106
+      },
+      "furthestStage": "qualified"
+    },
+    {
+      "name": "Yard management software",
+      "organization": "Summit Rail Logistics",
+      "mainContact": "Ben Adler",
+      "stage": "qualified",
+      "value": 380000,
+      "close": {
+        "daysFromToday": 102
+      },
+      "furthestStage": "qualified"
+    },
+    {
+      "name": "Turbine maintenance contract",
+      "organization": "Bluepeak Energy",
+      "mainContact": "Marcus Hale",
+      "stage": "proposal",
+      "value": 880000,
+      "close": {
+        "daysFromToday": -12
+      },
+      "furthestStage": "proposal"
+    },
+    {
+      "name": "Fleet telematics",
+      "organization": "Atlas Freight",
+      "mainContact": "Sam Whitfield",
+      "stage": "proposal",
+      "value": 620000,
+      "close": {
+        "daysFromToday": 67
+      },
+      "furthestStage": "proposal"
+    },
+    {
+      "name": "ERP rollout",
+      "organization": "Cedar Valley Foods",
+      "mainContact": "Grace Kim",
+      "stage": "proposal",
+      "value": 480000,
+      "close": {
+        "daysFromToday": 88
+      },
+      "furthestStage": "proposal"
+    },
+    {
+      "name": "Lab automation",
+      "organization": "Meridian Labs",
+      "mainContact": "Aisha Rahman",
+      "stage": "proposal",
+      "value": 400000,
+      "close": {
+        "daysFromToday": 32
+      },
+      "furthestStage": "proposal"
+    },
+    {
+      "name": "Steel supply agreement 2027",
+      "organization": "Northwind Metals",
+      "mainContact": "Priya Shah",
+      "stage": "negotiation",
+      "value": 950000,
+      "close": {
+        "daysFromToday": 25
+      },
+      "furthestStage": "negotiation"
+    },
+    {
+      "name": "Atlas Freight renewal",
+      "organization": "Atlas Freight",
+      "mainContact": "Dana Ortiz",
+      "stage": "negotiation",
+      "value": 560000,
+      "close": {
+        "daysFromToday": -17
+      },
+      "furthestStage": "negotiation"
+    },
+    {
+      "name": "Imaging equipment lease",
+      "organization": "Harbor Health Partners",
+      "mainContact": "Raj Patel",
+      "stage": "negotiation",
+      "value": 360000,
+      "close": {
+        "daysFromToday": 60
+      },
+      "furthestStage": "negotiation"
+    },
+    {
+      "name": "Branch network upgrade",
+      "organization": "Keystone Capital",
+      "mainContact": "Henry Liu",
+      "stage": "won",
+      "value": 640000,
+      "close": {
+        "monthsAgo": 0,
+        "day": 12
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Substation maintenance",
+      "organization": "Solano Utilities",
+      "mainContact": "Nora Fitz",
+      "stage": "won",
+      "value": 440000,
+      "close": {
+        "monthsAgo": 0,
+        "day": 3
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Site safety systems",
+      "organization": "Granite Ridge Construction",
+      "mainContact": "Olivia Grant",
+      "stage": "won",
+      "value": 520000,
+      "close": {
+        "monthsAgo": 1,
+        "day": 21
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Furnace relining",
+      "organization": "Northwind Metals",
+      "mainContact": "Priya Shah",
+      "stage": "won",
+      "value": 440000,
+      "close": {
+        "monthsAgo": 1,
+        "day": 6
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Cold chain monitoring",
+      "organization": "Cedar Valley Foods",
+      "mainContact": "Grace Kim",
+      "stage": "won",
+      "value": 460000,
+      "close": {
+        "monthsAgo": 2,
+        "day": 29
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Meter replacement",
+      "organization": "Solano Utilities",
+      "mainContact": "Nora Fitz",
+      "stage": "won",
+      "value": 860000,
+      "close": {
+        "monthsAgo": 2,
+        "day": 10
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Signal upgrade",
+      "organization": "Summit Rail Logistics",
+      "mainContact": "Ben Adler",
+      "stage": "won",
+      "value": 310000,
+      "close": {
+        "monthsAgo": 4,
+        "day": 15
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Crane rental contract",
+      "organization": "Granite Ridge Construction",
+      "mainContact": "Olivia Grant",
+      "stage": "won",
+      "value": 280000,
+      "close": {
+        "monthsAgo": 5,
+        "day": 26
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Trading floor fit-out",
+      "organization": "Keystone Capital",
+      "mainContact": "Henry Liu",
+      "stage": "won",
+      "value": 610000,
+      "close": {
+        "monthsAgo": 5,
+        "day": 5
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Pipeline inspection",
+      "organization": "Bluepeak Energy",
+      "mainContact": "Marcus Hale",
+      "stage": "won",
+      "value": 540000,
+      "close": {
+        "monthsAgo": 6,
+        "day": 19
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "CNC line service",
+      "organization": "Ironwood Fabrication",
+      "mainContact": "Carlos Mendes",
+      "stage": "won",
+      "value": 420000,
+      "close": {
+        "monthsAgo": 7,
+        "day": 24
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Nurse call system",
+      "organization": "Harbor Health Partners",
+      "mainContact": "Lena Moreau",
+      "stage": "won",
+      "value": 730000,
+      "close": {
+        "monthsAgo": 7,
+        "day": 8
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Warehouse scanners",
+      "organization": "Atlas Freight",
+      "mainContact": "Dana Ortiz",
+      "stage": "won",
+      "value": 260000,
+      "close": {
+        "monthsAgo": 9,
+        "day": 18
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Clean room fit-out",
+      "organization": "Meridian Labs",
+      "mainContact": "Aisha Rahman",
+      "stage": "won",
+      "value": 270000,
+      "close": {
+        "monthsAgo": 10,
+        "day": 28
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Alloy supply 2026",
+      "organization": "Northwind Metals",
+      "mainContact": "Tom Becker",
+      "stage": "won",
+      "value": 510000,
+      "close": {
+        "monthsAgo": 10,
+        "day": 14
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Conveyor replacement",
+      "organization": "Cedar Valley Foods",
+      "mainContact": "Grace Kim",
+      "stage": "won",
+      "value": 420000,
+      "close": {
+        "monthsAgo": 11,
+        "day": 9
+      },
+      "furthestStage": "won"
+    },
+    {
+      "name": "Policy admin migration",
+      "organization": "Brightline Insurance",
+      "mainContact": "Ethan Cole",
+      "stage": "lost",
+      "value": 720000,
+      "close": {
+        "daysFromToday": -7
+      },
+      "furthestStage": "negotiation"
+    },
+    {
+      "name": "Rail car tracking",
+      "organization": "Summit Rail Logistics",
+      "mainContact": "Ben Adler",
+      "stage": "lost",
+      "value": 310000,
+      "close": {
+        "daysFromToday": -19
+      },
+      "furthestStage": "negotiation"
+    },
+    {
+      "name": "Solar farm survey",
+      "organization": "Bluepeak Energy",
+      "mainContact": "Marcus Hale",
+      "stage": "lost",
+      "value": 530000,
+      "close": {
+        "daysFromToday": -94
+      },
+      "furthestStage": "proposal"
+    },
+    {
+      "name": "Pharmacy automation",
+      "organization": "Harbor Health Partners",
+      "mainContact": "Raj Patel",
+      "stage": "lost",
+      "value": 450000,
+      "close": {
+        "daysFromToday": -166
+      },
+      "furthestStage": "proposal"
+    },
+    {
+      "name": "Paint shop upgrade",
+      "organization": "Ironwood Fabrication",
+      "mainContact": "Carlos Mendes",
+      "stage": "lost",
+      "value": 390000,
+      "close": {
+        "daysFromToday": -241
+      },
+      "furthestStage": "qualified"
+    },
+    {
+      "name": "Cross-dock lease",
+      "organization": "Atlas Freight",
+      "mainContact": "Sam Whitfield",
+      "stage": "lost",
+      "value": 300000,
+      "close": {
+        "daysFromToday": -287
+      },
+      "furthestStage": "qualified"
+    },
+    {
+      "name": "Sequencer purchase",
+      "organization": "Meridian Labs",
+      "mainContact": "Aisha Rahman",
+      "stage": "lost",
+      "value": 720000,
+      "close": {
+        "daysFromToday": -310
+      },
+      "furthestStage": "new"
+    }
+  ],
+  "followUps": [
+    {
+      "description": "Send revised pricing for year two",
+      "contact": "Marcus Hale",
+      "deal": "Turbine maintenance contract",
+      "dueInDays": -9
+    },
+    {
+      "description": "Chase the signed NDA",
+      "contact": "Ben Adler",
+      "deal": "Yard management software",
+      "dueInDays": -6
+    },
+    {
+      "description": "Call back about the delivery schedule",
+      "contact": "Dana Ortiz",
+      "deal": "Atlas Freight renewal",
+      "dueInDays": -3
+    },
+    {
+      "description": "Book a site visit",
+      "contact": "Olivia Grant",
+      "deal": "Precast panel contract",
+      "dueInDays": -1
+    },
+    {
+      "description": "Confirm the legal review date",
+      "contact": "Priya Shah",
+      "deal": "Steel supply agreement 2027",
+      "dueInDays": 0
+    },
+    {
+      "description": "Send the records migration case study",
+      "contact": "Lena Moreau",
+      "deal": "Patient records system",
+      "dueInDays": 1
+    },
+    {
+      "description": "Demo for the operations team",
+      "contact": "Henry Liu",
+      "deal": "Data center refresh",
+      "dueInDays": 3
+    },
+    {
+      "description": "Send the revised proposal",
+      "contact": "Aisha Rahman",
+      "deal": "Lab automation",
+      "dueInDays": 5
+    },
+    {
+      "description": "Check budget approval",
+      "contact": "Grace Kim",
+      "deal": "ERP rollout",
+      "dueInDays": 7
+    }
+  ],
+  "recentActivity": [
+    {
+      "kind": "stageChange",
+      "deal": "Steel supply agreement 2027",
+      "from": "proposal",
+      "to": "negotiation",
+      "at": {
+        "daysFromToday": 0,
+        "time": "11:20"
+      }
+    },
+    {
+      "kind": "activity",
+      "type": "call",
+      "contact": "Priya Shah",
+      "deal": "Steel supply agreement 2027",
+      "description": "Agreed volumes for Q1. Legal will review the terms this week.",
+      "at": {
+        "daysFromToday": 0,
+        "time": "09:15"
+      }
+    },
+    {
+      "kind": "activity",
+      "type": "email",
+      "contact": "Henry Liu",
+      "deal": "Branch network upgrade",
+      "description": "Sent the signed order form and kickoff dates.",
+      "at": {
+        "daysFromToday": -3,
+        "time": "16:40"
+      }
+    },
+    {
+      "kind": "stageChange",
+      "deal": "Branch network upgrade",
+      "from": "negotiation",
+      "to": "won",
+      "at": {
+        "onCloseDate": true,
+        "time": "15:05"
+      }
+    },
+    {
+      "kind": "activity",
+      "type": "note",
+      "contact": "Lena Moreau",
+      "deal": "Patient records system",
+      "description": "Board approved the budget for the records project.",
+      "at": {
+        "daysFromToday": -4,
+        "time": "10:30"
+      }
+    },
+    {
+      "kind": "activity",
+      "type": "call",
+      "contact": "Marcus Hale",
+      "deal": "Turbine maintenance contract",
+      "description": "Wants a lower rate for year two of the contract.",
+      "at": {
+        "daysFromToday": -5,
+        "time": "14:00"
+      }
+    },
+    {
+      "kind": "stageChange",
+      "deal": "Policy admin migration",
+      "from": "negotiation",
+      "to": "lost",
+      "at": {
+        "onCloseDate": true,
+        "time": "09:50"
+      }
+    },
+    {
+      "kind": "activity",
+      "type": "email",
+      "contact": "Aisha Rahman",
+      "deal": "Lab automation",
+      "description": "Asked for references from two other labs.",
+      "at": {
+        "daysFromToday": -10,
+        "time": "11:15"
+      }
+    },
+    {
+      "kind": "stageChange",
+      "deal": "Lab automation",
+      "from": "qualified",
+      "to": "proposal",
+      "at": {
+        "daysFromToday": -11,
+        "time": "16:20"
+      }
+    },
+    {
+      "kind": "activity",
+      "type": "call",
+      "contact": "Grace Kim",
+      "deal": "ERP rollout",
+      "description": "Finance needs the ERP quote split by phase.",
+      "at": {
+        "daysFromToday": -12,
+        "time": "13:30"
+      }
+    }
+  ]
+}

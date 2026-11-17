@@ -62,7 +62,7 @@ The chosen design is mockup 7 in `docs/mockups/`, recorded under "Chosen design"
 - **The layout needs a window at least 1,280px wide**, which fits all six board columns. On a narrower window the whole page scrolls sideways, as the mockup does.
 - **Closed deals leave the board** 30 days after their close date. They stay in the Deals table and in the dashboard's figures.
 - **Reset while the app is running:** refresh the browser afterwards to see the sample data.
-- **No database migrations yet.** Tables are created on first start. If the data model changes during the build, reset the data. Migrations come with the shared database on Day 5.
+- **Database migrations from the start.** Alembic creates the tables and makes every later change to them. Each time the app starts, it brings the database up to date, and fills a new one with the sample data. A change to the data model is a new migration, so nobody has to reset their data, and the later move to Supabase starts from a known schema.
 - **What you need installed:** Node 24 or later, uv, and Google Chrome for the end-to-end tests.
 
 # Part 1: Requirements
@@ -340,34 +340,54 @@ SQLite file  data/accountable.db
   - `FRONTEND_PORT`: default 5173.
 
   The tests set their own, and so would parallel test workers later.
+- The backend turns `ACCOUNTABLE_DB` into a database URL in one place, `settings.py`, and everything else uses the URL. Only the reset command's backup needs the file itself. Moving to Supabase's Postgres later means giving that setting a different URL.
+- The code is grouped by business area. The MVP has one area, the CRM.
+  - Code any area could use sits at the top level and never imports from an area.
+  - Only the files that put the app together import the areas: `main.py`, `seed.py` and `migrations/env.py` in the backend, and `App.tsx` in the frontend.
+  - A later area, such as invoices, gets its own folders beside `crm/`.
 
 ## Repo layout
 
 ```
-package.json          npm scripts, workspaces: ["frontend"]
-pyproject.toml        backend dependencies (uv)
+package.json            npm scripts, workspaces: ["frontend"]
+pyproject.toml          backend dependencies (uv)
 uv.lock
-frontend/             React + Vite + TypeScript
-  src/api/            fetch client, TanStack Query hooks
-  src/lib/            money, dates, stage rules shown in the browser
-  src/components/     table, dialogs, forms, chips, timeline, stage menu, charts
-  src/pages/          dashboard, organizations, contacts, deals, pipeline, record pages
-  src/styles/         tokens and global styles
+alembic.ini             points Alembic at backend/migrations
 backend/
-  main.py             FastAPI app and routes
-  db.py               engine, tables, SQLite settings, create on first start
-  clock.py            today() and now(), the one source of the date
-  rules.py            validation, stage changes, delete and move rules
-  dashboard.py        dashboard figures
-  sample_data.py      the sample records, as offsets from today
-  seed.py             the reset command
-  tests/              pytest
-e2e/                  Playwright tests and config
-scripts/              small Node scripts: dependency check, running the tests
-data/                 database and backups (git-ignored)
+  main.py               creates the app and adds each area's routes
+  settings.py           database URL and ports
+  db.py                 engine, SQLite settings, migrations on start
+  clock.py              today() and now(), the one source of the date
+  errors.py             the 422, 409 and 404 shapes
+  seed.py               the reset command, for every area
+  migrations/           Alembic: env.py and versions/
+  crm/
+    tables.py           the CRM's tables
+    schemas.py          request and response shapes
+    rules.py            validation, stage changes, delete and move rules
+    queries.py          lists, record pages and timelines
+    dashboard.py        dashboard figures
+    sample_data.json    the sample records, as offsets from today
+    sample_data.py      turns them into dates and adds them
+    routes/             organizations, contacts, deals, activities, dashboard
+  tests/                pytest, with the CRM's tests in tests/crm/
+frontend/               React + Vite + TypeScript
+  src/api/              fetch client and error handling
+  src/lib/              money, dates, links, table search and sort
+  src/components/       shell, data table, dialogs, form fields, chips
+  src/styles/           tokens and global styles
+  src/crm/              the CRM's queries, rules shown in the browser, pages,
+                        forms, board, dashboard and timeline
+shared/                 test cases both test suites read
+e2e/                    Playwright tests and config, with the CRM's in e2e/crm/
+scripts/                small Node scripts: dependency check, dev, running the tests
+data/                   database and backups (git-ignored)
 ```
 
-The plan can adjust file names. The split to keep is that rules live in one backend module and the date comes from one function.
+The plan can adjust file names. The split to keep:
+- each area's rules live in one module
+- shared code never imports from an area, and only the files that put the app together import the areas
+- the date comes from one function
 
 ## Libraries
 
@@ -393,6 +413,7 @@ Popular, well-supported libraries do the heavy lifting.
 
 - FastAPI and Uvicorn.
 - SQLAlchemy Core 2. No ORM and no raw SQL.
+- Alembic, for migrations.
 - Pydantic v2, with `email-validator` for email checks.
 
 **Tests and tools**
@@ -404,7 +425,7 @@ Popular, well-supported libraries do the heavy lifting.
 
 ## Data model
 
-SQLite, with foreign keys switched on for every connection. Dates are stored as ISO text (`2026-11-16`), and times as local ISO date-time text, since everything runs on one computer.
+SQLite, with foreign keys switched on for every connection. Date columns use SQLAlchemy's `Date` type and times its `DateTime` type, with no time zone, since everything runs on one computer. SQLite stores them as ISO text (`2026-11-16`), and Postgres will store them as real dates. Tables are defined once, in each area's `tables.py`, and migrations create them.
 
 **organizations**
 
@@ -413,7 +434,7 @@ SQLite, with foreign keys switched on for every connection. Dates are stored as 
 | id | integer | primary key |
 | name | text | required. Unique index on its trimmed, lower-case form. |
 | website, industry, notes | text | optional |
-| created_at, updated_at | text | date-time |
+| created_at, updated_at | date-time | |
 
 **contacts**
 
@@ -425,7 +446,7 @@ SQLite, with foreign keys switched on for every connection. Dates are stored as 
 | email | text | optional. Stored trimmed and lower-case. Unique when present. |
 | phone, job_title | text | optional |
 | status | text | `lead`, `qualified` or `customer` (check constraint) |
-| created_at, updated_at | text | |
+| created_at, updated_at | date-time | |
 
 **deals**
 
@@ -433,15 +454,15 @@ SQLite, with foreign keys switched on for every connection. Dates are stored as 
 |---|---|---|
 | id | integer | primary key |
 | organization_id | integer | required, references organizations |
-| main_contact_id | integer | required, references contacts. The contact must be at the same organization (checked in `rules.py`). |
+| main_contact_id | integer | required, references contacts. The contact must be at the same organization (checked in `crm/rules.py`). |
 | name | text | required |
 | stage | text | one of the six stages (check constraint) |
 | value | integer | whole dollars, 0 or more (check constraint) |
 | probability | integer | 0 to 100 (check constraint) |
-| close_date | text | date, required |
+| close_date | date | required |
 | furthest_stage | text | for the funnel |
 | position | integer | place within its column, smallest at the top |
-| created_at, updated_at | text | |
+| created_at, updated_at | date-time | |
 
 **activities**
 
@@ -450,12 +471,12 @@ SQLite, with foreign keys switched on for every connection. Dates are stored as 
 | id | integer | primary key |
 | type | text | `note`, `call` or `email` |
 | description | text | required |
-| occurred_at | text | date-time |
-| follow_up_date | text | date, optional |
+| occurred_at | date-time | required |
+| follow_up_date | date | optional |
 | done | boolean | false by default |
 | contact_id | integer | optional, references contacts |
 | deal_id | integer | optional, references deals |
-| created_at, updated_at | text | |
+| created_at, updated_at | date-time | |
 
 A check constraint keeps at least one of `contact_id` and `deal_id` filled.
 
@@ -466,13 +487,13 @@ A check constraint keeps at least one of `contact_id` and `deal_id` filled.
 | id | integer | primary key |
 | deal_id | integer | references deals, deleted with the deal |
 | from_stage, to_stage | text | |
-| changed_at | text | date-time |
+| changed_at | date-time | |
 
 Indexes are on every foreign key, on `deals(stage, position)` and on `activities(follow_up_date)`.
 
 ## Backend rules
 
-All in `rules.py`, each write in one transaction:
+All in `crm/rules.py`, each write in one transaction:
 
 - **Validation**: required fields, lengths, email format, unique name and email, and that the main contact and any second activity link are at the right organization. Errors come back per field.
 - **Stage change**: one function is used by the move endpoint and by the deal edit. It sets probability, close date and furthest stage, adds a `stage_changes` row, and places the deal in its new column.
@@ -522,7 +543,9 @@ Errors share one shape:
 - **Forms.**
   - Zod schemas mirror the server's rules. Server field errors are placed on the matching fields.
   - The deal form loads the chosen organization's contacts for the main contact list.
-- **Shared logic** in `src/lib`: money and date formatting, late and board-window checks, stage order, probabilities and colors. Each has unit tests.
+- **Shared logic**, each with unit tests:
+  - `src/lib`, for any area: money and date formatting, website links, table search and sort.
+  - `src/crm/lib`, for the CRM: late and board-window checks, stage order, probabilities and colors, follow-up wording and board moves.
 - **Routes**: `/`, `/organizations`, `/organizations/:id`, `/contacts`, `/contacts/:id`, `/deals`, `/deals/:id`, `/pipeline`. An unknown address shows a "Page not found" panel with a link to the dashboard.
 
 ## Screens
@@ -743,9 +766,11 @@ Mockups 1 to 6 stay in `docs/mockups/` for reference.
 
 `npm test` runs all three kinds. None of them touches `data/accountable.db`.
 
+- **Rules in both places**: expected revenue and its rounding, the late check and the stage probabilities are in both the backend and the frontend. Their cases are written once, in `shared/crm-rule-cases.json`, and both pytest and Vitest check every case, so the two can't drift apart.
+- **Migrations**: a test runs every migration on an empty database and checks the result matches the tables in `tables.py` exactly.
 - **Backend (pytest)**:
   - Each test gets a fresh temporary database and a fixed today.
-  - Covers every rule in `rules.py`: validation messages, unique checks, delete and move rules, and stage changes, including Won to Lost, reopening and probability kept by hand. Also placement, and the activity link rules.
+  - Covers every rule in `crm/rules.py`: validation messages, unique checks, delete and move rules, and stage changes, including Won to Lost, reopening and probability kept by hand. Also placement, and the activity link rules.
   - Covers the dashboard figures against known data, including the window boundaries, and the seed: the backup is made, it asks without `--yes`, and the dates are relative.
 - **Frontend (Vitest)**: formatting money and dates, the late and board-window checks, the board totals, and the deal form's stage-change notes.
 - **End to end (Playwright Test, installed Chrome)**:
