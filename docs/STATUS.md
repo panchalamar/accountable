@@ -152,3 +152,6 @@ Found while testing the fixes:
 
 `npm test` passes: Vitest 78, pytest 214, Playwright 52 side by side and 24 one at a time. The new tests fail on the old code: the four new pipeline tests and the Deals table's midnight test were each run against it first.
 
+## Bugs
+
+- Editing an organization: the Industry dropdown shows only the current industry, since the browser filters the datalist by what is already in the box. It should list every industry in use (spec: "suggests industries already in use"). Confirmed in Chrome: the arrow also shows only the current industry; clearing the box shows all 9.
