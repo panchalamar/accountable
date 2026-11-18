@@ -110,7 +110,7 @@ def test_starting_on_an_up_to_date_database_changes_nothing(db_url: str):
     engine.dispose()
     before = _dump(db_url)
 
-    with TestClient(create_app(db_url)):
+    with TestClient(create_app(db_url), base_url="http://localhost"):
         pass
 
     assert _dump(db_url) == before

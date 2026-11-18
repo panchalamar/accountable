@@ -5,7 +5,7 @@ import { Link } from "react-router";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { DataTable, type TableColumn } from "../../components/table/DataTable";
 import { SearchBox } from "../../components/table/SearchBox";
-import { formatDate, today } from "../../lib/dates";
+import { formatDate, parseDate, toISODate, today } from "../../lib/dates";
 import { formatMoney } from "../../lib/money";
 import { countLabel } from "../../lib/table";
 import { type Deal, useDeals } from "../api";
@@ -23,10 +23,13 @@ export function DealsPage() {
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<Deal | null>(null);
   const [deleting, setDeleting] = useState<Deal | null>(null);
-  const now = today();
+  // The columns are worked out again when the day changes, so a page left
+  // open past midnight shows today's Late chips after its next refresh.
+  const day = toISODate(today());
 
-  const columns = useMemo<TableColumn<Deal>[]>(
-    () => [
+  const columns = useMemo<TableColumn<Deal>[]>(() => {
+    const now = parseDate(day);
+    return [
       {
         id: "name",
         header: "Name",
@@ -87,9 +90,8 @@ export function DealsPage() {
           </span>
         ),
       },
-    ],
-    [],
-  );
+    ];
+  }, [day]);
 
   if (deals.isError) {
     return <LoadFailed error={deals.error} title="Deals" backTo="/" backLabel="Go to the dashboard" />;

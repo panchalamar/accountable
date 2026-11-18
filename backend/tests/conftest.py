@@ -63,5 +63,5 @@ def engine(db_url: str):
 
 @pytest.fixture
 def client(db_url: str):
-    with TestClient(create_app(db_url)) as test_client:
+    with TestClient(create_app(db_url), base_url="http://localhost") as test_client:
         yield test_client

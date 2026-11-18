@@ -61,6 +61,23 @@ async function chooseStage(page: Page, deal: DealRec | { name: string }, from: s
   await page.getByRole("menuitemradio", { name: to }).click();
 }
 
+function stageButton(page: Page, deal: DealRec, stage: string) {
+  return page.getByRole("button", { name: `Stage: ${stage}. Change stage of ${deal.name}` });
+}
+
+/** Opens a stage menu with the keyboard and chooses a stage with the arrow keys and Enter. */
+async function chooseStageByKeyboard(page: Page, button: Locator, to: string) {
+  await button.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("menuitemradio", { name: "New" })).toBeFocused();
+  // Radix moves focus a moment after each key, so wait for each step as a person would.
+  for (const stage of STAGES.slice(1, STAGES.indexOf(to) + 1)) {
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("menuitemradio", { name: stage })).toBeFocused();
+  }
+  await page.keyboard.press("Enter");
+}
+
 test("the board shows the sample deals as cards in six columns", async ({ page }) => {
   await page.goto("/pipeline");
   for (const stage of STAGES) await expect(column(page, stage)).toBeVisible();
@@ -197,6 +214,98 @@ test("dragging a Won deal to an open column asks first, and Cancel puts the card
   await dialog.getByRole("button", { name: "Cancel" }).click();
   await expect(cardsIn(page, "Lost").filter({ hasText: deal.name })).toHaveCount(1);
   await expect(cardsIn(page, "Negotiation").filter({ hasText: deal.name })).toHaveCount(0);
+});
+
+test("dragging a Lost deal to an open column and choosing Reopen moves it, and the board keeps up with the next move", async ({
+  page,
+  api,
+}) => {
+  const lost = await api.deal(undefined, { stage: "lost" });
+  const next = await api.deal(undefined, { stage: "new" });
+  await page.goto("/pipeline");
+  await drag(page, card(page, lost.name), card(page, "Steel supply agreement 2027"));
+  const dialog = page.getByRole("dialog", { name: `Reopen ${lost.name}` });
+  await dialog.getByLabel("New expected close date").fill(isoDaysFromToday(45));
+  await dialog.getByRole("button", { name: "Reopen" }).click();
+  await expect(dialog).toBeHidden();
+  const reopened = cardsIn(page, "Negotiation").filter({ hasText: lost.name });
+  await expect(reopened).toHaveCount(1);
+  await expect(reopened).toContainText(shownDate(isoDaysFromToday(45)));
+  await expect(cardsIn(page, "Lost").filter({ hasText: lost.name })).toHaveCount(0);
+
+  // The board still follows the data: the next move shows at once, and the
+  // column's header counts the cards it shows.
+  await chooseStage(page, next, "New", "Qualified");
+  await expect(cardsIn(page, "Qualified").first()).toContainText(next.name);
+  await expect(cardsIn(page, "New").filter({ hasText: next.name })).toHaveCount(0);
+  const { count } = await columnFigures(page, "Qualified");
+  await expect(cardsIn(page, "Qualified")).toHaveCount(count);
+
+  const saved = await api.get<DealRec & { stage: string; close_date: string }>(`/deals/${lost.id}`);
+  expect([saved.stage, saved.close_date]).toEqual(["negotiation", isoDaysFromToday(45)]);
+});
+
+test("when the server refuses a reopen after a drag, the card goes back to its column", async ({ page, api }) => {
+  const lost = await api.deal(undefined, { stage: "lost" });
+  await page.route("**/api/deals/*/move", (route) =>
+    route.fulfill({
+      status: 409,
+      contentType: "application/json",
+      body: JSON.stringify({ message: "Refused for this test.", details: {} }),
+    }),
+  );
+  await page.goto("/pipeline");
+  await drag(page, card(page, lost.name), card(page, "Steel supply agreement 2027"));
+  const dialog = page.getByRole("dialog", { name: `Reopen ${lost.name}` });
+  await dialog.getByRole("button", { name: "Reopen" }).click();
+  await expect(page.locator("[data-sonner-toast]", { hasText: `${lost.name} wasn't moved. Refused for this test.` })).toBeVisible();
+  await expect(cardsIn(page, "Lost").filter({ hasText: lost.name })).toHaveCount(1);
+  await expect(cardsIn(page, "Negotiation").filter({ hasText: lost.name })).toHaveCount(0);
+});
+
+test("reopening from a card's stage menu by keyboard keeps focus on the card, after Cancel and after Reopen", async ({
+  page,
+  api,
+}) => {
+  const deal = await api.deal(undefined, { stage: "won" });
+  await page.goto("/pipeline");
+  const dialog = page.getByRole("dialog", { name: `Reopen ${deal.name}` });
+  const date = dialog.getByLabel("New expected close date");
+
+  await chooseStageByKeyboard(page, stageButton(page, deal, "Won"), "Proposal");
+  await expect(date).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(stageButton(page, deal, "Won")).toBeFocused();
+
+  await chooseStageByKeyboard(page, stageButton(page, deal, "Won"), "Proposal");
+  await expect(date).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeHidden();
+  await expect(cardsIn(page, "Proposal").filter({ hasText: deal.name })).toHaveCount(1);
+  await expect(stageButton(page, deal, "Proposal")).toBeFocused();
+});
+
+test("on a deal's page, the stage menu by keyboard keeps focus on its button, also after reopening", async ({
+  page,
+  api,
+}) => {
+  // The same menu as on the board, so it's tested here, away from tests that move cards.
+  const deal = await api.deal(undefined, { stage: "new" });
+  await page.goto(`/deals/${deal.id}`);
+
+  await chooseStageByKeyboard(page, stageButton(page, deal, "New"), "Qualified");
+  await expect(stageButton(page, deal, "Qualified")).toBeFocused();
+
+  await chooseStageByKeyboard(page, stageButton(page, deal, "Qualified"), "Won");
+  await expect(stageButton(page, deal, "Won")).toBeFocused();
+
+  await chooseStageByKeyboard(page, stageButton(page, deal, "Won"), "Proposal");
+  const dialog = page.getByRole("dialog", { name: `Reopen ${deal.name}` });
+  await expect(dialog.getByLabel("New expected close date")).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeHidden();
+  await expect(stageButton(page, deal, "Proposal")).toBeFocused();
 });
 
 test("when the server refuses a move, the card goes back and a message says why", async ({ page, api }) => {

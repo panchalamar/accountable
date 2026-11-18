@@ -76,7 +76,12 @@ def run(argv: list[str] | None = None, ask: Callable[[str], str] = input, say: C
             f"Your current data is in {database}. A copy of it is saved first."
         )
         if not args.yes:
-            answer = ask(QUESTION).strip().lower()
+            try:
+                answer = ask(QUESTION).strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                # No answer (input closed, or Ctrl+C) is a no.
+                say("")
+                answer = ""
             if answer not in ("y", "yes"):
                 say("Nothing changed.")
                 return 0

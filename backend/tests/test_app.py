@@ -43,9 +43,29 @@ def test_health_answers_ok(client: TestClient):
     assert response.json() == {"status": "ok"}
 
 
+@pytest.mark.parametrize("host", ["localhost", "localhost:8000", "127.0.0.1", "127.0.0.1:8011"])
+def test_answers_requests_for_this_computer(client: TestClient, host: str):
+    assert client.get("/api/organizations", headers={"Host": host}).status_code == 200
+
+
+@pytest.mark.parametrize("host", ["attacker.example", "attacker.example:8000", "testserver", "192.168.1.20:8000"])
+def test_refuses_requests_for_any_other_host_name(client: TestClient, host: str):
+    # A page that points its own domain at this computer (DNS rebinding)
+    # sends its domain as the Host, so it can't read or change the data.
+    for method, path in (("get", "/api/contacts"), ("post", "/api/organizations"), ("delete", "/api/organizations/1")):
+        response = client.request(method, path, headers={"Host": host}, json={"name": "Taken over"})
+        assert response.status_code == 400, (method, path)
+        assert "Aisha" not in response.text
+
+
+def test_has_no_docs_pages(client: TestClient):
+    for path in ("/api/docs", "/docs", "/redoc", "/api/openapi.json", "/openapi.json"):
+        assert client.get(path).status_code == 404, path
+
+
 def test_new_database_gets_every_table_index_and_check(tmp_path: Path):
     url = sqlite_url(tmp_path / "fresh" / "accountable.db")
-    with TestClient(create_app(url)):
+    with TestClient(create_app(url), base_url="http://localhost"):
         pass
 
     engine = db.make_engine(url)

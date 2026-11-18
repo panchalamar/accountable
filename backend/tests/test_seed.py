@@ -60,6 +60,23 @@ def test_without_yes_it_asks_and_anything_but_yes_changes_nothing(database, answ
     assert not (database.parent / "backups").exists()
 
 
+@pytest.mark.parametrize("no_answer", [EOFError, KeyboardInterrupt])
+def test_no_answer_at_all_changes_nothing(database, no_answer):
+    # Input closed (EOFError) or Ctrl+C at the question: a plain no, not a traceback.
+    run("--yes")
+    add_org(database, "Mine")
+    before = database.read_bytes()
+    said: list[str] = []
+
+    def ask(_question: str) -> str:
+        raise no_answer
+
+    assert seed.run([], ask=ask, say=said.append) == 0
+    assert said[-1] == "Nothing changed."
+    assert database.read_bytes() == before
+    assert not (database.parent / "backups").exists()
+
+
 @pytest.mark.parametrize("answer", ["y", "yes", " Yes "])
 def test_yes_saves_a_backup_says_where_and_replaces_the_data(database, answer):
     run("--yes")

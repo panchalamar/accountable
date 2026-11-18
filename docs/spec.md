@@ -525,7 +525,7 @@ All under `/api`, JSON in and out.
 | `POST /deals/{id}/move` | `{stage, before_id, close_date}`. `close_date` is required when reopening. |
 | `GET /deals/{id}/delete-check` | Activities to delete and to keep |
 | `GET /deals/{id}/timeline` | Activities and stage changes, newest first |
-| `POST /activities`, `PUT`, `DELETE /activities/{id}` | Log, edit, delete |
+| `POST /activities`, `GET`, `PUT`, `DELETE /activities/{id}` | Log, read one, edit, delete |
 | `PATCH /activities/{id}` | `{done}`, for the checkbox |
 | `GET /dashboard` | Every dashboard figure, follow-up and recent item |
 
@@ -757,6 +757,8 @@ Mockups 1 to 6 stay in `docs/mockups/` for reference.
 ## Security
 
 - The backend listens on 127.0.0.1 only. There's no sign-in, as the intent says, so nothing is exposed to the network.
+- The backend also answers only requests addressed to `localhost` or `127.0.0.1`. Otherwise a web page could point its own domain at this computer (DNS rebinding) and reach the API from the browser. Vite's dev server makes the same check.
+- The backend has no docs pages (`/docs`, `/redoc`, `/openapi.json`). They aren't part of the API, and they load from the internet.
 - All database access goes through SQLAlchemy Core with bound parameters.
 - React escapes everything it shows. Website links are rendered only for `http` and `https` addresses, with `rel="noopener noreferrer"`. Anything else shows as text, so a `javascript:` address can't run.
 - Request bodies are checked against the length limits.

@@ -8,10 +8,17 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from backend import db, errors, settings
 from backend.crm import sample_data as crm_sample_data
 from backend.crm.routes import router as crm_router
+
+# The only host names the backend answers to. Listening on 127.0.0.1 keeps
+# other computers out, but a web page could still point its own domain at
+# this computer (DNS rebinding) and reach the API; its requests carry that
+# domain as their Host, so they're refused. Vite's proxy keeps "localhost".
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 def add_sample_data(engine) -> None:
@@ -33,8 +40,10 @@ def create_app(url: str | None = None) -> FastAPI:
         yield
         engine.dispose()
 
-    app = FastAPI(title="Accountable", lifespan=lifespan, docs_url="/api/docs", openapi_url="/api/openapi.json")
+    # No docs pages: they're not part of the API, and they load from the internet.
+    app = FastAPI(title="Accountable", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     app.state.engine = engine
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
     errors.install(app)
 
     @app.get("/api/health")

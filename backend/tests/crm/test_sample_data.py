@@ -33,7 +33,7 @@ def seeded(request, template_db: Path, tmp_path: Path):
     shutil.copyfile(template_db, path)
     engine = db.make_engine(sqlite_url(path))
     sample_data.add(engine)
-    with TestClient(create_app(sqlite_url(path))) as client:
+    with TestClient(create_app(sqlite_url(path)), base_url="http://localhost") as client:
         yield now, engine, client
     engine.dispose()
 
@@ -158,7 +158,7 @@ def test_figures_equal_the_mockups_on_nov_16_2026(template_db, tmp_path):
     clock.set_now(datetime(2026, 11, 16, 12, 0))
     path = tmp_path / "mockup.db"
     shutil.copyfile(template_db, path)
-    with TestClient(create_app(sqlite_url(path))) as client:
+    with TestClient(create_app(sqlite_url(path)), base_url="http://localhost") as client:
         sample_data.add(client.app.state.engine)
         figures = client.get("/api/dashboard").json()["figures"]
     assert (figures["open_pipeline"]["value"], figures["open_pipeline"]["count"]) == (9_040_000, 17)
@@ -173,7 +173,7 @@ def test_recent_activity_matches_the_mockup_and_never_shows_the_future(template_
     clock.set_now(now)
     path = tmp_path / "early.db"
     shutil.copyfile(template_db, path)
-    with TestClient(create_app(sqlite_url(path))) as client:
+    with TestClient(create_app(sqlite_url(path)), base_url="http://localhost") as client:
         sample_data.add(client.app.state.engine)
         recent = client.get("/api/dashboard").json()["recent"]
     assert all(datetime.fromisoformat(r["at"]) <= now for r in recent)
@@ -195,9 +195,9 @@ def test_recent_activity_matches_the_mockup_and_never_shows_the_future(template_
 
 def test_a_new_database_gets_the_sample_data_once(tmp_path):
     url = sqlite_url(tmp_path / "first-start.db")
-    with TestClient(create_app(url)) as client:
+    with TestClient(create_app(url), base_url="http://localhost") as client:
         assert len(client.get("/api/deals").json()) == 40
         client.post("/api/organizations", json={"name": "Added after the first start"})
-    with TestClient(create_app(url)) as client:
+    with TestClient(create_app(url), base_url="http://localhost") as client:
         assert len(client.get("/api/deals").json()) == 40
         assert len(client.get("/api/organizations").json()) == 13

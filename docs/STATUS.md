@@ -117,3 +117,38 @@ You need **Node 24 or later**, **uv** and, for the end-to-end tests, **Google Ch
   - At 1,280 the mockup's forecast chart is a picture that shrinks with the page, so it's about 40px shorter than the app's, which stays 330px tall with full-size text. The app's dashboard is laid out the same, just lower below the chart.
   - Lucide's current `Building2` has a door that the mockup's older drawing doesn't.
 
+### Review against `main`
+
+The branch was reviewed against `docs/REVIEW.md`: bugs, security, and a match with `spec.md` and `plan.md`. `npm test` passed (Vitest 77, pytest 203, Playwright 52 + 20), but the review found these. Each was checked in a real browser or with `curl`, on a scratch database.
+
+Important (must be fixed before merging):
+
+1. **The board stopped following the data after a drag and Reopen.** Dragging a Won or Lost card into an open column and choosing Reopen left the board on the layout it had while dragging, since only Cancel cleared it. A later move by the stage menu was saved but its card stayed put, and the column header and cards disagreed (6 deals, 5 cards). A refused reopen after a drag didn't put the card back, and new deals didn't appear until a reload. The tests covered only drag and Cancel.
+2. **Focus was lost after a stage change by keyboard.** After reopening from a card's Stage menu, and after any stage change from the menu on a deal's own page, focus fell to the page itself. The spec says focus stays on the moved card, and dialogs return focus to what opened them.
+3. **The backend answered requests for any host name.** A web page could point its own domain at this computer (DNS rebinding) and read or change the CRM's data while the app is running. Vite already refused such requests; the backend didn't.
+
+Not blocking:
+
+4. `npm run seed` with no input (stdin closed) stopped with an `EOFError` traceback instead of "Nothing changed." No data was touched.
+5. The Deals table worked out "Late" once, when the page first showed, so a page left open past midnight kept yesterday's Late chips.
+6. Endpoints beyond the spec's API table: `GET /activities/{id}`, and FastAPI's docs pages (`/api/docs`, `/redoc`, `/api/openapi.json`), which also need the internet.
+7. The build landed as one commit, "Build: the MVP", not one per phase as the plan asks.
+8. This file gave Vitest's count as 75; it is 77.
+
+Fixes:
+
+1. Fixed. The reopen dialog now tells the board when it closes, by Reopen or Cancel (`useDealMover`'s `onDialogClose`), and the board drops its dragging layout either way, so it shows the cache: moved, or put back after a refusal. New end-to-end tests: drag and Reopen, then a stage-menu move that must show at once with the header matching the cards; and drag and Reopen refused, with the card back in Lost.
+2. Fixed. `FormDialog` takes an `onCloseAutoFocus`, and the mover uses it to put focus back after the reopen dialog (`refocus`): on the card's Stage button on the board, after Reopen or Cancel, and on the stage button on a deal's page, which also gets focus back after every move from its menu. New end-to-end tests check focus by keyboard on the board and on a deal's page.
+3. Fixed. The backend answers only requests addressed to `localhost` or `127.0.0.1` (Starlette's `TrustedHostMiddleware` in `main.py`). pytest's clients now use `http://localhost`, and new tests check other host names get 400 with no data. The spec's Security section says so.
+4. Fixed. No answer (input closed, or Ctrl+C) counts as no: "Nothing changed.", exit code 0. New pytest cases.
+5. Fixed. The Deals table's columns are worked out again when the day changes. A new Vitest test moves the clock past midnight.
+6. Fixed. `GET /activities/{id}` is a plain read the tests rely on, so it's now in the spec's API table. The docs pages are switched off, with a test.
+7. Left as it is. Splitting the commit into phases would mean rewriting history, for no change to the software.
+8. Fixed by the counts below.
+
+Found while testing the fixes:
+
+9. **A drag across columns could land in the wrong column, or crash the page.** Fixed. The board picked the column under the dragged card's corners (`closestCorners`). Moving the card into a column changes the columns' heights, so the closest corners could flip to another column: once, and the card landed in Proposal while the pointer was on a Negotiation card; or back and forth, until React stopped with "Maximum update depth exceeded" and the page fell over mid-drag. It was there before this review, in the original drag tests too, and showed up when columns had grown to very different heights. The traces showed the flip (`negotiation -> proposal` on the last mouse move). Now the column under the pointer decides, as in dnd-kit's own example for several containers. Between columns or over a header, the card stays where it last was. `onDragEnd` also copes with a drop before the last move was drawn. Before the fix, repeating the end-to-end drag tests gave 1 crash in 40 runs, and 2 wrong columns in 144. After it, 0 in 144 (the dashboard and pipeline files, six times over) and 0 in 120 (the drag tests, 24 times over).
+
+`npm test` passes: Vitest 78, pytest 214, Playwright 52 side by side and 24 one at a time. The new tests fail on the old code: the four new pipeline tests and the Deals table's midnight test were each run against it first.
+

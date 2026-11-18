@@ -1,5 +1,5 @@
 import { Pencil, Trash } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 
 import { PageHeader } from "../../components/layout/PageHeader";
@@ -27,6 +27,10 @@ export function DealPage() {
   const mover = useDealMover();
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  // The stage menu doesn't hand focus back (on the board its card may move),
+  // so after a stage change focus goes back to its button here.
+  const stageButton = useRef<HTMLButtonElement>(null);
+  const refocus = () => stageButton.current?.focus();
 
   if (deal.isError) {
     return <LoadFailed error={deal.error} title="Deal" backTo="/deals" backLabel="Go to Deals" />;
@@ -50,10 +54,14 @@ export function DealPage() {
         badges={
           <>
             <StageMenu
+              ref={stageButton}
               dealName={d.name}
               stage={d.stage}
               // The same menu as on the board: the deal goes to the top of the chosen column.
-              onChoose={(stage) => mover.request(d, stage, topCardId(allDeals.data ?? [], stage, d.id))}
+              onChoose={(stage) => {
+                const sent = mover.request(d, stage, topCardId(allDeals.data ?? [], stage, d.id), { refocus });
+                if (sent) refocus();
+              }}
               triggerClassName="inline-flex items-center gap-0.5 rounded-full"
               trigger={
                 <>

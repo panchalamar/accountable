@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { api, errorMessage } from "../../api/client";
@@ -9,7 +9,15 @@ import { ReopenDialog } from "../components/ReopenDialog";
 import { applyMove } from "../lib/board";
 import { STAGE_LABEL, type Stage, isClosed } from "../lib/stages";
 
-type Pending = { deal: Deal; stage: Stage; beforeId: number | null; onCancel?: () => void };
+/** For a move that waits for the reopen dialog. */
+export type MoveOptions = {
+  /** When the dialog closes, by Reopen or Cancel, after a Reopen's move is in the cache. */
+  onDialogClose?: () => void;
+  /** Puts focus back once the dialog has closed, since the menu item that opened it is gone. */
+  refocus?: () => void;
+};
+
+type Pending = { deal: Deal; stage: Stage; beforeId: number | null; options: MoveOptions };
 
 /**
  * Moves deals for the board and the deal page. The cached deals change first,
@@ -21,6 +29,9 @@ export function useDealMover() {
   const queryClient = useQueryClient();
   const [reopening, setReopening] = useState<Pending | null>(null);
   const [announcement, setAnnouncement] = useState("");
+  // Radix moves focus after the dialog has gone, when `reopening` is already
+  // cleared, so the way back is kept here.
+  const refocusAfterDialog = useRef<(() => void) | undefined>(undefined);
 
   function send(deal: Deal, stage: Stage, beforeId: number | null, closeDate: string | null = null) {
     const previous = queryClient.getQueryData<Deal[]>(keys.deals);
@@ -51,13 +62,22 @@ export function useDealMover() {
   }
 
   /** Returns false when it's waiting for the reopen dialog. */
-  function request(deal: Deal, stage: Stage, beforeId: number | null, onCancel?: () => void): boolean {
+  function request(deal: Deal, stage: Stage, beforeId: number | null, options: MoveOptions = {}): boolean {
     if (isClosed(deal.stage) && !isClosed(stage)) {
-      setReopening({ deal, stage, beforeId, onCancel });
+      refocusAfterDialog.current = options.refocus;
+      setReopening({ deal, stage, beforeId, options });
       return false;
     }
     send(deal, stage, beforeId);
     return true;
+  }
+
+  /** Reopen with the date given, or cancel with null. Either way the dialog closes. */
+  function finish(closeDate: string | null) {
+    if (!reopening) return;
+    if (closeDate) send(reopening.deal, reopening.stage, reopening.beforeId, closeDate);
+    reopening.options.onDialogClose?.();
+    setReopening(null);
   }
 
   const dialog: ReactNode = (
@@ -65,13 +85,15 @@ export function useDealMover() {
       open={reopening !== null}
       dealName={reopening?.deal.name ?? ""}
       stage={reopening?.stage ?? "new"}
-      onReopen={(closeDate) => {
-        if (reopening) send(reopening.deal, reopening.stage, reopening.beforeId, closeDate);
-        setReopening(null);
-      }}
-      onCancel={() => {
-        reopening?.onCancel?.();
-        setReopening(null);
+      onReopen={(closeDate) => finish(closeDate)}
+      onCancel={() => finish(null)}
+      onCloseAutoFocus={(event) => {
+        const refocus = refocusAfterDialog.current;
+        refocusAfterDialog.current = undefined;
+        if (refocus) {
+          event.preventDefault();
+          refocus();
+        }
       }}
     />
   );

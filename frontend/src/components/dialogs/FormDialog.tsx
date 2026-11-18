@@ -12,11 +12,17 @@ type Props = {
   /** The form, with a DialogFooter at its end. It mounts each time the dialog opens. */
   children: ReactNode;
   width?: number;
+  /**
+   * Where focus goes on closing, when the opener may be gone, such as a menu
+   * item. Call `event.preventDefault()` and move focus yourself; otherwise it
+   * goes back to whatever had focus when the dialog opened.
+   */
+  onCloseAutoFocus?: (event: Event) => void;
 };
 
 // A form in a dialog. Radix keeps focus inside, closes on Escape and returns
 // focus to the button that opened it.
-export function FormDialog({ open, onOpenChange, title, description, children, width = 560 }: Props) {
+export function FormDialog({ open, onOpenChange, title, description, children, width = 560, onCloseAutoFocus }: Props) {
   const focus = useReturnFocus();
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -36,7 +42,10 @@ export function FormDialog({ open, onOpenChange, title, description, children, w
               first.focus();
             }
           }}
-          onCloseAutoFocus={focus.onCloseAutoFocus}
+          onCloseAutoFocus={(event) => {
+            onCloseAutoFocus?.(event);
+            if (!event.defaultPrevented) focus.onCloseAutoFocus(event);
+          }}
           {...(description ? {} : { "aria-describedby": undefined })}
         >
           <div className="flex items-start justify-between gap-4 px-7 pt-6">

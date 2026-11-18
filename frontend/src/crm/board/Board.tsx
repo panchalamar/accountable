@@ -1,5 +1,6 @@
 import {
   type Announcements,
+  type CollisionDetection,
   DndContext,
   type DragEndEvent,
   type DragOverEvent,
@@ -8,14 +9,16 @@ import {
   PointerSensor,
   type UniqueIdentifier,
   closestCorners,
+  pointerWithin,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import type { Deal } from "../api";
 import type { BoardTotals } from "../lib/deals";
+import type { MoveOptions } from "./useDealMover";
 import { topCardId } from "../lib/board";
 import { STAGES, STAGE_LABEL, type Stage } from "../lib/stages";
 import { BoardColumn } from "./BoardColumn";
@@ -29,8 +32,8 @@ type Props = {
   totals: BoardTotals;
   today: Date;
   onAdd: (stage: Stage) => void;
-  /** Moves a deal. Returns false when it waits for the reopen dialog, whose Cancel calls onCancel. */
-  onMove: (deal: Deal, stage: Stage, beforeId: number | null, onCancel?: () => void) => boolean;
+  /** Moves a deal. Returns false when it waits for the reopen dialog; `options` say what happens as it closes. */
+  onMove: (deal: Deal, stage: Stage, beforeId: number | null, options?: MoveOptions) => boolean;
 };
 
 function columnsOf(deals: Deal[]): Columns {
@@ -50,6 +53,24 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
   const byId = useMemo(() => new Map(deals.map((d) => [d.id, d])), [deals]);
   const columns = dragging ?? columnsOf(deals);
 
+  // What the card is over goes by the pointer, as in dnd-kit's example for
+  // several containers. Going by the card's corners (closestCorners alone)
+  // let the target flip: moving the card into a column changes the columns'
+  // heights, which made another column's corners the closest, then back
+  // again. The card landed in the wrong column, or React stopped the loop
+  // with "Maximum update depth exceeded". Between columns or over a header,
+  // where the pointer is over nothing, the card stays where it last was.
+  const lastOver = useRef<UniqueIdentifier | null>(null);
+  const collisionDetection: CollisionDetection = useCallback((args) => {
+    const under = pointerWithin(args);
+    if (under.length > 0) {
+      lastOver.current = under[0].id;
+      return under;
+    }
+    if (lastOver.current !== null) return [{ id: lastOver.current }];
+    return closestCorners(args);
+  }, []);
+
   const findStage = useCallback(
     (id: UniqueIdentifier | undefined): Stage | null => {
       if (id === undefined) return null;
@@ -60,6 +81,7 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
   );
 
   function onDragStart(event: DragStartEvent) {
+    lastOver.current = null;
     setActiveId(Number(event.active.id));
     setDragging(columnsOf(deals));
   }
@@ -92,9 +114,15 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
       return;
     }
     let column = dragging[to];
-    const oldIndex = column.indexOf(deal.id);
     const overIndex = column.indexOf(Number(over.id));
-    if (overIndex >= 0 && oldIndex !== overIndex) column = arrayMove(column, oldIndex, overIndex);
+    if (!column.includes(deal.id)) {
+      // Dropped before the move into this column was drawn: put it where it's dropped.
+      column = [...column];
+      column.splice(overIndex >= 0 ? overIndex : column.length, 0, deal.id);
+    } else {
+      const oldIndex = column.indexOf(deal.id);
+      if (overIndex >= 0 && oldIndex !== overIndex) column = arrayMove(column, oldIndex, overIndex);
+    }
     const at = column.indexOf(deal.id);
     const beforeId = column[at + 1] ?? null;
 
@@ -104,15 +132,20 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
       setDragging(null);
       return;
     }
-    // Show the card where it was dropped while the reopen dialog asks; Cancel puts it back.
-    setDragging({ ...dragging, [to]: column });
-    const sent = onMove(deal, to, beforeId, () => setDragging(null));
+    // Show the card where it was dropped while the reopen dialog asks. When it
+    // closes, the board goes back to the cache: moved by Reopen, as it was on Cancel.
+    const shown = Object.fromEntries(
+      STAGES.map((s) => [s, s === to ? column : dragging[s].filter((id) => id !== deal.id)]),
+    ) as Columns;
+    setDragging(shown);
+    const sent = onMove(deal, to, beforeId, { onDialogClose: () => setDragging(null) });
     if (sent) setDragging(null);
   }
 
-  // The stage menu moves a card to the top of the chosen column, and keeps focus on it.
+  // The stage menu moves a card to the top of the chosen column, and keeps
+  // focus on it, also after the reopen dialog (Reopen or Cancel).
   function onStage(deal: Deal, stage: Stage) {
-    const sent = onMove(deal, stage, topCardId(deals, stage, deal.id));
+    const sent = onMove(deal, stage, topCardId(deals, stage, deal.id), { refocus: () => setFocusId(deal.id) });
     if (sent) setFocusId(deal.id);
   }
 
@@ -136,7 +169,7 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={collisionDetection}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
