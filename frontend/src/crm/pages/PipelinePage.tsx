@@ -25,8 +25,10 @@ export function PipelinePage() {
   const totals = boardTotals(onTheBoard, today);
   const late = totals.open.late;
 
+  // 24px at the bottom, since each column's cards already leave 24px to drop
+  // below the last one: 48px in all, as in the mockup.
   return (
-    <div className="px-8 pb-12 pt-7">
+    <div className="px-8 pb-6 pt-7">
       <PageHeader
         title="Pipeline"
         context={

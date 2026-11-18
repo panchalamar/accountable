@@ -1,7 +1,7 @@
-import { Chip } from "../../components/Chip";
+import { Chip, type ChipSize } from "../../components/Chip";
 import { STAGE_LABEL, STAGE_STYLE, STATUS_LABEL, STATUS_STYLE, type Stage, type Status } from "../lib/stages";
 
-type Size = { size?: "sm" | "md"; className?: string };
+type Size = { size?: ChipSize; className?: string };
 
 export function StageChip({ stage, size, className, onDark }: { stage: Stage; onDark?: boolean } & Size) {
   const style = STAGE_STYLE[stage];

@@ -23,7 +23,7 @@ import { type ChartRow, type FutureRow, MONTH_NAMES, chartRows, labelledKeys, lo
 // The chart's frame, in pixels. The figures above and the strip below use the
 // same numbers, so their split lines up with Today without measuring.
 const AXIS = 58;
-const RIGHT = 6;
+const RIGHT = 10; // the plot stops 10px short of the panel's content edge, as in the mockup
 const HEIGHT = 330;
 const TOP = 44;
 const X_AXIS = 46;
@@ -35,6 +35,16 @@ const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? o
 
 function splitColumns(pastCount: number, total: number) {
   return `calc(${AXIS}px + (100% - ${AXIS + RIGHT}px) * ${pastCount} / ${total}) minmax(0, 1fr)`;
+}
+
+/**
+ * The same split for the strip under the chart, except that the stage table
+ * keeps the room it needs. When the past is long and the page narrow, the
+ * split moves a little left of Today rather than the table running past the
+ * panel's edge.
+ */
+function stripColumns(pastCount: number, total: number) {
+  return `minmax(0, calc(${AXIS}px + (100% - ${AXIS + RIGHT}px) * ${pastCount} / ${total})) minmax(min-content, 1fr)`;
 }
 
 function Figure({ label, value, note }: { label: string; value: string; note: string }) {
@@ -354,7 +364,7 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
         <span className="ml-auto font-medium text-alert-strong">Late: past its close date and still open</span>
       </div>
 
-      <div className="mt-[26px] grid pt-[22px]" style={{ gridTemplateColumns: split }}>
+      <div className="mt-[26px] grid pt-[22px]" style={{ gridTemplateColumns: stripColumns(pastCount, total) }}>
         <div style={{ paddingLeft: AXIS }}>
           <h3 className="text-[14.5px] font-semibold">Deals won by month</h3>
           <p className="mt-0.5 text-[13.5px] text-ink-muted">{wonSummary(data)}</p>

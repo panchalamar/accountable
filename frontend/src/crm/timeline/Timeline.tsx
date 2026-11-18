@@ -1,4 +1,4 @@
-import { ArrowRight, Mail, Pencil, Phone, Plus, StickyNote, Trash } from "lucide-react";
+import { ArrowRight, FileText, Mail, Pencil, Phone, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ import { ActivityForm, type LoggedOn } from "../forms/ActivityForm";
 import { followUpTiming } from "../lib/followups";
 import { daysBetween, today } from "../../lib/dates";
 
-export const TYPE_ICON: Record<ActivityType, typeof Phone> = { call: Phone, email: Mail, note: StickyNote };
+export const TYPE_ICON: Record<ActivityType, typeof Phone> = { call: Phone, email: Mail, note: FileText };
 export const TYPE_LABEL: Record<ActivityType, string> = { call: "Call", email: "Email", note: "Note" };
 
 type Props = {

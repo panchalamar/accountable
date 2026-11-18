@@ -43,9 +43,9 @@ export function RecentActivity({ items }: { items: RecentItem[] }) {
                     </p>
                     <p className="mt-1 flex flex-wrap items-center gap-1.5 text-sea-mist">
                       <span className="whitespace-nowrap">Moved from</span>
-                      <StageChip stage={item.from_stage} size="sm" onDark />
+                      <StageChip stage={item.from_stage} size="mid" onDark />
                       <span>to</span>
-                      <StageChip stage={item.to_stage} size="sm" onDark />
+                      <StageChip stage={item.to_stage} size="mid" onDark />
                     </p>
                     <p className="mt-[3px] text-[12px] text-muted-on-dark">{formatWhen(item.at)}</p>
                   </div>

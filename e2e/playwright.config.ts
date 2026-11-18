@@ -31,7 +31,8 @@ export default defineConfig({
   outputDir: join(ROOT, "test-results"),
   fullyParallel: true,
   workers: 4,
-  forbidOnly: !!process.env.CI,
+  // A stray test.only would quietly run a few tests and pass, so refuse it.
+  forbidOnly: true,
   retries: 0,
   timeout: 30_000,
   expect: { timeout: 7_000 },

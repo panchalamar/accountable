@@ -54,5 +54,7 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.ts"],
     css: false,
     restoreMocks: true,
+    // A stray it.only would quietly run a few tests and pass, so refuse it.
+    allowOnly: false,
   },
 });

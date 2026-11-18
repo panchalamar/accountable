@@ -87,7 +87,7 @@ You need **Node 24 or later**, **uv** and, for the end-to-end tests, **Google Ch
 ### Phase 7: finish and check by eye (done)
 
 - `npm test` passes in full: Vitest 75, pytest 203, Playwright 52 side by side and 20 one at a time, with the keyboard and axe checks on every page.
-- Checked by eye with the Playwright MCP server at 1,440 and 1,280px: every section, the forms with their messages, the delete and reopen dialogs, the stage menu, dragging, and the dashboard and pipeline beside mockup 7's screenshots. They match it closely; the only differences are dates, since the data is made from today rather than Nov 16. Fixed on the way: deal rows on an organization's page didn't line up. No console errors from the app on any page.
+- Checked by eye with the Playwright MCP server at 1,440 and 1,280px: every section, the forms with their messages, the delete and reopen dialogs, the stage menu, dragging, and the dashboard and pipeline beside mockup 7's screenshots. They looked close, but that check missed the funnel's last band, two icons and a few pixels in the chart; see "Compared with mockup 7" below. Fixed on the way: deal rows on an organization's page didn't line up. No console errors from the app on any page.
 - A reset while the app is running: `npm run seed -- --yes` with the servers up, and the running backend served the fresh sample data at once, with no errors.
 - From a fresh copy (no `node_modules`, `.venv` or `data`): `npm run dev` installed the packages and Python, made `data/accountable.db` with the sample data, and served the dashboard and pipeline with a clean console. A change made through the app was still there after stopping and starting it again, and the second start installed nothing.
 - Known gaps:
@@ -95,3 +95,25 @@ You need **Node 24 or later**, **uv** and, for the end-to-end tests, **Google Ch
   - Windows and Linux haven't been tried by hand.
   - `npx playwright test` on its own runs both end-to-end projects at once, which can upset the dashboard tests' exact checks. Use `npm test`, or pass `--project side-by-side` or `--project one-at-a-time`. Each pass keeps its results in `test-results/<project>` and its report in `playwright-report/<project>`.
   - `npm audit` reports a ReDoS advisory in `picomatch`, which only the dev tools (Vite, Vitest) use. The fix it offers is a downgrade to an older Vitest, so it's left for now.
+
+### `npm test` checked
+
+- `npm test` runs all four test runs and exits 1 if any fail. Checked by planting a failing test in Vitest, pytest and the end-to-end tests: the summary said FAILED for each, the other runs still ran, and the exit code was 1. The two Playwright projects together hold all 72 end-to-end tests (52 + 20), so none fall between them.
+- `.only` is now refused everywhere, not just on CI (`allowOnly: false` in `frontend/vite.config.ts`, `forbidOnly: true` in `e2e/playwright.config.ts`), since a stray one would quietly run a few tests and pass.
+- AGENTS.md has a Testing section: `npm test` must pass before work is called done.
+
+### Compared with mockup 7
+
+- Compared with a script rather than by eye: the app on a scratch database with the date fixed at Nov 16, 2026 (the mockup's), screenshots of the dashboard and pipeline at 1,440 and 1,280px beside the mockup's HTML at the same sizes, and a pixel diff of each pair. The mockup has only these two screens, so Organizations, Contacts and Deals had nothing to compare against.
+- Fixed:
+  - The funnel's last band (Won) was a rectangle. The shape meant to narrow it to 78%, as in the mockup, but Recharts 3 doesn't pass a custom shape its index, so it never knew which band was last. It goes by the band's stage now, with a test.
+  - The chart's plot stopped 6px short of the panel's edge instead of the mockup's 10px, so Today and everything right of it sat 2px right at 1,440. At 1,280 that left the "Open pipeline by stage" table 6px past the panel's content edge. The plot now matches the mockup to the pixel at 1,440, and the strip under the chart keeps the room its table needs, moving its split a few pixels left of Today if it has to.
+  - Organizations used lucide's `Building`; the mockup draws `Building2`, with wings. Notes used `StickyNote`; the mockup draws `FileText`, a page with lines. That also changes the note icon on the deal and contact timelines.
+  - Recent activity's stage chips were 18px, the size for board cards; the mockup's are 20px with 11.5px text. `Chip` has a `mid` size for them. The rows below each stage change no longer drift down a pixel or two.
+  - The pipeline page was 24px taller than the mockup: each column's 24px drop space under the last card sat on top of the page's 48px bottom padding. The page now pads 24px, 48px in all.
+- After: every page height matches the mockup at both widths. Pixels that differ: pipeline 2.3% to 0.1%, dashboard at 1,440 3.6% to 1.6%, almost all of it text a pixel or two apart.
+- Left as they are:
+  - The y-axis labels sit 2px further left, and the funnel is 4px wider and 2px lower.
+  - At 1,280 the mockup's forecast chart is a picture that shrinks with the page, so it's about 40px shorter than the app's, which stays 330px tall with full-size text. The app's dashboard is laid out the same, just lower below the chart.
+  - Lucide's current `Building2` has a door that the mockup's older drawing doesn't.
+

@@ -8,8 +8,9 @@ const ROW = 53; // each band and its table row, so they line up
 const WIDTH = 264;
 const GAP = 3;
 
-type Band = { stage: Stage; value: number; count: number; fill: string; ofNew: number | null; ofBefore: number | null };
+export type Band = { stage: Stage; value: number; count: number; fill: string; ofNew: number | null; ofBefore: number | null };
 
+// What Recharts passes a custom funnel shape. It doesn't pass the band's index.
 type ShapeProps = {
   x?: number;
   y?: number;
@@ -17,17 +18,20 @@ type ShapeProps = {
   lowerWidth?: number;
   height?: number;
   payload?: Band;
-  index?: number;
 };
 
 const percent = (part: number, whole: number) => (whole > 0 ? Math.round((part / whole) * 100) : null);
 
-/** A band as wide at the top as the value that reached its stage, and at the bottom as the next. */
-function bandShape(last: number) {
-  return function BandShape({ x = 0, y = 0, upperWidth = 0, lowerWidth = 0, height = 0, payload, index = 0 }: ShapeProps) {
+/**
+ * A band as wide at the top as the value that reached its stage, and at the
+ * bottom as the next. The last band is known by its stage, since Recharts
+ * doesn't say which band it's drawing.
+ */
+export function bandShape(lastStage: Stage) {
+  return function BandShape({ x = 0, y = 0, upperWidth = 0, lowerWidth = 0, height = 0, payload }: ShapeProps) {
     const top = upperWidth;
     // The last band narrows a little, as in the mockup, rather than ending in a point or a box.
-    const bottom = index === last ? upperWidth * 0.78 : lowerWidth;
+    const bottom = payload?.stage === lastStage ? upperWidth * 0.78 : lowerWidth;
     const h = height - GAP;
     const center = x + upperWidth / 2;
     const d = `M${center - top / 2},${y}H${center + top / 2}L${center + bottom / 2},${y + h}H${center - bottom / 2}Z`;
@@ -85,7 +89,7 @@ export function FunnelPanel({ data }: { data: Dashboard }) {
                 nameKey="stage"
                 isAnimationActive={false}
                 lastShapeType="rectangle"
-                shape={bandShape(bands.length - 1)}
+                shape={bandShape(won.stage)}
               />
             </FunnelChart>
           ) : (

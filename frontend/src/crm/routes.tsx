@@ -1,4 +1,4 @@
-import { CircleDollarSign, LayoutDashboard, SquareKanban, Users, Building } from "lucide-react";
+import { Building2, CircleDollarSign, LayoutDashboard, SquareKanban, Users } from "lucide-react";
 import type { RouteObject } from "react-router";
 
 import type { NavSection } from "../components/layout/TopBar";
@@ -14,7 +14,7 @@ import { PipelinePage } from "./pages/PipelinePage";
 /** The CRM's sections in the top bar, in order. */
 export const crmSections: NavSection[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/organizations", label: "Organizations", icon: Building },
+  { to: "/organizations", label: "Organizations", icon: Building2 },
   { to: "/contacts", label: "Contacts", icon: Users },
   { to: "/deals", label: "Deals", icon: CircleDollarSign },
   { to: "/pipeline", label: "Pipeline", icon: SquareKanban },
