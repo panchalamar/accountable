@@ -152,6 +152,16 @@ Found while testing the fixes:
 
 `npm test` passes: Vitest 78, pytest 214, Playwright 52 side by side and 24 one at a time. The new tests fail on the old code: the four new pipeline tests and the Deals table's midnight test were each run against it first.
 
+## Harness
+
+### Docs reorganized for future changes
+
+- `docs/intent.md` and `docs/plan.md` moved, unchanged, into `docs/changes/mvp/`. Each later change gets its own `docs/changes/<branch name>/` with its `intent.md` and `plan.md`.
+- `docs/spec.md` now describes the whole product as it stands, and is the authority on behavior. It opens with the problem, who Accountable is for, where it runs and what isn't in it yet, all brought in from the intent. Everything that deferred to the intent is gone, including the success criteria table.
+- The spec was also brought up to what the build actually does: the health check behind the server message, the value cap and the "Link the activity" message, the 409 for a stale board move, expected revenue's rounding, the seed's "no answer counts as no" and in-place reset, the sample data's real counts (36 contacts, nine industries, about 145 activities), the two Playwright projects and their ports, and `httpx2`.
+- AGENTS.md: `docs/spec.md` is the first thing to read, and only the current branch's change folder gets read.
+- `docs/REVIEW.md`: a new pass flags code that `docs/spec.md` doesn't describe, and the plan pass points at the change's own `plan.md`.
+
 ## Bugs
 
 - Editing an organization: the Industry dropdown shows only the current industry, since the browser filters the datalist by what is already in the box. It should list every industry in use (spec: "suggests industries already in use"). Confirmed in Chrome: the arrow also shows only the current industry; clearing the box shows all 9.

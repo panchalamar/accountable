@@ -1,12 +1,41 @@
-# Spec: the Accountable MVP
+# Spec: Accountable
 
-This spec turns `docs/intent.md` into requirements (Part 1) and a design (Part 2) for the MVP. It follows `docs/TECH_STACK.md` and the brand skill (`.claude/skills/brand/`). Where they disagree, the intent wins on behavior and the brand wins on looks.
+This spec describes Accountable as it stands today: the problem it solves, how it behaves (Part 1) and how it's built and looks (Part 2). It follows `docs/TECH_STACK.md` and the brand skill (`.claude/skills/brand/`). This spec is the authority on behavior. The brand is the authority on looks, ahead of any general design guidance.
 
-The chosen design is mockup 7 in `docs/mockups/`, recorded under "Chosen design" near the end. Choosing it changed a few requirements, and they're listed there.
+Every change brings this spec up to date as part of the change, so it always describes the whole product.
 
-## Concerns
+The design is mockup 7 in `docs/mockups/`, described under "Design reference" near the end.
 
-### Decided
+## The problem
+
+A small business keeps track of its customers and sales in spreadsheets, inboxes and people's heads. Nobody can see at a glance which companies we deal with, who our contacts are, what's in the sales pipeline, what happened last with a customer or what needs doing next.
+
+## What Accountable is
+
+Accountable is a business management system: a sales CRM that will grow into a full Business OS, including ERP. Today it's a complete sales CRM for one person, running on their own computer. Think of it as a private Salesforce that does the everyday CRM essentials really well. It feels sharp, modern and professional, and is a pleasure to use.
+
+- **Who uses it**: one salesperson at a business that sells large B2B contracts, such as manufacturing contracts and enterprise systems. That means a modest number of long, high-value deals, mostly between $100,000 and $1,000,000. They use Accountable every day and aren't technical. The rest of the sales team joins later.
+- **What's in it**: five sections (Dashboard, Organizations, Contacts, Deals and Pipeline) over four kinds of record (organizations, contacts, deals and activities).
+- **Where it runs**: on the user's own computer, started with one command that works on Mac, Linux and Windows, with no internet needed once installed. Every change is kept, through a browser refresh and a restart. No other systems are involved.
+- **Size**: built for up to a few hundred records of each kind. Tables load everything and search and sort in the browser, with no paging. Larger volumes are a later concern.
+- **Look**: light mode, for a laptop or desktop screen, following the brand. Usable by keyboard alone, apart from changing a card's place within a pipeline column.
+
+## Not in Accountable yet
+
+- Sign-in, user accounts, several people sharing the same data, or a record of who did what
+- Reaching Accountable from anywhere but the computer it runs on
+- A dark mode, or a layout for phones
+- AI features
+- Email, calendar or phone integrations
+- Currencies other than US dollars
+- Reports beyond the dashboard
+- Tags or custom fields
+- Changing the pipeline stages
+- Importing or exporting data
+
+## Decisions
+
+### Color and contrast
 
 1. **Two brand colors fail WCAG AA behind small white text.** White on Cerulean is 3.96:1 and white on Raspberry is 3.62:1. AA asks for 4.5:1 for normal text, and 3:1 for large text (24px, or 18.7px bold). Both colors pass for large text. Decided:
    - Keep the brand colors for large text, fills and charts.
@@ -16,10 +45,10 @@ The chosen design is mockup 7 in `docs/mockups/`, recorded under "Chosen design"
    - New is Cerulean, Qualified Marigold, Proposal Coral, Negotiation Midnight, Won Sea Green and Lost slate grey.
    - Raspberry stays free for late deals and errors, so warnings stand out.
    - Contact statuses reuse the same colors: Lead is Cerulean, Qualified Marigold and Customer Sea Green.
-   - The brand's order puts Sea Green first. I've put it on Won because green reads as success.
-3. **Won and Lost columns don't show expected revenue.** On Won it would repeat the total, and on Lost it's always $0. They show "Closed in the last 30 days" in its place. Decided when choosing the design, and the intent was updated to match.
+   - The brand's order puts Sea Green first. It goes on Won because green reads as success.
+3. **Won and Lost columns don't show expected revenue.** On Won it would repeat the total, and on Lost it's always $0. They show "Closed in the last 30 days" in its place.
 
-### Calls made where the intent was silent
+### Behavior
 
 - **Every stage change follows the same rules**, whether it comes from the board, the card's stage menu or the deal's edit form. When the stage changes in the edit form, the form shows what will happen before saving:
   - The probability always becomes the new stage's usual one, even if another was typed in the same save.
@@ -33,7 +62,7 @@ The chosen design is mockup 7 in `docs/mockups/`, recorded under "Chosen design"
 - **A new deal, and a deal moved with the stage menu or the edit form, goes to the top of its column.** A dragged card goes where it's dropped.
 - **The sales funnel counts how far each deal got.** For each stage from New to Won, it shows the value of the deals that reached that stage or a later one. It counts deals that are open, or that closed in the last 12 months. A lost deal counts up to the furthest stage it reached before it was lost.
 - **An activity's date can be in the future**, since an activity can be something that needs to happen. Recent activity on the dashboard shows only what has already happened.
-- **Values are whole dollars**, zero or more. Probability is a whole percentage from 0 to 100.
+- **Values are whole dollars**, zero or more and under $1,000,000,000,000, so they stay exact in the browser. Probability is a whole percentage from 0 to 100.
 - **Text has length limits**:
   - names: 200 characters
   - job title and industry: 100
@@ -56,7 +85,7 @@ The chosen design is mockup 7 in `docs/mockups/`, recorded under "Chosen design"
 
 ### Worth knowing
 
-- **Fonts are bundled.** Loading fonts from Google Fonts needs the internet, and the intent says Accountable works offline. So the same three Google fonts are installed from npm and served by the app.
+- **Fonts are bundled.** Loading fonts from Google Fonts needs the internet, and Accountable works offline. So the same three Google fonts are installed from npm and served by the app.
 - **Adding a deal for a new company takes three steps:** add the organization, then a contact there, then the deal. A deal needs a main contact at its organization.
 - **The funnel remembers the furthest stage.** A deal moved to Won by mistake and moved back still counts as having reached Won.
 - **The layout needs a window at least 1,280px wide**, which fits all six board columns. On a narrower window the whole page scrolls sideways, as the mockup does.
@@ -72,7 +101,8 @@ The chosen design is mockup 7 in `docs/mockups/`, recorded under "Chosen design"
 - **Open stages**: New, Qualified, Proposal, Negotiation. **Closed stages**: Won, Lost.
 - **Today**: the date on the computer running Accountable. The backend gets today and now from one function, so tests can fix the date.
 - **Late deal**: an open deal whose close date is before today. A deal due today isn't late.
-- **Expected revenue**: a deal's value times its probability of close. Totals add these up.
+- **Lead**: a contact with the Lead status. There's no separate list of leads.
+- **Expected revenue**: a deal's value times its probability of close, rounded to whole dollars, with halves rounded up. Totals add up the rounded amounts.
 - **Open pipeline**: the total value of open deals.
 - **Follow-up**: an activity with a follow-up date that isn't marked done.
   - **Overdue**: the follow-up date is before today.
@@ -86,7 +116,7 @@ The chosen design is mockup 7 in `docs/mockups/`, recorded under "Chosen design"
 1. A bar across the top lists the five sections in this order: Dashboard, Organizations, Contacts, Deals, Pipeline. The current section is marked.
 2. The app opens on the Dashboard.
 3. Each record has its own address, such as `/deals/12`. The browser's back button and refresh keep you where you were.
-4. If the backend can't be reached, a message at the top of the page says so: "Can't reach Accountable's server. Check that `npm run dev` is still running."
+4. If the backend can't be reached, a message at the top of the page says so: "Can't reach Accountable's server. Check that `npm run dev` is still running." The app checks the backend every 3 seconds and shows the message after three failed checks in a row, so a slow first start doesn't flash it. It goes away once a check succeeds.
 
 ## Tables
 
@@ -127,7 +157,7 @@ The columns:
    | | Organization | Required. |
    | | Main contact | Required. Lists only the chosen organization's contacts. Choosing another organization clears it. |
    | | Stage | Required. New by default, or the column it was added from. |
-   | | Value | Required. Whole dollars, zero or more. |
+   | | Value | Required. Whole dollars, zero or more, under $1,000,000,000,000. |
    | | Probability | Filled with the stage's usual probability. Can be changed. |
    | | Close date | Required. |
    | Activity | Type | Required: Note, Call or Email. |
@@ -143,14 +173,17 @@ The columns:
    - "Another contact already uses this email."
    - "An organization called Acme Ltd already exists."
    - "Enter a value of $0 or more, in whole dollars."
+   - "Enter a value under $1,000,000,000,000."
    - "Choose a main contact at Acme Ltd."
+   - "Link the activity to a contact or a deal."
 5. Changing a contact's organization is refused while they are the main contact on any deal. The message names those deals and asks for a different main contact on each first.
 6. Changing a deal's organization requires a main contact at the new organization.
-7. Changing a deal's stage in the edit form follows "Stage changes". Before saving, the form shows what will happen:
+7. Moving a contact or a deal to another organization leaves its activities' links as they are.
+8. Changing a deal's stage in the edit form follows "Stage changes". Before saving, the form shows what will happen:
    - For every new stage: "Probability will be set to 50%", with that stage's figure, so 100% for Won and 0% for Lost.
    - When the new stage is Won or Lost, the close date field shows today and is locked, with "The close date will be set to today."
    - When reopening, the close date field becomes "New expected close date", filled with 30 days from today.
-8. Adding a deal at Won or Lost works the same way: the close date field shows today and is locked, with the same note. It can be changed after saving.
+9. Adding a deal at Won or Lost works the same way: the close date field shows today and is locked, with the same note. It can be changed after saving.
 
 ## Deleting
 
@@ -215,14 +248,14 @@ Other cases:
    - value, in short form such as "$520K"
    - close date, with a Late chip if late. An open deal that isn't late also says how soon it's due, such as "in 25 days" or "in 3 months".
    - a "Stage" button that opens the stage menu
-3. **Dragging.** Drag a card to another column to change its stage, and it lands where it's dropped. Drag it within its column to change its place.
+3. **Dragging.** Drag a card to another column to change its stage, and it lands where it's dropped. Drag it within its column to change its place. Only the pointer drags. The card itself isn't a keyboard stop, since its link and Stage button are the keyboard's way in.
 4. **Stage menu.** The menu lists the stages. Choosing one moves the card to the top of that column.
    - The menu works by keyboard. Focus stays on the moved card.
    - A screen reader hears "Moved Atlas Freight renewal to Negotiation".
 5. **Adding.** Each column has an "Add deal" button that opens the deal form at that stage. The new deal goes to the top of the column.
 6. **Totals.**
    - The board shows the total value, expected revenue and number of open deals.
-   - Each column shows its own count, total value and expected revenue. Won and Lost show "Closed in the last 30 days" in place of expected revenue (see "Concerns").
+   - Each column shows its own count, total value and expected revenue. Won and Lost show "Closed in the last 30 days" in place of expected revenue (see "Decisions").
    - All of these, the card's place and its stage update the moment a card moves, before the server replies. If the server refuses, the card goes back and a message says why.
 7. **After a refresh** every card is where it was left.
 
@@ -244,32 +277,33 @@ All figures come from the data at the time the page loads.
    With no open deals, the future part says "No open deals" in place of the bars.
 3. **Deals won by month**: a bar chart of the number of deals won in each of the same 12 months.
 4. **Pipeline by stage**: a visual of the four open stages, each with its number of deals, value and expected revenue.
-5. **Sales funnel**: the stages from New to Won, each with the value that reached that stage or a later one, as defined in "Concerns".
+5. **Sales funnel**: the stages from New to Won, each with the value that reached that stage or a later one, as defined under "Decisions".
 6. **Follow-ups**: overdue first, oldest first, then those due in the next 7 days, soonest first. Each shows:
    - its description
    - how late or how soon it is: "3 days overdue", "Due today", "Due in 2 days"
    - links to its contact and deal
    - a Done checkbox
 
-   Ticking it saves at once and removes it from the list, and the figures refresh. With none due, it says "No follow-ups due in the next 7 days".
+   Ticking it saves at once and removes it from the list, focus moves to the next follow-up, and the figures refresh. With none due, it says "No follow-ups due in the next 7 days".
 7. **Recent activity**: the 10 latest activities and stage changes that have already happened, newest first. Each links to its contact or deal.
-8. The layout and styling of the charts follow the chosen design, described under "Screens".
+8. The layout and styling of the charts follow mockup 7, described under "Screens".
 
 ## Sample data
 
 The sample data is made fresh from a fixed list each time, with every date counted back or forward from today. Names, companies and email addresses are made up. Emails use made-up company domains under `example.com`, so they can't reach a real company.
 
-- **About 12 organizations** across at least six industries: manufacturing, logistics, healthcare, energy, construction and financial services, for example.
-- **About 36 contacts**, two to four per organization, with all three statuses well represented.
+- **12 organizations** across nine industries, such as manufacturing, logistics, healthcare, energy, construction and financial services, each with a website and notes.
+- **36 contacts**, two to four per organization, 12 at each status.
 - **About 40 deals**, with values mostly between $100,000 and $1,000,000:
   - About 16 won over the last 12 months, with a win in at least 10 of the 12 months.
   - About 7 lost.
   - At least 2 won and 2 lost in the last 30 days.
   - About 17 open, spread across the four open stages, closing in the coming 1 to 9 months, with 3 running late.
 - **Stage history** for every deal past New: entries between its start and today, or its close, so timelines and the funnel have something to show.
-- **About 120 activities** over the last 12 months:
+- **About 145 activities** over the last 12 months:
   - Notes, calls and emails, linked to a contact, a deal or both.
-  - Follow-ups: about 4 overdue, 5 due in the next 7 days (one due today), 4 due later, and some done.
+  - Follow-ups: about 4 overdue, 5 due in the next 7 days (one due today), 4 due later, and 6 done.
+  - Anything dated later today than the time the data is made moves to just before it, in order, so recent activity never shows the future.
 - **Board order** is set for each column.
 
 ## Running and keeping data
@@ -279,8 +313,9 @@ The sample data is made fresh from a fixed list each time, with every date count
    - Every change is saved at once, and is still there after a refresh and a restart.
    - `data/` is git-ignored, so the data is never committed.
 3. **`npm run seed` resets the data to the sample data:**
-   - It explains what it does and asks "Replace all data with fresh sample data? (y/N)". Anything other than "y" or "yes" stops without changing anything.
-   - Before replacing, it saves a copy of the current database as `data/backups/accountable-YYYYMMDD-HHMMSS.db` and prints where.
+   - It explains what it does and asks "Replace all data with fresh sample data? (y/N)". Anything other than "y" or "yes" stops without changing anything. No answer at all, such as closed input or Ctrl+C, counts as no: it says "Nothing changed." and exits normally.
+   - Before replacing, it saves a copy of the current database in a `backups/` folder beside it, as `data/backups/accountable-YYYYMMDD-HHMMSS.db` by default, and prints where.
+   - It empties the database file in place and rebuilds it with the migrations and the sample data, rather than deleting the file. So a running app shows the sample data after a browser refresh, and a database migrated on another branch resets cleanly.
    - `npm run seed -- --yes` skips the question.
    - With no database yet, it just creates one.
 4. **`npm test`** runs every test and fails if any fails. It never touches `data/accountable.db`.
@@ -300,23 +335,6 @@ The sample data is made fresh from a fixed list each time, with every date count
 7. **Charts** each have a short text summary, and a table of their figures for screen readers.
 8. **"Skip to content"** is the first link on every page.
 9. **Color is never the only signal.** Chips have words, and late deals say "Late".
-
-## Success criteria and where they're covered
-
-| Criterion in the intent | Covered by |
-|---|---|
-| 1. One command, lands on the dashboard | Running and keeping data, Sample data |
-| 2. Add, find, sort, edit, delete, validation | Tables, Adding and editing |
-| 3. Delete and move rules | Deleting, Adding and editing (5, 6) |
-| 4. Status filter and linked records | Tables, Record pages |
-| 5. Pipeline | Pipeline, Stage changes |
-| 6. Close date and reopening | Stage changes |
-| 7. Timelines and follow-ups | Activities and timelines, Dashboard (6) |
-| 8. Dashboard figures | Dashboard |
-| 9. Reset | Running and keeping data (3) |
-| 10. Look and feel | Visual design, Chosen design |
-| 11. Keyboard and contrast | Accessibility, Pipeline (4) |
-| 12. End-to-end use in a browser | Testing |
 
 # Part 2: Design
 
@@ -341,7 +359,7 @@ SQLite file  data/accountable.db
 
   The tests set their own, and so would parallel test workers later.
 - The backend turns `ACCOUNTABLE_DB` into a database URL in one place, `settings.py`, and everything else uses the URL. Only the reset command's backup needs the file itself. Moving to Supabase's Postgres later means giving that setting a different URL.
-- The code is grouped by business area. The MVP has one area, the CRM.
+- The code is grouped by business area. Today there's one area, the CRM.
   - Code any area could use sits at the top level and never imports from an area.
   - Only the files that put the app together import the areas: `main.py`, `seed.py` and `migrations/env.py` in the backend, and `App.tsx` in the frontend.
   - A later area, such as invoices, gets its own folders beside `crm/`.
@@ -380,11 +398,12 @@ frontend/               React + Vite + TypeScript
                         forms, board, dashboard and timeline
 shared/                 test cases both test suites read
 e2e/                    Playwright tests and config, with the CRM's in e2e/crm/
-scripts/                small Node scripts: dependency check, dev, running the tests
-data/                   database and backups (git-ignored)
+scripts/                small Node scripts: dependency check, dev, running the tests,
+                        and the end-to-end tests' backend
+data/                   database, backups and the end-to-end tests' database (git-ignored)
 ```
 
-The plan can adjust file names. The split to keep:
+The split to keep as the code grows:
 - each area's rules live in one module
 - shared code never imports from an area, and only the files that put the app together import the areas
 - the date comes from one function
@@ -419,7 +438,7 @@ Popular, well-supported libraries do the heavy lifting.
 **Tests and tools**
 
 - Vitest, React Testing Library and jsdom.
-- pytest, with FastAPI's TestClient (httpx).
+- pytest, with FastAPI's TestClient (which now needs `httpx2`, not `httpx`).
 - Playwright Test, using the installed Google Chrome (`channel: "chrome"`).
 - `concurrently`, to run the backend and frontend together.
 
@@ -501,7 +520,8 @@ All in `crm/rules.py`, each write in one transaction:
   - A move gives `before_id`, the card it now sits above, or nothing for the bottom of the column.
   - The server renumbers that column's positions from 0. That's fine at a few hundred deals.
   - A new deal, or one moved without a `before_id` from the stage menu or the edit form, goes to the top.
-- **Delete checks**: count what a delete would remove or keep, and refuse the delete when the intent's rules say so.
+  - A `before_id` that isn't in the target column, such as a card that has moved since the board loaded, is refused with a 409: "That card is no longer in the Proposal column. Refresh the page and try again."
+- **Delete checks**: count what a delete would remove or keep, and refuse the delete when the rules under "Deleting" say so.
 - **Contact move**: refused while the contact is the main contact on any deal.
 
 ## API
@@ -510,6 +530,7 @@ All under `/api`, JSON in and out.
 
 | Method and path | Does |
 |---|---|
+| `GET /health` | `{"status": "ok"}`, for the server message in the app shell |
 | `GET /organizations` | All organizations, with contact and open-deal counts |
 | `POST /organizations` | Add one |
 | `GET /organizations/{id}` | One organization, with its contacts and deals |
@@ -532,7 +553,7 @@ All under `/api`, JSON in and out.
 Errors share one shape:
 
 - **422** for invalid input: `{"message": "Check the highlighted fields.", "errors": {"email": "Another contact already uses this email."}}`. FastAPI's own validation errors are converted to this shape, in plain words.
-- **409** for a refused delete, move or reopening without a date: `{"message": "...", "details": {...}}`, with the counts or the deals involved.
+- **409** for a refused delete, move or reopening without a date, or a board move against a stale column: `{"message": "...", "details": {...}}`, with the counts or the deals involved.
 - **404** for a record that no longer exists: `{"message": "That deal no longer exists."}`
 
 ## Frontend
@@ -550,7 +571,7 @@ Errors share one shape:
 
 ## Screens
 
-This is the chosen design, mockup 7. The Dashboard and Pipeline match it. Tables, record pages and dialogs weren't mocked up, so they follow these notes in the same style.
+This is mockup 7 (see "Design reference"). The Dashboard and Pipeline match it. Tables, record pages and dialogs weren't mocked up, so they follow these notes in the same style.
 
 ### Shell
 
@@ -620,7 +641,7 @@ Every chart has a title and a one-line summary, such as "$7.7M won in the last 1
   - "organization, main contact"
   - the close date, with "in 3 months" or a Late chip on the line under it
   - a "Stage" button at the bottom right
-- When a card is dragged, a lifted copy follows the pointer, and a gap opens where it will land.
+- When a card is dragged, a lifted copy follows the pointer, and a gap opens where it will land. The column under the pointer decides where it goes. Between columns or over a header, it stays where it last was.
 - The reopen dialog, "Reopen Atlas Freight renewal", has a "New expected close date" field and the buttons "Reopen" and "Cancel".
 
 ### Dialogs
@@ -715,7 +736,7 @@ Short transitions, 150 to 200ms. The board's drag uses dnd-kit's own animation. 
 - Buttons say what they do: "Add deal", "Log activity", "Save", "Cancel", "Delete deal".
 - Empty states say what to do next, such as "No activities yet. Log a call, email or note to start the timeline."
 
-## Chosen design
+## Design reference
 
 **Mockup 7, `docs/mockups/7-forecast-board.html`**, with a screenshot of each screen beside it. It combines parts of the earlier mockups:
 
@@ -728,17 +749,7 @@ Short transitions, 150 to 200ms. The board's drag uses dnd-kit's own animation. 
 | Pipeline header sentence and arrow-shaped column headers | 6, Stage flow |
 | Board cards tinted by stage, with a Stage button | 5, Deal mosaic |
 
-"Screens" and "Visual design" above describe it. Take sizes, spacing and corner radii from the mockup's HTML. Its figures are the sample data's, and they add up.
-
-**What choosing it changed in this spec:**
-
-- A top bar replaces the sidebar (App shell 1).
-- Won and Lost columns show "Closed in the last 30 days" in place of expected revenue (Concerns, Pipeline 6).
-- Cards show the value in short form, and how soon an open deal is due (Pipeline 2).
-- The revenue chart goes on past today with open deals by close month, up to 9 months ahead (Dashboard 2).
-- Follow-ups and recent activity are stacked in a dark column, not side by side.
-- Six board columns fit from 1,280px wide, down from 1,500px.
-- New color tokens: the top bar's current section, the card tints, and the dark column's text colors. `--column` is gone, since columns no longer have a background.
+"Screens" and "Visual design" above describe it. Take sizes, spacing and corner radii from the mockup's HTML. Its figures are the sample data's with today at Nov 16, 2026, and they add up.
 
 **In the mockup but not working:** dragging cards, the stage menu, the "Add deal" buttons and the links to records. Part 1 says how they work. The mockup loads its fonts from Google Fonts, but the app bundles them (see "Worth knowing").
 
@@ -749,24 +760,24 @@ Mockups 1 to 6 stay in `docs/mockups/` for reference.
 | Command | Does |
 |---|---|
 | `npm run dev` | Checks dependencies, then starts the backend (`uv run` Uvicorn) and the frontend (Vite) together with `concurrently`, and opens the browser at the dashboard |
-| `npm test` | Runs Vitest, pytest (`uv run pytest`) and the Playwright tests in turn, and fails if any fail |
+| `npm test` | Runs Vitest, pytest (`uv run pytest`), then the Playwright tests in two passes. Each runs even if an earlier one fails, and the command fails if any fail. |
 | `npm run seed` | Resets the data to the sample data, after asking. `npm run seed -- --yes` skips the question. Runs the backend's seed module through `uv run`. |
 
 **First run.** Before `npm run dev` starts anything, a small Node script that needs no packages runs `npm install` if `node_modules` is missing or out of date, judged by comparing `package-lock.json` with `node_modules/.package-lock.json`. `uv run` installs the Python dependencies itself. On a fresh clone, one command is enough, given Node and uv.
 
 ## Security
 
-- The backend listens on 127.0.0.1 only. There's no sign-in, as the intent says, so nothing is exposed to the network.
-- The backend also answers only requests addressed to `localhost` or `127.0.0.1`. Otherwise a web page could point its own domain at this computer (DNS rebinding) and reach the API from the browser. Vite's dev server makes the same check.
+- The backend listens on 127.0.0.1 only. There's no sign-in yet, so nothing is exposed to the network.
+- The backend also answers only requests addressed to `localhost` or `127.0.0.1`, and gives any other host name a 400 with no data. Otherwise a web page could point its own domain at this computer (DNS rebinding) and reach the API from the browser. Vite's dev server makes the same check.
 - The backend has no docs pages (`/docs`, `/redoc`, `/openapi.json`). They aren't part of the API, and they load from the internet.
 - All database access goes through SQLAlchemy Core with bound parameters.
 - React escapes everything it shows. Website links are rendered only for `http` and `https` addresses, with `rel="noopener noreferrer"`. Anything else shows as text, so a `javascript:` address can't run.
 - Request bodies are checked against the length limits.
-- `data/` is git-ignored, so customer data and backups stay off GitHub. There are no secrets in the MVP.
+- `data/` is git-ignored, so customer data and backups stay off GitHub. Accountable has no secrets, such as API keys, yet.
 
 ## Testing
 
-`npm test` runs all three kinds. None of them touches `data/accountable.db`.
+`npm test` runs all three kinds. None of them touches `data/accountable.db`. Both Vitest and Playwright refuse `.only`, so a stray one can't quietly run a few tests and pass.
 
 - **Rules in both places**: expected revenue and its rounding, the late check and the stage probabilities are in both the backend and the frontend. Their cases are written once, in `shared/crm-rule-cases.json`, and both pytest and Vitest check every case, so the two can't drift apart.
 - **Migrations**: a test runs every migration on an empty database and checks the result matches the tables in `tables.py` exactly.
@@ -774,19 +785,26 @@ Mockups 1 to 6 stay in `docs/mockups/` for reference.
   - Each test gets a fresh temporary database and a fixed today.
   - Covers every rule in `crm/rules.py`: validation messages, unique checks, delete and move rules, and stage changes, including Won to Lost, reopening and probability kept by hand. Also placement, and the activity link rules.
   - Covers the dashboard figures against known data, including the window boundaries, and the seed: the backup is made, it asks without `--yes`, and the dates are relative.
-- **Frontend (Vitest)**: formatting money and dates, the late and board-window checks, the board totals, and the deal form's stage-change notes.
+- **Frontend (Vitest)**: formatting money and dates, the late and board-window checks, the board totals, and the deal form's stage-change notes. It runs with the time zone fixed (`TZ=America/Los_Angeles`).
 - **End to end (Playwright Test, installed Chrome)**:
-  - Config starts its own backend and frontend on other ports, with `ACCOUNTABLE_DB` set to a test database that's reset with sample data first.
-  - Tests add their own records with unique names rather than relying on each other.
-  - Covers criteria 1 to 9 and the keyboard parts of 11, including:
-    - adding, searching, sorting, editing and deleting in each table
-    - the delete dialogs' counts
+  - The config starts its own backend and frontend on ports 8011 and 5183, with `ACCOUNTABLE_DB` set to `data/test/e2e.db`, reset with sample data first. So the tests can run beside `npm run dev`.
+  - Two projects, run one after the other by `npm test`:
+    - **side-by-side**: most files, 4 workers. Tests add their own records with unique names rather than relying on each other.
+    - **one-at-a-time**: the dashboard and pipeline files, 1 worker, on their own fresh servers and data, since they check exact changes to shared figures.
+    - Running both projects at once upsets the dashboard tests, so `npx playwright test` takes `--project side-by-side` or `--project one-at-a-time`.
+  - Every test fails on a page error or a console error from the app.
+  - They cover the product as a salesperson uses it, including:
+    - starting on the dashboard with the sample data
+    - adding, searching, sorting, editing and deleting in each table, with the validation messages
+    - the delete dialogs' counts, and refused deletes
     - a refused contact move
     - drag and stage-menu moves, with totals and the saved position after a refresh
-    - reopening a deal
+    - closing and reopening a deal
     - a follow-up ticked done on the dashboard
     - an activity showing on both timelines
     - the figures changing after a win
+    - the reset command, on a copy of the test database
+    - keyboard use, and an axe accessibility check, on every page
 - **By eye**:
-  - Criterion 12 needs a person, or the agent with the Playwright MCP server, to use every section in a real browser. That means checking each screen against the brand and the chosen mockup, with no console errors.
+  - Before a change is called done, a person, or the agent with the Playwright MCP server, uses it end to end in a real browser, the way a salesperson would. That means checking each screen against the brand and mockup 7, with no console errors.
   - Tests passing is necessary but not enough.
