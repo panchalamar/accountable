@@ -47,11 +47,11 @@ The student builds the MVP of Accountable, a sales CRM for one person, from the 
 - **Maintain:** the student uses the app and adds ideas to `docs/STATUS.md`.
 - **Share:** the student copies the day's documents into a folder of their own in `community_contributions/` and opens a PR ("The day's documents" in `course/for_agents/AGENT_GIT_GUIDE.md`).
 
-The student commits at the end of each stage with `git add .` and `git commit -m` and the message on the slide, such as `"Design: spec.md"`. At the end of the day, `git log --oneline` shows a commit for each stage.
+The prompts and commit commands are in `course/instructions/week1day3.md`. The student commits at the end of each stage with `git add .` and `git commit -m` and the message on the slide, such as `"Design: spec.md"`. At the end of the day, `git log --oneline` shows a commit for each stage.
 
 **Watch out for:**
 
-- **Usage limits:** Day 3 is the heaviest day of the week. On a plan of about $20 a month, use Sonnet or the equivalent, and if a limit stops the build, wait for the reset and carry on in the same session ("Models and usage limits" in `course/for_agents/AGENT_COURSE_GUIDE.md`).
+- **Usage limits:** Day 3 is the heaviest day of the week. On a smaller plan, such as Claude Pro, use Sonnet or the equivalent, and if a limit stops the build, wait for the reset and carry on in the same session ("Models and usage limits" in `course/for_agents/AGENT_COURSE_GUIDE.md`).
 - **The agent may commit its own work,** for example after each phase when `plan.md` calls each phase a commit point. That's fine. "If the agent has committed" in `course/for_agents/AGENT_GIT_GUIDE.md` explains what to do.
 - **The review can find Important bugs that every test missed.** That's what the stage is for, and it doesn't mean the build failed. The agent fixes them before the merge.
 

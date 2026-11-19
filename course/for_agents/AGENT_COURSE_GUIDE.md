@@ -37,7 +37,7 @@ When you help a student on this route:
 
 ## Models and usage limits
 
-Ed records with Claude Opus, the largest model, on a larger plan. On a plan of about $20 a month, such as Claude Pro, recommend the agent's medium-size model: Sonnet in Claude Code (choose it with `/model`), or the equivalent in another agent. It handles the course's builds and leaves room in the plan's limits.
+Ed records with Claude Opus, the largest model, on a larger plan. On a smaller plan, such as Claude Pro ([claude.com/pricing](https://claude.com/pricing)), recommend the agent's medium-size model: Sonnet in Claude Code (choose it with `/model`), or the equivalent in another agent. It handles the course's builds and leaves room in the plan's limits.
 
 The heaviest day of Week 1 is Day 3, when the agent builds the MVP: about four hours of agent time in all, nearly two of them for the build. On Opus, Ed's Day 3 used roughly a third of a Claude Pro plan's weekly allowance. Sonnet uses less of it.
 

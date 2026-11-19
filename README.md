@@ -13,7 +13,7 @@ _If you're looking at this in VS Code or Cursor, right-click `README.md` in the 
 - `docs/`: the documents for Accountable, such as what we build and the tech stack it uses.
 - `course/`: your guides. [course/SETUP.md](course/SETUP.md) installs the tools, and [course/coding_agents/](course/coding_agents/) has the steps for each coding agent.
 - `course/for_agents/`: guides for your coding agent, so it can help you with the course.
-- `course/instructions/`: extra instructions for some days, such as the review policy for Week 1 Day 3, every prompt for Week 1 Days 4 and 5, the worktree demo for Week 2 Day 1, my checkpoints for Week 2 Days 2 to 4, and every prompt for Week 2 Day 5.
+- `course/instructions/`: extra instructions for some days, such as every prompt for Week 1 Days 3 to 5, the worktree demo for Week 2 Day 1, my checkpoints for Week 2 Days 2 to 4, and every prompt for Week 2 Day 5.
 - `course/cheap_llm_instructions/`: the same days with simpler prompts and a smaller build, for cheap or free models.
 - `AGENTS.md`: the instructions your coding agent reads at the start of each session.
 - `community_contributions/`: work shared by students, added by pull request.
@@ -65,12 +65,14 @@ You can follow the whole course with your own build. On each day that we work on
 
 Commit your own changes before you switch branches. From Week 2 Day 2 on, run `npm run seed` after you switch, then `npm run dev`. `npm run seed` brings your local database up to date and puts the sample data back, and it asks first: type `yes`.
 
-Your `main` holds your own build for the whole course, and each change gets a branch of its own that you merge into `main` (Week 1 Day 3 explains this). If you've been building your own version and want to carry on from mine instead, keep yours on a branch, then move your `main` onto my branch for the day you want:
+Your `main` holds your own build for the whole course, and each change gets a branch of its own that you merge into `main` (Week 1 Day 3 explains this). If you've been building your own version and want to carry on from mine instead, keep yours on a branch with a name you haven't used yet, then move your `main` onto my branch for the day you want. For example, for my Day 2 setup:
 
 ```bash
-git branch my-version
+git branch my-day2
 git checkout --no-track -B main origin/week1day2-end
 ```
+
+Each day's instructions give these commands with a branch name for that day.
 
 ## Share your work
 
@@ -84,7 +86,7 @@ I'd love to see what you build! Please share it with a pull request to `communit
 
 **Day 2: Coding agents crash course.** Install the tools and your coding agent ([course/SETUP.md](course/SETUP.md)), set it up one piece at a time (instructions, settings, permissions, an MCP server, a skill, a plugin), then check your repo and commit it. The steps for your agent are in [course/coding_agents/](course/coding_agents/). My setup: `git checkout week1day2-end`.
 
-**Day 3: Anthropic AI-SDLC.** Build the MVP of Accountable, a sales CRM for one person, and take it through each stage of Anthropic's AI-native SDLC on a branch: Plan, Design, Build, Test, Deploy and Maintain. Fork the repo at the start of the day and share the documents you wrote in a pull request at the end. My build: `git checkout week1day3-end`, then `npm run dev`.
+**Day 3: Anthropic AI-SDLC.** Build the MVP of Accountable, a sales CRM for one person, and take it through each stage of Anthropic's AI-native SDLC on a branch: Plan, Design, Build, Test, Deploy and Maintain. Fork the repo at the start of the day and share the documents you wrote in a pull request at the end. Every prompt is in [course/instructions/week1day3.md](course/instructions/week1day3.md). My build: `git checkout week1day3-end`, then `npm run dev`.
 
 **Day 4: Harness engineering.** Add a harness to Accountable: your coding standards, `npm run check`, hooks for git and your coding agent, and CI on GitHub. Then add dark mode through the six stages, with the harness in place. Every prompt is in [course/instructions/week1day4.md](course/instructions/week1day4.md). My build: install gitleaks as the instructions show, then `git checkout week1day4-end` and `npm run dev`.
 
