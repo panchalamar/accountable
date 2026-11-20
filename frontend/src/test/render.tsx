@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import type { ReactElement } from "react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, type InitialEntry } from "react-router";
 import { vi } from "vitest";
 
 type Reply = unknown | ((body: unknown) => { status: number; body?: unknown } | unknown);
@@ -20,21 +20,32 @@ export function mockApi(routes: Routes) {
     const body = init?.body ? JSON.parse(String(init.body)) : undefined;
     calls.push({ method, path, body });
     const key = `${method} ${path}`;
-    if (!(key in routes)) return new Response(JSON.stringify({ message: `No mock for ${key}` }), { status: 404 });
+    if (!(key in routes))
+      return new Response(JSON.stringify({ message: `No mock for ${key}` }), { status: 404 });
     let reply = routes[key];
     if (typeof reply === "function") reply = (reply as (b: unknown) => unknown)(body);
-    if (reply && typeof reply === "object" && "status" in reply && typeof (reply as { status: unknown }).status === "number") {
+    if (
+      reply &&
+      typeof reply === "object" &&
+      "status" in reply &&
+      typeof (reply as { status: unknown }).status === "number"
+    ) {
       const { status, body: replyBody } = reply as { status: number; body?: unknown };
       return new Response(status === 204 ? null : JSON.stringify(replyBody ?? {}), { status });
     }
-    return new Response(JSON.stringify(reply), { status: 200, headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(reply), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   });
   vi.stubGlobal("fetch", fetchMock);
   return calls;
 }
 
-export function renderWithProviders(ui: ReactElement, { route = "/" } = {}) {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+export function renderWithProviders(ui: ReactElement, { route = "/" as InitialEntry } = {}) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   return render(
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>

@@ -50,11 +50,21 @@ def list_organizations(engine: Engine) -> list[dict]:
 
 def organization(engine: Engine, org_id: int) -> dict:
     with engine.connect() as conn:
-        org = conn.execute(select(organizations).where(organizations.c.id == org_id)).mappings().first()
+        org = (
+            conn.execute(select(organizations).where(organizations.c.id == org_id))
+            .mappings()
+            .first()
+        )
         if org is None:
             raise NotFound("organization")
         people = conn.execute(
-            select(contacts.c.id, contacts.c.name, contacts.c.job_title, contacts.c.email, contacts.c.status)
+            select(
+                contacts.c.id,
+                contacts.c.name,
+                contacts.c.job_title,
+                contacts.c.email,
+                contacts.c.status,
+            )
             .where(contacts.c.organization_id == org_id)
             .order_by(func.lower(contacts.c.name), contacts.c.id)
         ).mappings()
@@ -78,7 +88,10 @@ def organization(engine: Engine, org_id: int) -> dict:
             "contacts": [dict(c) for c in people],
             "deals": [
                 {
-                    **{k: d[k] for k in ("id", "name", "stage", "value", "probability", "close_date")},
+                    **{
+                        k: d[k]
+                        for k in ("id", "name", "stage", "value", "probability", "close_date")
+                    },
                     "main_contact": _link(d["contact_id"], d["contact_name"]),
                 }
                 for d in their_deals
@@ -136,7 +149,12 @@ def contact(engine: Engine, contact_id: int) -> dict:
             raise NotFound("contact")
         led = conn.execute(
             select(
-                deals.c.id, deals.c.name, deals.c.stage, deals.c.value, deals.c.probability, deals.c.close_date
+                deals.c.id,
+                deals.c.name,
+                deals.c.stage,
+                deals.c.value,
+                deals.c.probability,
+                deals.c.close_date,
             )
             .where(deals.c.main_contact_id == contact_id)
             .order_by(deals.c.close_date.desc(), deals.c.id)
@@ -153,12 +171,14 @@ def contact_check(engine: Engine, contact_id: int) -> dict:
 
 
 def _deal_query():
-    return select(
-        deals,
-        organizations.c.name.label("org_name"),
-        contacts.c.name.label("contact_name"),
-    ).join(organizations, organizations.c.id == deals.c.organization_id).join(
-        contacts, contacts.c.id == deals.c.main_contact_id
+    return (
+        select(
+            deals,
+            organizations.c.name.label("org_name"),
+            contacts.c.name.label("contact_name"),
+        )
+        .join(organizations, organizations.c.id == deals.c.organization_id)
+        .join(contacts, contacts.c.id == deals.c.main_contact_id)
     )
 
 
@@ -234,7 +254,9 @@ def activity_row(row: Any) -> dict:
 
 def activity(engine: Engine, activity_id: int) -> dict:
     with engine.connect() as conn:
-        row = conn.execute(activity_query().where(activities.c.id == activity_id)).mappings().first()
+        row = (
+            conn.execute(activity_query().where(activities.c.id == activity_id)).mappings().first()
+        )
         if row is None:
             raise NotFound("activity")
         return activity_row(row)
@@ -268,7 +290,9 @@ def deal_timeline(engine: Engine, deal_id: int) -> list[dict]:
         name = conn.execute(select(deals.c.name).where(deals.c.id == deal_id)).scalar_one()
         items = [
             _timeline_activity(r)
-            for r in conn.execute(activity_query().where(activities.c.deal_id == deal_id)).mappings()
+            for r in conn.execute(
+                activity_query().where(activities.c.deal_id == deal_id)
+            ).mappings()
         ]
         for change in conn.execute(
             select(stage_changes).where(stage_changes.c.deal_id == deal_id)

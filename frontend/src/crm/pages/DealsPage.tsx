@@ -67,7 +67,14 @@ export function DealsPage() {
         sortValue: (d) => STAGES.indexOf(d.stage),
         render: (d) => <StageChip stage={d.stage} />,
       },
-      { id: "value", header: "Value", text: (d) => formatMoney(d.value), sortValue: (d) => d.value, mono: true, descFirst: true },
+      {
+        id: "value",
+        header: "Value",
+        text: (d) => formatMoney(d.value),
+        sortValue: (d) => d.value,
+        mono: true,
+        descFirst: true,
+      },
       {
         id: "probability",
         header: "Probability",
@@ -94,7 +101,9 @@ export function DealsPage() {
   }, [day]);
 
   if (deals.isError) {
-    return <LoadFailed error={deals.error} title="Deals" backTo="/" backLabel="Go to the dashboard" />;
+    return (
+      <LoadFailed error={deals.error} title="Deals" backTo="/" backLabel="Go to the dashboard" />
+    );
   }
   const rows = deals.data ?? [];
 
@@ -104,7 +113,11 @@ export function DealsPage() {
         title="Deals"
         context={deals.data ? countLabel(rows.length, rows.length, "deal", "deals") : null}
         actions={
-          <button type="button" className="btn btn-primary h-[42px]" onClick={() => setAdding(true)}>
+          <button
+            type="button"
+            className="btn btn-primary h-[42px]"
+            onClick={() => setAdding(true)}
+          >
             <Plus size={18} aria-hidden="true" />
             Add deal
           </button>
@@ -124,14 +137,28 @@ export function DealsPage() {
             noun={{ one: "deal", many: "deals" }}
             toolbar={<SearchBox value={search} onChange={setSearch} label="Search deals" />}
             emptyMessage="No deals yet. Add one to start the pipeline."
-            rowActions={(d) => <RowActions name={d.name} onEdit={() => setEditing(d)} onDelete={() => setDeleting(d)} />}
+            rowActions={(d) => (
+              <RowActions
+                name={d.name}
+                onEdit={() => setEditing(d)}
+                onDelete={() => setDeleting(d)}
+              />
+            )}
           />
         </section>
       )}
       <DealForm open={adding} onOpenChange={setAdding} />
-      {editing ? <DealForm open onOpenChange={(open) => !open && setEditing(null)} deal={editing} /> : null}
+      {editing ? (
+        <DealForm open onOpenChange={(open) => !open && setEditing(null)} deal={editing} />
+      ) : null}
       {deleting ? (
-        <DeleteDialog kind="deal" id={deleting.id} name={deleting.name} open onOpenChange={(open) => !open && setDeleting(null)} />
+        <DeleteDialog
+          kind="deal"
+          id={deleting.id}
+          name={deleting.name}
+          open
+          onOpenChange={(open) => !open && setDeleting(null)}
+        />
       ) : null}
     </Page>
   );

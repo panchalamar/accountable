@@ -4,6 +4,7 @@ from sqlalchemy import (
     Boolean,
     CheckConstraint,
     Column,
+    CursorResult,
     Date,
     DateTime,
     ForeignKey,
@@ -119,3 +120,10 @@ stage_changes = Table(
     CheckConstraint(_one_of("from_stage", STAGES), name="from_stage"),
     CheckConstraint(_one_of("to_stage", STAGES), name="to_stage"),
 )
+
+
+def inserted_id(result: CursorResult) -> int:
+    """The id of the row a single-row insert just added."""
+    key = result.inserted_primary_key
+    assert key is not None, "only an insert has an inserted primary key"
+    return key[0]

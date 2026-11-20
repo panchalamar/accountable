@@ -22,7 +22,15 @@ type Props = {
 
 // A form in a dialog. Radix keeps focus inside, closes on Escape and returns
 // focus to the button that opened it.
-export function FormDialog({ open, onOpenChange, title, description, children, width = 560, onCloseAutoFocus }: Props) {
+export function FormDialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  children,
+  width = 560,
+  onCloseAutoFocus,
+}: Props) {
   const focus = useReturnFocus();
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -50,9 +58,13 @@ export function FormDialog({ open, onOpenChange, title, description, children, w
         >
           <div className="flex items-start justify-between gap-4 px-7 pt-6">
             <div>
-              <Dialog.Title className="text-[20px] font-semibold tracking-[-0.01em]">{title}</Dialog.Title>
+              <Dialog.Title className="text-[20px] font-semibold tracking-[-0.01em]">
+                {title}
+              </Dialog.Title>
               {description ? (
-                <Dialog.Description className="mt-1 text-[14px] text-ink-muted">{description}</Dialog.Description>
+                <Dialog.Description className="mt-1 text-[14px] text-ink-muted">
+                  {description}
+                </Dialog.Description>
               ) : null}
             </div>
             <Dialog.Close className="btn btn-quiet -mr-2 -mt-1 h-9 w-9 p-0" aria-label="Close">
@@ -71,7 +83,10 @@ export function DialogBody({ children, error }: { children: ReactNode; error?: s
   return (
     <div className="flex flex-col gap-4 overflow-y-auto px-7 pb-2 pt-5">
       {error ? (
-        <p role="alert" className="rounded-[10px] bg-tint-proposal px-4 py-3 text-[14px] font-medium text-ink">
+        <p
+          role="alert"
+          className="rounded-[10px] bg-tint-proposal px-4 py-3 text-[14px] font-medium text-ink"
+        >
           {error}
         </p>
       ) : null}
@@ -86,7 +101,13 @@ export function LoadingBody() {
 }
 
 /** Cancel, then the main button last, at the bottom right. */
-export function DialogFooter({ submitLabel, submitting }: { submitLabel: string; submitting?: boolean }) {
+export function DialogFooter({
+  submitLabel,
+  submitting,
+}: {
+  submitLabel: string;
+  submitting?: boolean;
+}) {
   return (
     <div className="flex justify-end gap-2 px-7 pb-6 pt-5">
       <Dialog.Close className="btn btn-secondary" type="button">

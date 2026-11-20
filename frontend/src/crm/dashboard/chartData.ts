@@ -6,8 +6,18 @@ import type { Dashboard, Slot } from "../api";
 import { OPEN_STAGES, type Stage } from "../lib/stages";
 
 export const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ]; // fmt: skip
 
 export type PastRow = {
@@ -60,7 +70,16 @@ export function chartRows(data: Dashboard): ChartRow[] {
   });
   // With no open deals, one empty slot holds the "No open deals" note.
   if (future.length === 0) {
-    const empty = { kind: "none", key: "none", label: "", year: null, showYear: false, total: 0, count: 0, deals: [] } as unknown as FutureRow;
+    const empty = {
+      kind: "none",
+      key: "none",
+      label: "",
+      year: null,
+      showYear: false,
+      total: 0,
+      count: 0,
+      deals: [],
+    } as unknown as FutureRow;
     for (const stage of OPEN_STAGES) empty[stage] = 0;
     future.push(empty);
   }
@@ -69,7 +88,9 @@ export function chartRows(data: Dashboard): ChartRow[] {
 
 /** Round axis steps, with the top tick above the biggest value. */
 export function moneyTicks(max: number): number[] {
-  const steps = [100_000, 250_000, 500_000, 1_000_000, 2_500_000, 5_000_000, 10_000_000, 25_000_000, 50_000_000];
+  const steps = [
+    100_000, 250_000, 500_000, 1_000_000, 2_500_000, 5_000_000, 10_000_000, 25_000_000, 50_000_000,
+  ];
   const step = steps.find((s) => max / s <= 4) ?? Math.ceil(max / 4 / 10_000_000) * 10_000_000;
   const top = Math.max(step, Math.ceil(max / step) * step);
   const ticks = [];

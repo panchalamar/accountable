@@ -4,7 +4,7 @@ Run it with:
     uv run uvicorn backend.main:create_app --factory --host 127.0.0.1 --port 8000
 """
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -36,12 +36,14 @@ def create_app(url: str | None = None) -> FastAPI:
         add_sample_data(engine)
 
     @asynccontextmanager
-    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    async def lifespan(_app: FastAPI) -> AsyncGenerator[None]:
         yield
         engine.dispose()
 
     # No docs pages: they're not part of the API, and they load from the internet.
-    app = FastAPI(title="Accountable", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(
+        title="Accountable", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None
+    )
     app.state.engine = engine
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
     errors.install(app)

@@ -15,11 +15,11 @@ from pathlib import Path
 _SAFE_DIR = Path(tempfile.mkdtemp(prefix="accountable-tests-"))
 os.environ["ACCOUNTABLE_DB"] = str(_SAFE_DIR / "not-used.db")
 
-import pytest  # noqa: E402
-from fastapi.testclient import TestClient  # noqa: E402
+import pytest
+from fastapi.testclient import TestClient
 
-from backend import clock, db  # noqa: E402
-from backend.main import create_app  # noqa: E402
+from backend import clock, db
+from backend.main import create_app
 
 FIXED_NOW = datetime(2026, 11, 16, 12, 0, 0)
 

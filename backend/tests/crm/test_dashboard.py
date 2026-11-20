@@ -68,7 +68,13 @@ def test_twelve_months_of_wins_ending_with_this_month(make: Make):
         "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05",
         "2026-06", "2026-07", "2026-08", "2026-09", "2026-10", "2026-11",
     ]  # fmt: skip
-    assert months[3] == {"month": "2026-03", "label": "Mar", "year": 2026, "won_value": 100_000, "won_count": 2}
+    assert months[3] == {
+        "month": "2026-03",
+        "label": "Mar",
+        "year": 2026,
+        "won_value": 100_000,
+        "won_count": 2,
+    }
     assert all(m["won_value"] == 0 and m["won_count"] == 0 for i, m in enumerate(months) if i != 3)
 
 

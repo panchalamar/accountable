@@ -9,7 +9,9 @@ import { type Organization, useOrganizations, useSaveOrganization } from "../api
 import { type OrganizationValues, organizationSchema } from "./schemas";
 import { placeServerErrors } from "./serverErrors";
 
-type Existing = Pick<Organization, "id" | "name" | "website" | "industry"> & { notes?: string | null };
+type Existing = Pick<Organization, "id" | "name" | "website" | "industry"> & {
+  notes?: string | null;
+};
 
 type Props = {
   open: boolean;
@@ -20,27 +22,46 @@ type Props = {
 
 export function OrganizationForm({ open, onOpenChange, organization, onSaved }: Props) {
   return (
-    <FormDialog open={open} onOpenChange={onOpenChange} title={organization ? `Edit ${organization.name}` : "Add organization"}>
-      <OrganizationFields organization={organization} onDone={(saved) => {
-        onOpenChange(false);
-        onSaved?.(saved);
-      }} />
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={organization ? `Edit ${organization.name}` : "Add organization"}
+    >
+      <OrganizationFields
+        organization={organization}
+        onDone={(saved) => {
+          onOpenChange(false);
+          onSaved?.(saved);
+        }}
+      />
     </FormDialog>
   );
 }
 
-function OrganizationFields({ organization, onDone }: { organization?: Existing; onDone: (o: Organization) => void }) {
+function organizationDefaults(organization?: Existing): OrganizationValues {
+  return {
+    name: organization?.name ?? "",
+    website: organization?.website ?? "",
+    industry: organization?.industry ?? "",
+    notes: organization?.notes ?? "",
+  };
+}
+
+function OrganizationFields({
+  organization,
+  onDone,
+}: {
+  organization?: Existing;
+  onDone: (o: Organization) => void;
+}) {
   const [formError, setFormError] = useState<string | null>(null);
   const save = useSaveOrganization(organization?.id);
-  const industries = [...new Set((useOrganizations().data ?? []).map((o) => o.industry).filter(Boolean))].sort() as string[];
+  const industries = [
+    ...new Set((useOrganizations().data ?? []).map((o) => o.industry).filter(Boolean)),
+  ].sort() as string[];
   const form = useForm<OrganizationValues>({
     resolver: zodResolver(organizationSchema),
-    defaultValues: {
-      name: organization?.name ?? "",
-      website: organization?.website ?? "",
-      industry: organization?.industry ?? "",
-      notes: organization?.notes ?? "",
-    },
+    defaultValues: organizationDefaults(organization),
   });
   const { register, handleSubmit, formState } = form;
   const errors = formState.errors;
@@ -64,7 +85,12 @@ function OrganizationFields({ organization, onDone }: { organization?: Existing;
   return (
     <form onSubmit={submit} noValidate className="flex min-h-0 flex-col">
       <DialogBody error={formError}>
-        <TextField label="Name" autoComplete="off" {...register("name")} error={errors.name?.message} />
+        <TextField
+          label="Name"
+          autoComplete="off"
+          {...register("name")}
+          error={errors.name?.message}
+        />
         <TextField
           label="Website"
           optional
@@ -86,9 +112,17 @@ function OrganizationFields({ organization, onDone }: { organization?: Existing;
             <option key={industry} value={industry} />
           ))}
         </datalist>
-        <TextAreaField label="Notes" optional {...register("notes")} error={errors.notes?.message} />
+        <TextAreaField
+          label="Notes"
+          optional
+          {...register("notes")}
+          error={errors.notes?.message}
+        />
       </DialogBody>
-      <DialogFooter submitLabel={organization ? "Save" : "Add organization"} submitting={formState.isSubmitting} />
+      <DialogFooter
+        submitLabel={organization ? "Save" : "Add organization"}
+        submitting={formState.isSubmitting}
+      />
     </form>
   );
 }

@@ -22,7 +22,14 @@ type CardProps = {
   overlay?: boolean;
 };
 
-export function DealCardBody({ deal, today, onStage, takeFocus, onFocusTaken, overlay }: CardProps) {
+export function DealCardBody({
+  deal,
+  today,
+  onStage,
+  takeFocus,
+  onFocusTaken,
+  overlay,
+}: CardProps) {
   const stageButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (takeFocus) {
@@ -38,7 +45,10 @@ export function DealCardBody({ deal, today, onStage, takeFocus, onFocusTaken, ov
       style={{ background: STAGE_STYLE[deal.stage].tint }}
     >
       <div className="flex items-baseline justify-between gap-2">
-        <Link to={`/deals/${deal.id}`} className="min-w-0 text-[14.5px] font-semibold leading-[1.3] text-ink hover:underline">
+        <Link
+          to={`/deals/${deal.id}`}
+          className="min-w-0 text-[14.5px] font-semibold leading-[1.3] text-ink hover:underline"
+        >
           {deal.name}
         </Link>
         <span className="num whitespace-nowrap text-[14px] font-semibold">
@@ -52,10 +62,18 @@ export function DealCardBody({ deal, today, onStage, takeFocus, onFocusTaken, ov
       <div className="mt-auto flex items-end justify-between gap-1.5 pt-2.5">
         <p className="flex flex-col items-start gap-[3px] text-[12px] text-ink-on-tint">
           <span className="num whitespace-nowrap">
-            {isOpen(deal.stage) ? <span className="sr-only">Due </span> : <span className="sr-only">Closed </span>}
+            {isOpen(deal.stage) ? (
+              <span className="sr-only">Due </span>
+            ) : (
+              <span className="sr-only">Closed </span>
+            )}
             {formatDate(deal.close_date)}
           </span>
-          {late ? <LateChip size="sm" /> : isOpen(deal.stage) ? <span>{dueIn(deal.close_date, today)}</span> : null}
+          {late ? (
+            <LateChip size="sm" />
+          ) : isOpen(deal.stage) ? (
+            <span>{dueIn(deal.close_date, today)}</span>
+          ) : null}
         </p>
         {onStage ? (
           <StageMenu
@@ -66,7 +84,9 @@ export function DealCardBody({ deal, today, onStage, takeFocus, onFocusTaken, ov
             triggerClassName="inline-flex h-[26px] flex-none items-center gap-[3px] rounded-[7px] bg-white/75 pl-[9px] pr-1.5 text-[12px] font-semibold text-ink hover:bg-white"
           />
         ) : (
-          <span className="inline-flex h-[26px] items-center rounded-[7px] bg-white/75 px-2 text-[12px] font-semibold">Stage</span>
+          <span className="inline-flex h-[26px] items-center rounded-[7px] bg-white/75 px-2 text-[12px] font-semibold">
+            Stage
+          </span>
         )}
       </div>
     </div>

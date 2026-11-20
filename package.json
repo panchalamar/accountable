@@ -8,14 +8,25 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "test": "node scripts/test.mjs",
-    "seed": "node scripts/ensure-deps.mjs --uv-only && uv run python -m backend.seed"
+    "seed": "node scripts/ensure-deps.mjs --uv-only && uv run python -m backend.seed",
+    "check": "node scripts/check.mjs",
+    "check:quick": "node scripts/check.mjs --quick",
+    "format": "prettier --write frontend && uv run ruff format backend && uv run ruff check --fix --select I backend"
   },
   "engines": {
     "node": ">=24"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@eslint/js": "^9.39.5",
     "@playwright/test": "^1.65.1",
-    "concurrently": "^10.0.7"
+    "concurrently": "^10.0.7",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
+    "typescript": "~6.0",
+    "typescript-eslint": "^8.73.0"
   }
 }

@@ -6,7 +6,7 @@ import pytest
 from alembic.autogenerate import compare_metadata
 from alembic.runtime.migration import MigrationContext
 from fastapi.testclient import TestClient
-from sqlalchemy import CheckConstraint, Index, inspect, insert, select
+from sqlalchemy import CheckConstraint, Index, insert, inspect, select
 from sqlalchemy.exc import IntegrityError
 
 from backend import db
@@ -25,7 +25,9 @@ def _dump(url: str) -> list[str]:
     engine = db.make_engine(url)
     try:
         with engine.connect() as conn:
-            return list(conn.connection.dbapi_connection.iterdump())
+            sqlite = conn.connection.dbapi_connection
+            assert sqlite is not None, "an open connection has a DBAPI connection"
+            return list(sqlite.iterdump())
     finally:
         engine.dispose()
 
@@ -39,19 +41,19 @@ def _add_deal(conn, **overrides) -> int:
             organization_id=org, name="Ann", status="lead", created_at=STAMP, updated_at=STAMP
         )
     ).inserted_primary_key[0]
-    values = dict(
-        organization_id=org,
-        main_contact_id=contact,
-        name="Big deal",
-        stage="new",
-        value=100_000,
-        probability=10,
-        close_date=date(2026, 11, 16),
-        furthest_stage="new",
-        position=0,
-        created_at=STAMP,
-        updated_at=STAMP,
-    )
+    values = {
+        "organization_id": org,
+        "main_contact_id": contact,
+        "name": "Big deal",
+        "stage": "new",
+        "value": 100_000,
+        "probability": 10,
+        "close_date": date(2026, 11, 16),
+        "furthest_stage": "new",
+        "position": 0,
+        "created_at": STAMP,
+        "updated_at": STAMP,
+    }
     values.update(overrides)
     return conn.execute(insert(tables.deals).values(**values)).inserted_primary_key[0]
 
@@ -123,7 +125,9 @@ def test_date_columns_are_python_dates_stored_as_iso_text(engine):
         value = conn.execute(
             select(tables.deals.c.close_date).where(tables.deals.c.id == deal_id)
         ).scalar_one()
-        raw = conn.exec_driver_sql("SELECT close_date FROM deals WHERE id = ?", (deal_id,)).scalar_one()
+        raw = conn.exec_driver_sql(
+            "SELECT close_date FROM deals WHERE id = ?", (deal_id,)
+        ).scalar_one()
     assert value == date(2026, 11, 16)
     assert type(value) is date
     assert raw == "2026-11-16"

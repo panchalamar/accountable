@@ -22,22 +22,26 @@ if (setting) {
 ensureDeps();
 
 const isWindows = process.platform === "win32";
+// --coverage fails a unit test run below 80% coverage. --unit-only skips Playwright.
+const coverage = process.argv.includes("--coverage");
+const unitOnly = process.argv.includes("--unit-only");
 
-const runs = [
+const allRuns = [
   {
     name: "Vitest (frontend unit tests)",
     command: "npm",
-    args: ["run", "test", "-w", "frontend"],
+    args: ["run", "test", "-w", "frontend", ...(coverage ? ["--", "--coverage"] : [])],
     // Catches dates read as UTC, which land on the day before in the Americas.
     env: { TZ: "America/Los_Angeles" },
   },
   {
     name: "pytest (backend unit tests)",
     command: "uv",
-    args: ["run", "pytest"],
+    args: ["run", "pytest", ...(coverage ? ["--cov"] : [])],
   },
   {
     name: "Playwright, side by side (end-to-end tests)",
+    endToEnd: true,
     command: "npx",
     args: ["playwright", "test", "-c", join("e2e", "playwright.config.ts"), "--project", "side-by-side"],
     env: { E2E_PASS: "side-by-side" },
@@ -45,11 +49,13 @@ const runs = [
   {
     // The dashboard and pipeline tests, alone, on fresh servers and data.
     name: "Playwright, one at a time (end-to-end tests)",
+    endToEnd: true,
     command: "npx",
     args: ["playwright", "test", "-c", join("e2e", "playwright.config.ts"), "--project", "one-at-a-time"],
     env: { E2E_PASS: "one-at-a-time" },
   },
 ];
+const runs = unitOnly ? allRuns.filter((run) => !run.endToEnd) : allRuns;
 
 const results = [];
 for (const run of runs) {

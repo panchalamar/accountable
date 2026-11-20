@@ -7,15 +7,29 @@ import { useQueryClient } from "@tanstack/react-query";
 import { errorMessage } from "../../api/client";
 import { ConfirmDialog } from "../../components/dialogs/ConfirmDialog";
 import { formatDate, formatWhen } from "../../lib/dates";
-import { type Activity, type ActivityType, type TimelineItem, deleteRecord, refreshAfterSave } from "../api";
+import {
+  type Activity,
+  type ActivityType,
+  type TimelineItem,
+  deleteRecord,
+  refreshAfterSave,
+} from "../api";
 import { StageChip } from "../components/chips";
 import { DoneCheckbox } from "../components/DoneCheckbox";
 import { ActivityForm, type LoggedOn } from "../forms/ActivityForm";
 import { followUpTiming } from "../lib/followups";
 import { daysBetween, today } from "../../lib/dates";
 
-export const TYPE_ICON: Record<ActivityType, typeof Phone> = { call: Phone, email: Mail, note: FileText };
-export const TYPE_LABEL: Record<ActivityType, string> = { call: "Call", email: "Email", note: "Note" };
+export const TYPE_ICON: Record<ActivityType, typeof Phone> = {
+  call: Phone,
+  email: Mail,
+  note: FileText,
+};
+export const TYPE_LABEL: Record<ActivityType, string> = {
+  call: "Call",
+  email: "Email",
+  note: "Note",
+};
 
 type Props = {
   on: LoggedOn;
@@ -41,7 +55,9 @@ export function Timeline({ on, items, loading }: Props) {
       {loading ? (
         <p className="text-ink-muted">Loading the timeline...</p>
       ) : !items || items.length === 0 ? (
-        <p className="text-ink-muted">No activities yet. Log a call, email or note to start the timeline.</p>
+        <p className="text-ink-muted">
+          No activities yet. Log a call, email or note to start the timeline.
+        </p>
       ) : (
         <ol className="flex flex-col">
           {items.map((item) =>
@@ -103,7 +119,9 @@ function ActivityEntry({ activity, on }: { activity: Activity; on: LoggedOn }) {
     }
   }
 
-  const timing = activity.follow_up_date ? followUpTiming(daysBetween(today(), activity.follow_up_date)) : null;
+  const timing = activity.follow_up_date
+    ? followUpTiming(daysBetween(today(), activity.follow_up_date))
+    : null;
 
   return (
     <li className="grid grid-cols-[32px_1fr] gap-3 border-t border-divider py-3.5 first:border-t-0 first:pt-0">
@@ -153,7 +171,11 @@ function ActivityEntry({ activity, on }: { activity: Activity; on: LoggedOn }) {
         </div>
         {activity.follow_up_date ? (
           <div className="mt-2 flex items-center gap-2.5 rounded-[10px] bg-bg px-3 py-2 text-[13.5px]">
-            <DoneCheckbox id={activity.id} done={activity.done} description={activity.description} />
+            <DoneCheckbox
+              id={activity.id}
+              done={activity.done}
+              description={activity.description}
+            />
             <span className={activity.done ? "text-ink-muted line-through" : ""}>
               Follow up by <span className="num">{formatDate(activity.follow_up_date)}</span>
             </span>

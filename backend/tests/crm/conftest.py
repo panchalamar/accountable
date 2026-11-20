@@ -33,7 +33,7 @@ class Make:
         self,
         contact: dict | None = None,
         stage: str = "new",
-        value: int = 100_000,
+        value: float = 100_000,
         close_date: str = "2026-12-31",
         name: str | None = None,
         **fields,
@@ -69,7 +69,9 @@ class Make:
         }
         return self._post("/api/activities", body)
 
-    def move(self, deal: dict, stage: str, before_id: int | None = None, close_date: str | None = None):
+    def move(
+        self, deal: dict, stage: str, before_id: int | None = None, close_date: str | None = None
+    ):
         body = {"stage": stage, "before_id": before_id, "close_date": close_date}
         return self.client.post(f"/api/deals/{deal['id']}/move", json=body)
 

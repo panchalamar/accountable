@@ -86,21 +86,26 @@ def forecast(open_deals: list, today: date) -> dict:
 
     rest = [d for d in open_deals if today <= d["close_date"] <= month_end]
     if rest:
-        slots.append(_slot("rest", "rest", f"Rest of {MONTH_LABELS[today.month - 1]}", rest, this_month))
+        slots.append(
+            _slot("rest", "rest", f"Rest of {MONTH_LABELS[today.month - 1]}", rest, this_month)
+        )
 
     ahead = [d for d in open_deals if d["close_date"] > month_end]
     if ahead:
-        last = min(max(_months_between(this_month, d["close_date"]) for d in ahead), FORECAST_MONTHS)
+        last = min(
+            max(_months_between(this_month, d["close_date"]) for d in ahead), FORECAST_MONTHS
+        )
         for offset in range(1, last + 1):
             month = _add_months(this_month, offset)
             rows = [d for d in ahead if _month_start(d["close_date"]) == month]
-            slots.append(_slot(month.strftime("%Y-%m"), "month", MONTH_LABELS[month.month - 1], rows, month))
+            slots.append(
+                _slot(month.strftime("%Y-%m"), "month", MONTH_LABELS[month.month - 1], rows, month)
+            )
         later = [d for d in ahead if _months_between(this_month, d["close_date"]) > FORECAST_MONTHS]
         if later:
             slots.append(_slot("later", "later", "Later", later))
 
     return {"slots": slots, "none_open": False}
-
 
 
 def dashboard(engine: Engine) -> dict:
@@ -110,42 +115,58 @@ def dashboard(engine: Engine) -> dict:
     window_start = _add_months(this_month, -11)  # the last 12 months: this one and the 11 before
 
     with engine.connect() as conn:
-        all_deals = conn.execute(
-            select(
-                deals.c.id,
-                deals.c.name,
-                deals.c.stage,
-                deals.c.value,
-                deals.c.probability,
-                deals.c.close_date,
-                deals.c.furthest_stage,
-            ).order_by(BOARD_ORDER, deals.c.position, deals.c.id)
-        ).mappings().all()
-
-        follow_up_rows = conn.execute(
-            activity_query()
-            .where(
-                activities.c.follow_up_date.is_not(None),
-                activities.c.done.is_(False),
-                activities.c.follow_up_date <= today + timedelta(days=FOLLOW_UP_DAYS),
+        all_deals = (
+            conn.execute(
+                select(
+                    deals.c.id,
+                    deals.c.name,
+                    deals.c.stage,
+                    deals.c.value,
+                    deals.c.probability,
+                    deals.c.close_date,
+                    deals.c.furthest_stage,
+                ).order_by(BOARD_ORDER, deals.c.position, deals.c.id)
             )
-            .order_by(activities.c.follow_up_date, activities.c.id)
-        ).mappings().all()
+            .mappings()
+            .all()
+        )
 
-        recent_activities = conn.execute(
-            activity_query()
-            .where(activities.c.occurred_at <= now)
-            .order_by(activities.c.occurred_at.desc(), activities.c.id.desc())
-            .limit(RECENT_ITEMS)
-        ).mappings().all()
+        follow_up_rows = (
+            conn.execute(
+                activity_query()
+                .where(
+                    activities.c.follow_up_date.is_not(None),
+                    activities.c.done.is_(False),
+                    activities.c.follow_up_date <= today + timedelta(days=FOLLOW_UP_DAYS),
+                )
+                .order_by(activities.c.follow_up_date, activities.c.id)
+            )
+            .mappings()
+            .all()
+        )
 
-        recent_changes = conn.execute(
-            select(stage_changes, deals.c.name.label("deal_name"))
-            .join(deals, deals.c.id == stage_changes.c.deal_id)
-            .where(stage_changes.c.changed_at <= now)
-            .order_by(stage_changes.c.changed_at.desc(), stage_changes.c.id.desc())
-            .limit(RECENT_ITEMS)
-        ).mappings().all()
+        recent_activities = (
+            conn.execute(
+                activity_query()
+                .where(activities.c.occurred_at <= now)
+                .order_by(activities.c.occurred_at.desc(), activities.c.id.desc())
+                .limit(RECENT_ITEMS)
+            )
+            .mappings()
+            .all()
+        )
+
+        recent_changes = (
+            conn.execute(
+                select(stage_changes, deals.c.name.label("deal_name"))
+                .join(deals, deals.c.id == stage_changes.c.deal_id)
+                .where(stage_changes.c.changed_at <= now)
+                .order_by(stage_changes.c.changed_at.desc(), stage_changes.c.id.desc())
+                .limit(RECENT_ITEMS)
+            )
+            .mappings()
+            .all()
+        )
 
     open_deals = [d for d in all_deals if d["stage"] in OPEN_STAGES]
     late = [d for d in open_deals if is_late(d["stage"], d["close_date"], today)]
@@ -167,18 +188,22 @@ def dashboard(engine: Engine) -> dict:
     won_12 = [d for d in won if window_start <= d["close_date"] <= _month_end(today)]
 
     stages = [
-        {"stage": stage, **_sum(d for d in open_deals if d["stage"] == stage)} for stage in OPEN_STAGES
+        {"stage": stage, **_sum(d for d in open_deals if d["stage"] == stage)}
+        for stage in OPEN_STAGES
     ]
 
     in_funnel = [
         d
         for d in all_deals
-        if d["stage"] in OPEN_STAGES or (d["stage"] in CLOSED_STAGES and d["close_date"] >= window_start)
+        if d["stage"] in OPEN_STAGES
+        or (d["stage"] in CLOSED_STAGES and d["close_date"] >= window_start)
     ]
     funnel = []
     for index, stage in enumerate(REACHABLE_STAGES):
         reached = [d for d in in_funnel if REACHABLE_STAGES.index(d["furthest_stage"]) >= index]
-        funnel.append({"stage": stage, "count": len(reached), "value": sum(d["value"] for d in reached)})
+        funnel.append(
+            {"stage": stage, "count": len(reached), "value": sum(d["value"] for d in reached)}
+        )
 
     def follow_up(row) -> dict:
         item = activity_row(row)

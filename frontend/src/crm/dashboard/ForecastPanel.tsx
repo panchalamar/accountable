@@ -18,7 +18,15 @@ import { formatMoney, formatMoneyAxis, formatMoneyShort } from "../../lib/money"
 import type { Dashboard } from "../api";
 import { COLORS, OPEN_STAGES, STAGE_LABEL, STAGE_STYLE, type Stage } from "../lib/stages";
 import { ChartTable } from "./ChartTable";
-import { type ChartRow, type FutureRow, MONTH_NAMES, chartRows, labelledKeys, longLabel, moneyTicks } from "./chartData";
+import {
+  type ChartRow,
+  type FutureRow,
+  MONTH_NAMES,
+  chartRows,
+  labelledKeys,
+  longLabel,
+  moneyTicks,
+} from "./chartData";
 
 // The chart's frame, in pixels. The figures above and the strip below use the
 // same numbers, so their split lines up with Today without measuring.
@@ -84,7 +92,13 @@ function XTick(props: { x?: number; y?: number; payload?: { value: string }; row
   );
 }
 
-type SegmentProps = { x?: number; y?: number; width?: number; height?: number; payload?: FutureRow };
+type SegmentProps = {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  payload?: FutureRow;
+};
 
 /** One stage's part of a bar: a 2px gap above the part below, a rounded top on the topmost, and its label. */
 function segment(stage: Stage, labelled: Set<string>) {
@@ -102,7 +116,15 @@ function segment(stage: Stage, labelled: Set<string>) {
       <g>
         <path d={path} fill={fill} />
         {labelled.has(payload.key) ? (
-          <text x={x + width / 2} y={y - 9} textAnchor="middle" className="font-mono" fontSize={11} fontWeight={600} fill={COLORS.midnight}>
+          <text
+            x={x + width / 2}
+            y={y - 9}
+            textAnchor="middle"
+            className="font-mono"
+            fontSize={11}
+            fontWeight={600}
+            fill={COLORS.midnight}
+          >
             {formatMoneyShort(payload.total)}
           </text>
         ) : null}
@@ -111,11 +133,31 @@ function segment(stage: Stage, labelled: Set<string>) {
   };
 }
 
-function LineLabel({ x = 0, y = 0, index = 0, rows, labelled }: { x?: number; y?: number; index?: number; rows: ChartRow[]; labelled: Set<string> }) {
+function LineLabel({
+  x = 0,
+  y = 0,
+  index = 0,
+  rows,
+  labelled,
+}: {
+  x?: number;
+  y?: number;
+  index?: number;
+  rows: ChartRow[];
+  labelled: Set<string>;
+}) {
   const row = rows[index];
   if (!row || row.kind !== "past" || !labelled.has(row.key)) return null;
   return (
-    <text x={x} y={y - 12} textAnchor="middle" className="font-mono" fontSize={11} fontWeight={600} fill={COLORS.midnight}>
+    <text
+      x={x}
+      y={y - 12}
+      textAnchor="middle"
+      className="font-mono"
+      fontSize={11}
+      fontWeight={600}
+      fill={COLORS.midnight}
+    >
       {formatMoneyShort(row.won)}
     </text>
   );
@@ -147,7 +189,13 @@ function TipLine({ children }: { children: ReactNode }) {
   return <div className="font-mono text-[12px] text-sea-mist">{children}</div>;
 }
 
-function ChartTooltip({ active, payload }: { active?: boolean; payload?: readonly { payload?: ChartRow }[] }) {
+function ChartTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: readonly { payload?: ChartRow }[];
+}) {
   const row = payload?.[0]?.payload;
   if (!active || !row || row.kind === "none") return null;
   if (row.kind === "past") {
@@ -180,7 +228,10 @@ function wonSummary(data: Dashboard) {
   if (none.length === 0) return `${lead} A win in every month.`;
   if (none.length > 3) return `${lead} None in ${none.length} of the months.`;
   const names = none.map((m) => MONTH_NAMES[Number(m.month.slice(5)) - 1]);
-  const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} or ${names[names.length - 1]}`;
+  const list =
+    names.length === 1
+      ? names[0]
+      : `${names.slice(0, -1).join(", ")} or ${names[names.length - 1]}`;
   return `${lead} None in ${list}.`;
 }
 
@@ -188,9 +239,12 @@ function stageSummary(data: Dashboard) {
   const total = data.figures.expected_revenue;
   if (total === 0) return "No expected revenue in the open stages.";
   const top = [...data.stages].sort((a, b) => b.expected - a.expected).slice(0, 2);
-  if (top[0].expected / total > 0.5) return `Most of the expected revenue sits in ${STAGE_LABEL[top[0].stage]}.`;
+  if (top[0].expected / total > 0.5)
+    return `Most of the expected revenue sits in ${STAGE_LABEL[top[0].stage]}.`;
   if ((top[0].expected + top[1].expected) / total > 0.5) {
-    const [a, b] = [top[0].stage, top[1].stage].sort((x, y) => OPEN_STAGES.indexOf(x) - OPEN_STAGES.indexOf(y));
+    const [a, b] = [top[0].stage, top[1].stage].sort(
+      (x, y) => OPEN_STAGES.indexOf(x) - OPEN_STAGES.indexOf(y),
+    );
     return `Most of the expected revenue sits in ${STAGE_LABEL[a]} and ${STAGE_LABEL[b]}.`;
   }
   return "The expected revenue is spread across the stages.";
@@ -218,7 +272,9 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
   const f = data.figures;
   const late = f.open_pipeline.late_count;
   const winMonths = f.won_12_months.months_with_wins;
-  const share = f.open_pipeline.value ? Math.round((f.expected_revenue / f.open_pipeline.value) * 100) : 0;
+  const share = f.open_pipeline.value
+    ? Math.round((f.expected_revenue / f.open_pipeline.value) * 100)
+    : 0;
   const maxWon = Math.max(...data.months.map((m) => m.won_count), 1);
   const countTicks = Array.from({ length: maxWon + 1 }, (_, i) => i);
 
@@ -227,7 +283,9 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
     (data.forecast.none_open
       ? "There are no open deals."
       : `${formatMoneyShort(f.open_pipeline.value)} is open` +
-        (late ? `, ${formatMoneyShort(f.open_pipeline.late_value)} of it in ${plural(late, "late deal")}.` : ", and none of it is late."));
+        (late
+          ? `, ${formatMoneyShort(f.open_pipeline.late_value)} of it in ${plural(late, "late deal")}.`
+          : ", and none of it is late."));
 
   return (
     <section className="panel rounded-[20px] px-7 pb-7 pt-[26px]" aria-labelledby="hero-h">
@@ -239,7 +297,10 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
       </div>
 
       <div className="grid" style={{ gridTemplateColumns: split }}>
-        <div className="flex gap-[clamp(24px,calc(24px+(100vw-1280px)/20),32px)]" style={{ paddingLeft: AXIS }}>
+        <div
+          className="flex gap-[clamp(24px,calc(24px+(100vw-1280px)/20),32px)]"
+          style={{ paddingLeft: AXIS }}
+        >
           <Figure
             label="Won in the last 12 months"
             value={formatMoney(f.won_12_months.value)}
@@ -257,13 +318,21 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
             value={formatMoney(f.open_pipeline.value)}
             note={`${plural(f.open_pipeline.count, "deal")}, ${late} late`}
           />
-          <Figure label="Expected revenue" value={formatMoney(f.expected_revenue)} note={`${share}% of the open pipeline`} />
+          <Figure
+            label="Expected revenue"
+            value={formatMoney(f.expected_revenue)}
+            note={`${share}% of the open pipeline`}
+          />
         </div>
       </div>
 
       <div className="mt-[18px]" aria-hidden="true" data-chart="forecast">
         <ResponsiveContainer width="100%" height={HEIGHT}>
-          <ComposedChart data={rows} margin={{ top: TOP, right: RIGHT, bottom: 0, left: 0 }} accessibilityLayer={false}>
+          <ComposedChart
+            data={rows}
+            margin={{ top: TOP, right: RIGHT, bottom: 0, left: 0 }}
+            accessibilityLayer={false}
+          >
             <ReferenceArea
               x1={firstFuture}
               x2={lastFuture}
@@ -298,8 +367,19 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
               tick={{ fontFamily: "var(--font-mono)", fontSize: 11, fill: COLORS.inkMuted }}
               tickMargin={8}
             />
-            <Tooltip content={ChartTooltip} cursor={{ fill: "rgba(7,59,76,0.04)" }} isAnimationActive={false} />
-            <Area dataKey="won" type="linear" stroke="none" fill={COLORS.seaGreen} fillOpacity={0.13} isAnimationActive={false} />
+            <Tooltip
+              content={ChartTooltip}
+              cursor={{ fill: "rgba(7,59,76,0.04)" }}
+              isAnimationActive={false}
+            />
+            <Area
+              dataKey="won"
+              type="linear"
+              stroke="none"
+              fill={COLORS.seaGreen}
+              fillOpacity={0.13}
+              isAnimationActive={false}
+            />
             <Line
               dataKey="won"
               type="linear"
@@ -322,7 +402,13 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
                 shape={segment(stage, labelled)}
               />
             ))}
-            <ReferenceLine x={firstFuture} position="start" stroke={COLORS.midnight} strokeWidth={1.5} label={<TodayLabel />} />
+            <ReferenceLine
+              x={firstFuture}
+              position="start"
+              stroke={COLORS.midnight}
+              strokeWidth={1.5}
+              label={<TodayLabel />}
+            />
             {data.forecast.none_open ? (
               <ReferenceArea
                 x1={firstFuture}
@@ -347,11 +433,22 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
           )}
       />
 
-      <div className="mt-1.5 flex flex-wrap items-center gap-x-[22px] gap-y-2 text-[13px]" style={{ paddingLeft: AXIS }} aria-hidden="true">
+      <div
+        className="mt-1.5 flex flex-wrap items-center gap-x-[22px] gap-y-2 text-[13px]"
+        style={{ paddingLeft: AXIS }}
+        aria-hidden="true"
+      >
         <span className="inline-flex items-center gap-2">
           <svg width="22" height="10">
             <path d="M1 5h20" stroke={COLORS.seaGreenText} strokeWidth="2" />
-            <circle cx="11" cy="5" r="3.5" fill={COLORS.seaGreenText} stroke="#fff" strokeWidth="1.5" />
+            <circle
+              cx="11"
+              cy="5"
+              r="3.5"
+              fill={COLORS.seaGreenText}
+              stroke="#fff"
+              strokeWidth="1.5"
+            />
           </svg>
           Revenue won
         </span>
@@ -361,16 +458,25 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
             {STAGE_LABEL[stage]}
           </span>
         ))}
-        <span className="ml-auto font-medium text-alert-strong">Late: past its close date and still open</span>
+        <span className="ml-auto font-medium text-alert-strong">
+          Late: past its close date and still open
+        </span>
       </div>
 
-      <div className="mt-[26px] grid pt-[22px]" style={{ gridTemplateColumns: stripColumns(pastCount, total) }}>
+      <div
+        className="mt-[26px] grid pt-[22px]"
+        style={{ gridTemplateColumns: stripColumns(pastCount, total) }}
+      >
         <div style={{ paddingLeft: AXIS }}>
           <h3 className="text-[14.5px] font-semibold">Deals won by month</h3>
           <p className="mt-0.5 text-[13.5px] text-ink-muted">{wonSummary(data)}</p>
           <div className="mt-2.5" style={{ marginLeft: -AXIS }} aria-hidden="true" data-chart="won">
             <ResponsiveContainer width="100%" height={128}>
-              <BarChart data={data.months} margin={{ top: 14, right: 2, bottom: 8, left: 0 }} accessibilityLayer={false}>
+              <BarChart
+                data={data.months}
+                margin={{ top: 14, right: 2, bottom: 8, left: 0 }}
+                accessibilityLayer={false}
+              >
                 <CartesianGrid vertical={false} stroke={COLORS.divider} />
                 <XAxis dataKey="month" hide />
                 <ReferenceLine y={0} stroke="#C9D5D8" />
@@ -399,14 +505,23 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
                     );
                   }}
                 />
-                <Bar dataKey="won_count" barSize={24} fill={COLORS.marigold} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                <Bar
+                  dataKey="won_count"
+                  barSize={24}
+                  fill={COLORS.marigold}
+                  radius={[4, 4, 0, 0]}
+                  isAnimationActive={false}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
           <ChartTable
             caption="Deals won by month"
             columns={["Month", "Deals won"]}
-            rows={data.months.map((m) => [`${MONTH_NAMES[Number(m.month.slice(5)) - 1]} ${m.year}`, String(m.won_count)])}
+            rows={data.months.map((m) => [
+              `${MONTH_NAMES[Number(m.month.slice(5)) - 1]} ${m.year}`,
+              String(m.won_count),
+            ])}
           />
         </div>
         <div className="pl-[22px]">
@@ -415,10 +530,18 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
           <table className="mt-3 w-full border-collapse text-[13.5px] max-[1399px]:text-[13px]">
             <thead>
               <tr className="text-[12.5px] text-ink-muted">
-                <th scope="col" className="pb-1.5 text-left font-normal">Stage</th>
-                <th scope="col" className="pb-1.5 pl-2.5 text-right font-normal">Deals</th>
-                <th scope="col" className="pb-1.5 pl-2.5 text-right font-normal">Value</th>
-                <th scope="col" className="pb-1.5 pl-2.5 text-right font-normal">Expected</th>
+                <th scope="col" className="pb-1.5 text-left font-normal">
+                  Stage
+                </th>
+                <th scope="col" className="pb-1.5 pl-2.5 text-right font-normal">
+                  Deals
+                </th>
+                <th scope="col" className="pb-1.5 pl-2.5 text-right font-normal">
+                  Value
+                </th>
+                <th scope="col" className="pb-1.5 pl-2.5 text-right font-normal">
+                  Expected
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -426,7 +549,10 @@ export function ForecastPanel({ data }: { data: Dashboard }) {
                 <tr key={s.stage} className="border-t border-divider first:border-t-0">
                   <th scope="row" className="py-1.5 text-left font-medium">
                     <span className="flex items-center gap-[9px]">
-                      <i className="h-2.5 w-2.5 flex-none rounded-[3px]" style={{ background: STAGE_STYLE[s.stage].fill }} />
+                      <i
+                        className="h-2.5 w-2.5 flex-none rounded-[3px]"
+                        style={{ background: STAGE_STYLE[s.stage].fill }}
+                      />
                       {STAGE_LABEL[s.stage]}
                     </span>
                   </th>

@@ -29,7 +29,9 @@ def test_organization_delete_is_refused_while_it_has_any(client, make: Make):
     make.contact(org)
     response = client.delete(f"/api/organizations/{org['id']}")
     assert response.status_code == 409
-    assert response.json()["message"].startswith("Busy Org can't be deleted while it has 1 contact.")
+    assert response.json()["message"].startswith(
+        "Busy Org can't be deleted while it has 1 contact."
+    )
     assert response.json()["details"] == {"contacts": 1, "deals": 0}
 
     empty = make.org("Empty Org")
@@ -115,7 +117,9 @@ def test_deleting_a_deal(client, make: Make):
     kept = make.get(f"/api/activities/{shared[0]['id']}")
     assert kept["deal"] is None and kept["contact"]["id"] == contact["id"]
     assert count(client, stage_changes, stage_changes.c.deal_id == deal["id"]) == 0
-    assert [i["id"] for i in make.get(f"/api/contacts/{contact['id']}/timeline")] == [shared[0]["id"]]
+    assert [i["id"] for i in make.get(f"/api/contacts/{contact['id']}/timeline")] == [
+        shared[0]["id"]
+    ]
 
 
 def test_deleting_an_activity(client, make: Make):
@@ -126,11 +130,13 @@ def test_deleting_an_activity(client, make: Make):
 
 def test_no_delete_ever_leaves_an_activity_with_no_link(client, make: Make):
     priya, deal, _only, _shared = _contact_with_activities(make)
-    contact, other_deal, _o, _s = _deal_with_activities(make)
+    _contact, other_deal, _o, _s = _deal_with_activities(make)
     client.delete(f"/api/contacts/{priya['id']}")
     client.delete(f"/api/deals/{other_deal['id']}")
     # Deleting the deal the kept activities now hang on removes them too.
     client.delete(f"/api/deals/{deal['id']}")
-    unlinked = count(client, activities, activities.c.contact_id.is_(None), activities.c.deal_id.is_(None))
+    unlinked = count(
+        client, activities, activities.c.contact_id.is_(None), activities.c.deal_id.is_(None)
+    )
     assert unlinked == 0
     assert count(client, activities) == 1  # the one still linked to `contact`

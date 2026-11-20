@@ -21,6 +21,7 @@ from backend.crm.tables import (
     activities,
     contacts,
     deals,
+    inserted_id,
     organizations,
     stage_changes,
 )
@@ -177,8 +178,10 @@ def add_organization(engine: Engine, body: schemas.OrganizationIn) -> int:
     with engine.begin() as conn:
         values = _check_organization(conn, body, None)
         now = clock.now()
-        result = conn.execute(insert(organizations).values(**values, created_at=now, updated_at=now))
-        return result.inserted_primary_key[0]
+        result = conn.execute(
+            insert(organizations).values(**values, created_at=now, updated_at=now)
+        )
+        return inserted_id(result)
 
 
 def edit_organization(engine: Engine, org_id: int, body: schemas.OrganizationIn) -> None:
@@ -197,12 +200,12 @@ def organization_delete_check(conn: Connection, org_id: int) -> dict:
     contact_count = conn.execute(
         select(func.count()).where(contacts.c.organization_id == org_id)
     ).scalar_one()
-    deal_count = conn.execute(select(func.count()).where(deals.c.organization_id == org_id)).scalar_one()
+    deal_count = conn.execute(
+        select(func.count()).where(deals.c.organization_id == org_id)
+    ).scalar_one()
     if contact_count or deal_count:
         parts = [
-            plural(n, word)
-            for n, word in ((contact_count, "contact"), (deal_count, "deal"))
-            if n
+            plural(n, word) for n, word in ((contact_count, "contact"), (deal_count, "deal")) if n
         ]
         them = "it" if contact_count + deal_count == 1 else "them"
         message = (
@@ -225,7 +228,9 @@ def delete_organization(engine: Engine, org_id: int) -> None:
     with engine.begin() as conn:
         check = organization_delete_check(conn, org_id)
         if not check["can_delete"]:
-            raise Refused(check["message"], {"contacts": check["contacts"], "deals": check["deals"]})
+            raise Refused(
+                check["message"], {"contacts": check["contacts"], "deals": check["deals"]}
+            )
         conn.execute(delete(organizations).where(organizations.c.id == org_id))
 
 
@@ -289,7 +294,7 @@ def add_contact(engine: Engine, body: schemas.ContactIn) -> int:
         values = _check_contact(conn, body, None)
         now = clock.now()
         result = conn.execute(insert(contacts).values(**values, created_at=now, updated_at=now))
-        return result.inserted_primary_key[0]
+        return inserted_id(result)
 
 
 def edit_contact(engine: Engine, contact_id: int, body: schemas.ContactIn) -> None:
@@ -307,7 +312,9 @@ def edit_contact(engine: Engine, contact_id: int, body: schemas.ContactIn) -> No
                     {"deals": led},
                 )
         conn.execute(
-            update(contacts).where(contacts.c.id == contact_id).values(**values, updated_at=clock.now())
+            update(contacts)
+            .where(contacts.c.id == contact_id)
+            .values(**values, updated_at=clock.now())
         )
 
 
@@ -315,7 +322,9 @@ def contact_delete_check(conn: Connection, contact_id: int) -> dict:
     contact = _must(conn, contacts, contact_id, "contact")
     led = _deals_led_by(conn, contact_id)
     only_theirs = conn.execute(
-        select(func.count()).where(activities.c.contact_id == contact_id, activities.c.deal_id.is_(None))
+        select(func.count()).where(
+            activities.c.contact_id == contact_id, activities.c.deal_id.is_(None)
+        )
     ).scalar_one()
     shared = conn.execute(
         select(func.count()).where(
@@ -341,7 +350,9 @@ def contact_delete_check(conn: Connection, contact_id: int) -> dict:
                 f"{plural(shared, 'activity', 'activities')} also linked to a deal "
                 "will stay on the deal's timeline."
             )
-        message = " ".join(sentences) or f"{name} has no activities, so nothing else will be deleted."
+        message = (
+            " ".join(sentences) or f"{name} has no activities, so nothing else will be deleted."
+        )
     return {
         "can_delete": not led,
         "message": message,
@@ -496,9 +507,9 @@ def add_deal(engine: Engine, body: schemas.DealIn) -> int:
         # A deal added at Lost reached New; one added at Won reached Won.
         values["furthest_stage"] = stage if stage in REACHABLE_STAGES else "new"
         now = clock.now()
-        deal_id = conn.execute(
-            insert(deals).values(**values, position=0, created_at=now, updated_at=now)
-        ).inserted_primary_key[0]
+        deal_id = inserted_id(
+            conn.execute(insert(deals).values(**values, position=0, created_at=now, updated_at=now))
+        )
         _place(conn, deal_id, stage, "top")
         return deal_id
 
@@ -548,10 +559,14 @@ def move_deal(engine: Engine, deal_id: int, body: schemas.DealMove) -> None:
 def deal_delete_check(conn: Connection, deal_id: int) -> dict:
     _must(conn, deals, deal_id, "deal")
     only_this = conn.execute(
-        select(func.count()).where(activities.c.deal_id == deal_id, activities.c.contact_id.is_(None))
+        select(func.count()).where(
+            activities.c.deal_id == deal_id, activities.c.contact_id.is_(None)
+        )
     ).scalar_one()
     shared = conn.execute(
-        select(func.count()).where(activities.c.deal_id == deal_id, activities.c.contact_id.is_not(None))
+        select(func.count()).where(
+            activities.c.deal_id == deal_id, activities.c.contact_id.is_not(None)
+        )
     ).scalar_one()
     history = conn.execute(
         select(func.count()).where(stage_changes.c.deal_id == deal_id)
@@ -581,7 +596,9 @@ def delete_deal(engine: Engine, deal_id: int) -> None:
     with engine.begin() as conn:
         current = _must(conn, deals, deal_id, "deal")
         conn.execute(
-            delete(activities).where(activities.c.deal_id == deal_id, activities.c.contact_id.is_(None))
+            delete(activities).where(
+                activities.c.deal_id == deal_id, activities.c.contact_id.is_(None)
+            )
         )
         conn.execute(
             update(activities)
@@ -621,15 +638,20 @@ def _check_activity(conn: Connection, body: schemas.ActivityIn, current: Mapping
         current["contact_id"],
         current["deal_id"],
     )
-    if contact is not None and deal is not None and links_changed:
-        if contact["organization_id"] != deal["organization_id"]:
-            contact_org = _one(conn, organizations, contact["organization_id"])
-            deal_org = _one(conn, organizations, deal["organization_id"])
-            errors["deal_id"] = f"Choose a deal at {contact_org['name']}."
-            errors["contact_id"] = f"Choose a contact at {deal_org['name']}."
+    if (
+        contact is not None
+        and deal is not None
+        and links_changed
+        and contact["organization_id"] != deal["organization_id"]
+    ):
+        contact_org = _one(conn, organizations, contact["organization_id"])
+        deal_org = _one(conn, organizations, deal["organization_id"])
+        errors["deal_id"] = f"Choose a deal at {contact_org['name']}."
+        errors["contact_id"] = f"Choose a contact at {deal_org['name']}."
 
     if errors:
         raise Invalid(errors)
+    assert body.occurred_at is not None, "a missing time is reported above"
     return {
         "type": body.type,
         "description": description,
@@ -646,7 +668,7 @@ def add_activity(engine: Engine, body: schemas.ActivityIn) -> int:
         values = _check_activity(conn, body, None)
         now = clock.now()
         result = conn.execute(insert(activities).values(**values, created_at=now, updated_at=now))
-        return result.inserted_primary_key[0]
+        return inserted_id(result)
 
 
 def edit_activity(engine: Engine, activity_id: int, body: schemas.ActivityIn) -> None:

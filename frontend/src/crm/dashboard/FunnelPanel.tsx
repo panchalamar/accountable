@@ -8,7 +8,14 @@ const ROW = 53; // each band and its table row, so they line up
 const WIDTH = 264;
 const GAP = 3;
 
-export type Band = { stage: Stage; value: number; count: number; fill: string; ofNew: number | null; ofBefore: number | null };
+export type Band = {
+  stage: Stage;
+  value: number;
+  count: number;
+  fill: string;
+  ofNew: number | null;
+  ofBefore: number | null;
+};
 
 // What Recharts passes a custom funnel shape. It doesn't pass the band's index.
 type ShapeProps = {
@@ -20,7 +27,8 @@ type ShapeProps = {
   payload?: Band;
 };
 
-const percent = (part: number, whole: number) => (whole > 0 ? Math.round((part / whole) * 100) : null);
+const percent = (part: number, whole: number) =>
+  whole > 0 ? Math.round((part / whole) * 100) : null;
 
 /**
  * A band as wide at the top as the value that reached its stage, and at the
@@ -28,7 +36,14 @@ const percent = (part: number, whole: number) => (whole > 0 ? Math.round((part /
  * doesn't say which band it's drawing.
  */
 export function bandShape(lastStage: Stage) {
-  return function BandShape({ x = 0, y = 0, upperWidth = 0, lowerWidth = 0, height = 0, payload }: ShapeProps) {
+  return function BandShape({
+    x = 0,
+    y = 0,
+    upperWidth = 0,
+    lowerWidth = 0,
+    height = 0,
+    payload,
+  }: ShapeProps) {
     const top = upperWidth;
     // The last band narrows a little, as in the mockup, rather than ending in a point or a box.
     const bottom = payload?.stage === lastStage ? upperWidth * 0.78 : lowerWidth;
@@ -39,7 +54,13 @@ export function bandShape(lastStage: Stage) {
   };
 }
 
-function FunnelTip({ active, payload }: { active?: boolean; payload?: readonly { payload?: Band }[] }) {
+function FunnelTip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: readonly { payload?: Band }[];
+}) {
   const band = payload?.[0]?.payload;
   if (!active || !band) return null;
   return (
@@ -50,7 +71,9 @@ function FunnelTip({ active, payload }: { active?: boolean; payload?: readonly {
       </div>
       <div className="font-mono text-[12px] text-sea-mist">
         {band.count} {band.count === 1 ? "deal" : "deals"}
-        {band.ofBefore !== null && band.stage !== "new" ? `, ${band.ofBefore}% of the stage before` : ""}
+        {band.ofBefore !== null && band.stage !== "new"
+          ? `, ${band.ofBefore}% of the stage before`
+          : ""}
       </div>
     </div>
   );
@@ -81,7 +104,12 @@ export function FunnelPanel({ data }: { data: Dashboard }) {
       <div className="mt-5 grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-10">
         <div className="mt-[30px]" aria-hidden="true" data-chart="funnel">
           {reachedNew > 0 ? (
-            <FunnelChart width={WIDTH} height={ROW * bands.length} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} accessibilityLayer={false}>
+            <FunnelChart
+              width={WIDTH}
+              height={ROW * bands.length}
+              margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+              accessibilityLayer={false}
+            >
               <Tooltip content={FunnelTip} isAnimationActive={false} />
               <Funnel
                 data={bands}
@@ -100,25 +128,46 @@ export function FunnelPanel({ data }: { data: Dashboard }) {
           <caption className="sr-only">Sales funnel: the value that reached each stage</caption>
           <thead>
             <tr className="h-[30px] align-top text-[12.5px] text-ink-muted">
-              <th scope="col" className="text-left font-normal">Stage</th>
-              <th scope="col" className="pl-3.5 text-right font-normal">Deals</th>
-              <th scope="col" className="pl-3.5 text-right font-normal">Reached</th>
-              <th scope="col" className="pl-3.5 text-right font-normal">Of New</th>
-              <th scope="col" className="pl-3.5 text-right font-normal">Of the stage before</th>
+              <th scope="col" className="text-left font-normal">
+                Stage
+              </th>
+              <th scope="col" className="pl-3.5 text-right font-normal">
+                Deals
+              </th>
+              <th scope="col" className="pl-3.5 text-right font-normal">
+                Reached
+              </th>
+              <th scope="col" className="pl-3.5 text-right font-normal">
+                Of New
+              </th>
+              <th scope="col" className="pl-3.5 text-right font-normal">
+                Of the stage before
+              </th>
             </tr>
           </thead>
           <tbody>
             {bands.map((b, i) => (
-              <tr key={b.stage} style={{ height: ROW }} className={i ? "shadow-[inset_0_1px_0_var(--divider)]" : ""}>
+              <tr
+                key={b.stage}
+                style={{ height: ROW }}
+                className={i ? "shadow-[inset_0_1px_0_var(--divider)]" : ""}
+              >
                 <th scope="row" className="text-left font-semibold">
-                  <i className="mr-[9px] inline-block h-2.5 w-2.5 rounded-[3px]" style={{ background: b.fill }} />
+                  <i
+                    className="mr-[9px] inline-block h-2.5 w-2.5 rounded-[3px]"
+                    style={{ background: b.fill }}
+                  />
                   {STAGE_LABEL[b.stage]}
                 </th>
                 <td className="num pl-3.5 text-right">{b.count}</td>
                 <td className="num pl-3.5 text-right">{formatMoney(b.value)}</td>
                 <td className="num pl-3.5 text-right">{b.ofNew === null ? "" : `${b.ofNew}%`}</td>
                 <td className="num pl-3.5 text-right">
-                  {b.ofBefore === null ? <span className="sr-only">Not applicable</span> : `${b.ofBefore}%`}
+                  {b.ofBefore === null ? (
+                    <span className="sr-only">Not applicable</span>
+                  ) : (
+                    `${b.ofBefore}%`
+                  )}
                 </td>
               </tr>
             ))}

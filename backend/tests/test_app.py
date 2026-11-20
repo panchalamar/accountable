@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import inspect, insert, text
+from sqlalchemy import insert, inspect, text
 from sqlalchemy.exc import IntegrityError
 
 from backend import db, settings
@@ -48,11 +48,17 @@ def test_answers_requests_for_this_computer(client: TestClient, host: str):
     assert client.get("/api/organizations", headers={"Host": host}).status_code == 200
 
 
-@pytest.mark.parametrize("host", ["attacker.example", "attacker.example:8000", "testserver", "192.168.1.20:8000"])
+@pytest.mark.parametrize(
+    "host", ["attacker.example", "attacker.example:8000", "testserver", "192.168.1.20:8000"]
+)
 def test_refuses_requests_for_any_other_host_name(client: TestClient, host: str):
     # A page that points its own domain at this computer (DNS rebinding)
     # sends its domain as the Host, so it can't read or change the data.
-    for method, path in (("get", "/api/contacts"), ("post", "/api/organizations"), ("delete", "/api/organizations/1")):
+    for method, path in (
+        ("get", "/api/contacts"),
+        ("post", "/api/organizations"),
+        ("delete", "/api/organizations/1"),
+    ):
         response = client.request(method, path, headers={"Host": host}, json={"name": "Taken over"})
         assert response.status_code == 400, (method, path)
         assert "Aisha" not in response.text

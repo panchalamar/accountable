@@ -13,7 +13,14 @@ from sqlalchemy import Connection, Engine, insert
 
 from backend import clock
 from backend.crm.rules import STAGE_PROBABILITY
-from backend.crm.tables import activities, contacts, deals, organizations, stage_changes
+from backend.crm.tables import (
+    activities,
+    contacts,
+    deals,
+    inserted_id,
+    organizations,
+    stage_changes,
+)
 
 SAMPLE_FILE = Path(__file__).with_name("sample_data.json")
 
@@ -52,7 +59,9 @@ class _Moments:
 
     def settle(self) -> None:
         start_of_today = datetime.combine(self.now.date(), time(0, 0))
-        future = sorted((i for i in self.items if i[0] > self.now), key=lambda i: i[0], reverse=True)
+        future = sorted(
+            (i for i in self.items if i[0] > self.now), key=lambda i: i[0], reverse=True
+        )
         for rank, (_moment, target, key) in enumerate(future, start=1):
             target[key] = max(self.now - timedelta(minutes=rank), start_of_today)
         for moment, target, key in self.items:
@@ -167,7 +176,9 @@ def build(now: datetime) -> dict[str, list[dict]]:
     # A deal was last changed at its latest stage change.
     latest: dict[str, datetime] = {}
     for change in change_rows:
-        latest[change["deal"]] = max(latest.get(change["deal"], change["changed_at"]), change["changed_at"])
+        latest[change["deal"]] = max(
+            latest.get(change["deal"], change["changed_at"]), change["changed_at"]
+        )
     for row in deal_rows:
         row["updated_at"] = max(row["created_at"], latest.get(row["name"], row["created_at"]))
     for row in activity_rows:
@@ -187,20 +198,20 @@ def add_to(conn: Connection, now: datetime | None = None) -> None:
 
     org_ids: dict[str, int] = {}
     for row in rows["organizations"]:
-        org_ids[row["name"]] = conn.execute(insert(organizations).values(**row)).inserted_primary_key[0]
+        org_ids[row["name"]] = inserted_id(conn.execute(insert(organizations).values(**row)))
 
     contact_ids: dict[str, int] = {}
     for row in rows["contacts"]:
         values = {k: v for k, v in row.items() if k != "organization"}
         values["organization_id"] = org_ids[row["organization"]]
-        contact_ids[row["name"]] = conn.execute(insert(contacts).values(**values)).inserted_primary_key[0]
+        contact_ids[row["name"]] = inserted_id(conn.execute(insert(contacts).values(**values)))
 
     deal_ids: dict[str, int] = {}
     for row in rows["deals"]:
         values = {k: v for k, v in row.items() if k not in ("organization", "main_contact")}
         values["organization_id"] = org_ids[row["organization"]]
         values["main_contact_id"] = contact_ids[row["main_contact"]]
-        deal_ids[row["name"]] = conn.execute(insert(deals).values(**values)).inserted_primary_key[0]
+        deal_ids[row["name"]] = inserted_id(conn.execute(insert(deals).values(**values)))
 
     conn.execute(
         insert(stage_changes),

@@ -5,7 +5,14 @@ import { toast } from "sonner";
 
 import { ApiError, errorMessage } from "../../api/client";
 import { ConfirmDialog } from "../../components/dialogs/ConfirmDialog";
-import { type DeleteCheck, type RecordKind, deleteRecord, fetchDeleteCheck, keys, refreshAfterSave } from "../api";
+import {
+  type DeleteCheck,
+  type RecordKind,
+  deleteRecord,
+  fetchDeleteCheck,
+  keys,
+  refreshAfterSave,
+} from "../api";
 
 type Props = {
   kind: Exclude<RecordKind, "activity">;

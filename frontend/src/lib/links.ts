@@ -20,5 +20,8 @@ export function websiteHref(text: string | null | undefined): string | null {
 
 /** "www.acme.example.com", without the scheme or a trailing slash. */
 export function websiteLabel(text: string): string {
-  return text.trim().replace(/^https?:\/\//i, "").replace(/\/$/, "");
+  return text
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/$/, "");
 }

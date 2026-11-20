@@ -12,7 +12,14 @@ from sqlalchemy import func, select
 from backend import clock, db
 from backend.crm import sample_data
 from backend.crm.rules import OPEN_STAGES
-from backend.crm.tables import REACHABLE_STAGES, activities, contacts, deals, organizations, stage_changes
+from backend.crm.tables import (
+    REACHABLE_STAGES,
+    activities,
+    contacts,
+    deals,
+    organizations,
+    stage_changes,
+)
 from backend.main import create_app
 from backend.tests.conftest import sqlite_url
 
@@ -120,7 +127,10 @@ def test_links_follow_the_rules(seeded):
     for a in _rows(engine, select(activities)):
         assert a["contact_id"] or a["deal_id"]
         if a["contact_id"] and a["deal_id"]:
-            assert people[a["contact_id"]]["organization_id"] == all_deals[a["deal_id"]]["organization_id"]
+            assert (
+                people[a["contact_id"]]["organization_id"]
+                == all_deals[a["deal_id"]]["organization_id"]
+            )
     with engine.connect() as conn:
         assert 100 <= conn.execute(select(func.count()).select_from(activities)).scalar_one() <= 160
 
@@ -137,7 +147,11 @@ def test_stage_history(seeded):
             assert history, d["name"]
         times = [c["changed_at"] for c in history]
         assert times == sorted(times), d["name"]
-        end = datetime.combine(d["close_date"], datetime.max.time()) if d["stage"] in ("won", "lost") else now
+        end = (
+            datetime.combine(d["close_date"], datetime.max.time())
+            if d["stage"] in ("won", "lost")
+            else now
+        )
         assert all(d["created_at"] <= t <= min(end, now) for t in times), d["name"]
         stage = "new"
         for c in history:
@@ -158,8 +172,9 @@ def test_figures_equal_the_mockups_on_nov_16_2026(template_db, tmp_path):
     clock.set_now(datetime(2026, 11, 16, 12, 0))
     path = tmp_path / "mockup.db"
     shutil.copyfile(template_db, path)
-    with TestClient(create_app(sqlite_url(path)), base_url="http://localhost") as client:
-        sample_data.add(client.app.state.engine)
+    app = create_app(sqlite_url(path))
+    with TestClient(app, base_url="http://localhost") as client:
+        sample_data.add(app.state.engine)
         figures = client.get("/api/dashboard").json()["figures"]
     assert (figures["open_pipeline"]["value"], figures["open_pipeline"]["count"]) == (9_040_000, 17)
     assert figures["expected_revenue"] == 3_481_000
@@ -173,8 +188,9 @@ def test_recent_activity_matches_the_mockup_and_never_shows_the_future(template_
     clock.set_now(now)
     path = tmp_path / "early.db"
     shutil.copyfile(template_db, path)
-    with TestClient(create_app(sqlite_url(path)), base_url="http://localhost") as client:
-        sample_data.add(client.app.state.engine)
+    app = create_app(sqlite_url(path))
+    with TestClient(app, base_url="http://localhost") as client:
+        sample_data.add(app.state.engine)
         recent = client.get("/api/dashboard").json()["recent"]
     assert all(datetime.fromisoformat(r["at"]) <= now for r in recent)
     assert [r["kind"] for r in recent[:2]] == ["stage_change", "activity"]  # order kept

@@ -23,13 +23,25 @@ export const columnId = (stage: Stage) => `column:${stage}`;
 
 // One column: an arrow-shaped header in the stage color, an outlined Add
 // deal button, then the cards.
-export function BoardColumn({ stage, deals, totals, today, onAdd, onStage, focusId, onFocusTaken }: Props) {
+export function BoardColumn({
+  stage,
+  deals,
+  totals,
+  today,
+  onAdd,
+  onStage,
+  focusId,
+  onFocusTaken,
+}: Props) {
   const { setNodeRef } = useDroppable({ id: columnId(stage) });
   const style = STAGE_STYLE[stage];
   const first = STAGES.indexOf(stage) === 0;
   const label = STAGE_LABEL[stage];
   return (
-    <section className="min-w-0" aria-label={`${label}, ${totals.count} ${totals.count === 1 ? "deal" : "deals"}`}>
+    <section
+      className="min-w-0"
+      aria-label={`${label}, ${totals.count} ${totals.count === 1 ? "deal" : "deals"}`}
+    >
       <header
         className={`py-3 pb-[13px] ${first ? "rounded-l-[12px] pl-4 pr-[26px]" : "pl-6 pr-[26px]"}`}
         style={{
@@ -47,7 +59,9 @@ export function BoardColumn({ stage, deals, totals, today, onAdd, onStage, focus
             <span className="sr-only"> {totals.count === 1 ? "deal" : "deals"}</span>
           </span>
         </h2>
-        <p className="num mt-0.5 text-[17px] font-semibold tracking-[-0.01em]">{formatMoney(totals.value)}</p>
+        <p className="num mt-0.5 text-[17px] font-semibold tracking-[-0.01em]">
+          {formatMoney(totals.value)}
+        </p>
         <p className="whitespace-nowrap text-[12.5px]">
           {isOpen(stage) ? (
             <>
@@ -67,8 +81,16 @@ export function BoardColumn({ stage, deals, totals, today, onAdd, onStage, focus
         <Plus size={16} aria-hidden="true" className="text-ink-muted" />
         Add deal
       </button>
-      <SortableContext id={columnId(stage)} items={deals.map((d) => d.id)} strategy={verticalListSortingStrategy}>
-        <ol ref={setNodeRef} className="flex min-h-[120px] flex-col gap-2 pb-6" aria-label={`${label} deals`}>
+      <SortableContext
+        id={columnId(stage)}
+        items={deals.map((d) => d.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <ol
+          ref={setNodeRef}
+          className="flex min-h-[120px] flex-col gap-2 pb-6"
+          aria-label={`${label} deals`}
+        >
           {deals.map((deal) => (
             <DealCard
               key={deal.id}

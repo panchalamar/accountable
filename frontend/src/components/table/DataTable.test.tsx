@@ -16,7 +16,13 @@ const people: Person[] = Array.from({ length: 36 }, (_, i) => ({
 const columns: TableColumn<Person>[] = [
   { id: "name", header: "Name", text: (p) => p.name },
   { id: "organization", header: "Organization", text: (p) => p.organization },
-  { id: "value", header: "Value", text: (p) => `$${p.value.toLocaleString("en-US")}`, sortValue: (p) => p.value, mono: true },
+  {
+    id: "value",
+    header: "Value",
+    text: (p) => `$${p.value.toLocaleString("en-US")}`,
+    sortValue: (p) => p.value,
+    mono: true,
+  },
 ];
 
 function table(search = "") {

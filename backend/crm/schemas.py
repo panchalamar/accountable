@@ -27,21 +27,24 @@ ActivityType = Literal["note", "call", "email"]
 
 
 def _whole_number(raw: Any, message: str) -> int | None:
-    if raw is None or raw == "":
-        return None
-    if isinstance(raw, bool):
-        raise ValueError(message)
-    if isinstance(raw, int):
-        return raw
-    if isinstance(raw, float):
-        if raw.is_integer():
+    match raw:
+        case None | "":
+            return None
+        case bool():
+            raise ValueError(message)
+        case int():
+            return raw
+        case float() if raw.is_integer():
             return int(raw)
-        raise ValueError(message)
-    if isinstance(raw, str):
-        text = raw.strip().replace(",", "")
-        if text.lstrip("-").isdigit():
-            return int(text)
-    raise ValueError(message)
+        case str() if _digits(raw).lstrip("-").isdigit():
+            return int(_digits(raw))
+        case _:
+            raise ValueError(message)
+
+
+def _digits(text: str) -> str:
+    """The text without padding or thousands separators."""
+    return text.strip().replace(",", "")
 
 
 def _money(raw: Any) -> int | None:

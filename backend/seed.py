@@ -54,7 +54,9 @@ def _empty(url: str) -> None:
             conn.exec_driver_sql("PRAGMA foreign_keys = OFF")
             meta = MetaData()
             with warnings.catch_warnings():
-                warnings.simplefilter("ignore", SAWarning)  # expression indexes go with their tables
+                warnings.simplefilter(
+                    "ignore", SAWarning
+                )  # expression indexes go with their tables
                 meta.reflect(conn)
             meta.drop_all(conn)
             conn.exec_driver_sql("VACUUM")
@@ -62,7 +64,11 @@ def _empty(url: str) -> None:
         engine.dispose()
 
 
-def run(argv: list[str] | None = None, ask: Callable[[str], str] = input, say: Callable[[str], None] = print) -> int:
+def run(
+    argv: list[str] | None = None,
+    ask: Callable[[str], str] = input,
+    say: Callable[[str], None] = print,
+) -> int:
     parser = argparse.ArgumentParser(description="Reset Accountable's data to the sample data.")
     parser.add_argument("--yes", action="store_true", help="don't ask first")
     args = parser.parse_args(argv)
@@ -89,7 +95,9 @@ def run(argv: list[str] | None = None, ask: Callable[[str], str] = input, say: C
         say(f"Saved a copy of your data to {saved}")
         _empty(url)
     else:
-        say(f"There's no database yet, so a new one with the sample data is being made at {database}")
+        say(
+            f"There's no database yet, so a new one with the sample data is being made at {database}"
+        )
 
     db.upgrade(url)
     engine = db.make_engine(url)

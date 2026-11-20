@@ -1,10 +1,11 @@
 """The database: shared metadata, the engine and migrations."""
 
 from pathlib import Path
+from typing import Annotated
 
 from alembic import command
 from alembic.config import Config
-from fastapi import Request
+from fastapi import Depends, Request
 from sqlalchemy import Column, Engine, Index, MetaData, create_engine, event, inspect
 from sqlalchemy.engine import make_url
 
@@ -32,9 +33,7 @@ def include_object(obj, name, type_, reflected, compare_to) -> bool:
     lower-case names, so autogenerate can't compare them. Add them to a
     migration by hand. test_migrations.py checks they exist.
     """
-    if type_ == "index" and not reflected and is_expression_index(obj):
-        return False
-    return True
+    return not (type_ == "index" and not reflected and is_expression_index(obj))
 
 
 def is_expression_index(index: Index) -> bool:
@@ -100,3 +99,7 @@ def upgrade(url: str | None = None) -> None:
 def get_engine(request: Request) -> Engine:
     """FastAPI dependency: the app's engine."""
     return request.app.state.engine
+
+
+# Route parameter type: FastAPI fills it with the app's engine.
+EngineDep = Annotated[Engine, Depends(get_engine)]

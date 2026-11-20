@@ -31,7 +31,8 @@ function sharedFiles(): string[] {
   );
 }
 
-const IMPORT = /(?:import|export)\s[^'";]*?from\s*["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)|import\s+["']([^"']+)["']/g;
+const IMPORT =
+  /(?:import|export)\s[^'";]*?from\s*["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)|import\s+["']([^"']+)["']/g;
 
 function importedAreas(path: string): string[] {
   const found = new Set<string>();

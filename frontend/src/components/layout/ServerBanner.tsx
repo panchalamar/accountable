@@ -12,7 +12,11 @@ type Props = {
   failuresBeforeShowing?: number;
 };
 
-export function ServerBanner({ check = checkHealth, intervalMs = 3000, failuresBeforeShowing = 3 }: Props) {
+export function ServerBanner({
+  check = checkHealth,
+  intervalMs = 3000,
+  failuresBeforeShowing = 3,
+}: Props) {
   const [failures, setFailures] = useState(0);
 
   useEffect(() => {
@@ -42,8 +46,8 @@ export function ServerBanner({ check = checkHealth, intervalMs = 3000, failuresB
 
   return (
     <div role="alert" className="bg-alert-strong px-8 py-3 text-[14.5px] font-medium text-white">
-      Can't reach Accountable's server. Check that <code className="font-mono">npm run dev</code> is still
-      running.
+      Can't reach Accountable's server. Check that <code className="font-mono">npm run dev</code> is
+      still running.
     </div>
   );
 }

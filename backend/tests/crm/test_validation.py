@@ -22,7 +22,9 @@ def test_duplicate_organization_name_ignores_case_and_spaces(client, make: Make)
 
 def test_saving_an_organization_unchanged_keeps_its_own_name(client, make: Make):
     org = make.org("Acme Ltd", industry="Logistics")
-    response = client.put(f"/api/organizations/{org['id']}", json={"name": "Acme Ltd", "industry": "Logistics"})
+    response = client.put(
+        f"/api/organizations/{org['id']}", json={"name": "Acme Ltd", "industry": "Logistics"}
+    )
     assert response.status_code == 200
     # Changing only the case of its own name is allowed too.
     response = client.put(f"/api/organizations/{org['id']}", json={"name": "ACME LTD"})
@@ -49,7 +51,10 @@ def test_length_limits(client, make: Make, kind, field, limit):
     deal = make.deal(contact)
     base = {
         "organization": ("/api/organizations", {"name": "Limit test org"}),
-        "contact": ("/api/contacts", {"name": "Limit test", "organization_id": contact["organization"]["id"]}),
+        "contact": (
+            "/api/contacts",
+            {"name": "Limit test", "organization_id": contact["organization"]["id"]},
+        ),
         "deal": (
             "/api/deals",
             {
@@ -63,7 +68,12 @@ def test_length_limits(client, make: Make, kind, field, limit):
         ),
         "activity": (
             "/api/activities",
-            {"type": "note", "description": "x", "occurred_at": "2026-11-16T10:00", "deal_id": deal["id"]},
+            {
+                "type": "note",
+                "description": "x",
+                "occurred_at": "2026-11-16T10:00",
+                "deal_id": deal["id"],
+            },
         ),
     }
     path, body = base[kind]
@@ -85,7 +95,9 @@ def test_contact_needs_an_organization_that_exists(client):
 @pytest.mark.parametrize("email", ["ann", "ann@", "ann@acme", "@acme.com", "ann smith@acme.com"])
 def test_badly_formed_email_is_refused(client, make: Make, email):
     org = make.org()
-    response = client.post("/api/contacts", json={"name": "Ann", "organization_id": org["id"], "email": email})
+    response = client.post(
+        "/api/contacts", json={"name": "Ann", "organization_id": org["id"], "email": email}
+    )
     assert errors(response) == {"email": "Enter a valid email address, like name@company.com."}
 
 
@@ -93,7 +105,8 @@ def test_used_email_in_different_case_is_refused(client, make: Make):
     make.contact(email="ann@acme.example.com")
     org = make.org()
     response = client.post(
-        "/api/contacts", json={"name": "Ann 2", "organization_id": org["id"], "email": " ANN@Acme.Example.com "}
+        "/api/contacts",
+        json={"name": "Ann 2", "organization_id": org["id"], "email": " ANN@Acme.Example.com "},
     )
     assert errors(response) == {"email": "Another contact already uses this email."}
 
@@ -104,7 +117,11 @@ def test_emails_are_stored_trimmed_and_lower_case_and_many_can_be_blank(client, 
     # A contact keeps its own email when saved again.
     response = client.put(
         f"/api/contacts/{contact['id']}",
-        json={"name": contact["name"], "organization_id": contact["organization"]["id"], "email": contact["email"]},
+        json={
+            "name": contact["name"],
+            "organization_id": contact["organization"]["id"],
+            "email": contact["email"],
+        },
     )
     assert response.status_code == 200
     no_email = [make.contact(), make.contact(email=""), make.contact(email="   ")]
@@ -178,13 +195,17 @@ def test_deal_needs_a_close_date_and_a_known_stage(client, make: Make):
     }
     response = client.post("/api/deals", json={**body, "stage": "new"})
     assert errors(response) == {"close_date": "Enter a close date."}
-    response = client.post("/api/deals", json={**body, "stage": "maybe", "close_date": "2026-12-01"})
+    response = client.post(
+        "/api/deals", json={**body, "stage": "maybe", "close_date": "2026-12-01"}
+    )
     assert errors(response) == {"stage": "Choose a stage."}
 
 
 def test_activity_needs_a_type_a_description_and_when_it_happened(client, make: Make):
     contact = make.contact()
-    response = client.post("/api/activities", json={"contact_id": contact["id"], "description": "  "})
+    response = client.post(
+        "/api/activities", json={"contact_id": contact["id"], "description": "  "}
+    )
     assert errors(response) == {
         "type": "Choose a type.",
         "description": "Enter a description.",
@@ -192,6 +213,11 @@ def test_activity_needs_a_type_a_description_and_when_it_happened(client, make: 
     }
     response = client.post(
         "/api/activities",
-        json={"contact_id": contact["id"], "type": "meeting", "description": "x", "occurred_at": "2026-11-16T10:00"},
+        json={
+            "contact_id": contact["id"],
+            "type": "meeting",
+            "description": "x",
+            "occurred_at": "2026-11-16T10:00",
+        },
     )
     assert errors(response) == {"type": "Choose a type."}

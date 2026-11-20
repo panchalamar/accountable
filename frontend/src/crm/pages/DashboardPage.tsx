@@ -16,7 +16,14 @@ export function DashboardPage() {
   const [adding, setAdding] = useState(false);
 
   if (dashboard.isError) {
-    return <LoadFailed error={dashboard.error} title="Dashboard" backTo="/deals" backLabel="Go to Deals" />;
+    return (
+      <LoadFailed
+        error={dashboard.error}
+        title="Dashboard"
+        backTo="/deals"
+        backLabel="Go to Deals"
+      />
+    );
   }
   const data = dashboard.data;
 
@@ -27,7 +34,11 @@ export function DashboardPage() {
           title="Dashboard"
           context={data ? `Figures as of ${formatDate(data.today)}` : null}
           actions={
-            <button type="button" className="btn btn-primary h-[42px]" onClick={() => setAdding(true)}>
+            <button
+              type="button"
+              className="btn btn-primary h-[42px]"
+              onClick={() => setAdding(true)}
+            >
               <Plus size={18} aria-hidden="true" />
               Add deal
             </button>
@@ -43,7 +54,10 @@ export function DashboardPage() {
         )}
       </div>
       {/* The dark column runs from under the top bar to the bottom of the page. */}
-      <aside className="on-dark bg-ink px-[26px] pb-10 pt-7 text-white" aria-label="Follow-ups and recent activity">
+      <aside
+        className="on-dark bg-ink px-[26px] pb-10 pt-7 text-white"
+        aria-label="Follow-ups and recent activity"
+      >
         {data ? (
           <>
             <FollowUps overdue={data.follow_ups.overdue} upcoming={data.follow_ups.upcoming} />

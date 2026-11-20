@@ -70,7 +70,12 @@ def test_each_slot_gives_its_value_by_stage_and_lists_its_deals():
         TODAY,
     )
     (dec,) = result["slots"]
-    assert dec["by_stage"] == {"new": 0, "qualified": 0, "proposal": 500_000, "negotiation": 950_000}
+    assert dec["by_stage"] == {
+        "new": 0,
+        "qualified": 0,
+        "proposal": 500_000,
+        "negotiation": 950_000,
+    }
     assert [d["value"] for d in dec["deals"]] == [950_000, 400_000, 100_000]
     assert set(dec["deals"][0]) == {"id", "name", "stage", "value", "close_date"}
 

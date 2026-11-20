@@ -6,7 +6,12 @@ export class ApiError extends Error {
   fieldErrors: Record<string, string>;
   details: Record<string, unknown>;
 
-  constructor(status: number, message: string, fieldErrors: Record<string, string> = {}, details = {}) {
+  constructor(
+    status: number,
+    message: string,
+    fieldErrors: Record<string, string> = {},
+    details = {},
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
@@ -15,7 +20,8 @@ export class ApiError extends Error {
   }
 }
 
-export const CANT_REACH = "Can't reach Accountable's server. Check that npm run dev is still running.";
+export const CANT_REACH =
+  "Can't reach Accountable's server. Check that npm run dev is still running.";
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -41,7 +47,11 @@ export async function request<T>(method: Method, path: string, body?: unknown): 
   }
 
   if (!response.ok) {
-    const payload = (data ?? {}) as { message?: string; errors?: Record<string, string>; details?: object };
+    const payload = (data ?? {}) as {
+      message?: string;
+      errors?: Record<string, string>;
+      details?: object;
+    };
     if (response.status >= 500 && !payload.message) {
       throw new ApiError(response.status, CANT_REACH);
     }

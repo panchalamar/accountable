@@ -37,7 +37,9 @@ type Props = {
 };
 
 function columnsOf(deals: Deal[]): Columns {
-  return Object.fromEntries(STAGES.map((s) => [s, deals.filter((d) => d.stage === s).map((d) => d.id)])) as Columns;
+  return Object.fromEntries(
+    STAGES.map((s) => [s, deals.filter((d) => d.stage === s).map((d) => d.id)]),
+  ) as Columns;
 }
 
 // The board: six columns with dnd-kit's sortable pattern for several
@@ -97,7 +99,8 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
       let index = target.length;
       if (overIndex >= 0) {
         const below =
-          active.rect.current.translated && active.rect.current.translated.top > over.rect.top + over.rect.height / 2;
+          active.rect.current.translated &&
+          active.rect.current.translated.top > over.rect.top + over.rect.height / 2;
         index = overIndex + (below ? 1 : 0);
       }
       target.splice(index, 0, Number(active.id));
@@ -127,7 +130,8 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
     const beforeId = column[at + 1] ?? null;
 
     const original = columnsOf(deals)[deal.stage];
-    const unchanged = to === deal.stage && original[original.indexOf(deal.id) + 1] === (beforeId ?? undefined);
+    const unchanged =
+      to === deal.stage && original[original.indexOf(deal.id) + 1] === (beforeId ?? undefined);
     if (unchanged) {
       setDragging(null);
       return;
@@ -145,7 +149,9 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
   // The stage menu moves a card to the top of the chosen column, and keeps
   // focus on it, also after the reopen dialog (Reopen or Cancel).
   function onStage(deal: Deal, stage: Stage) {
-    const sent = onMove(deal, stage, topCardId(deals, stage, deal.id), { refocus: () => setFocusId(deal.id) });
+    const sent = onMove(deal, stage, topCardId(deals, stage, deal.id), {
+      refocus: () => setFocusId(deal.id),
+    });
     if (sent) setFocusId(deal.id);
   }
 
@@ -154,17 +160,22 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
     onDragStart: ({ active }) => `Picked up ${nameOf(active.id)}.`,
     onDragOver: ({ active, over }) => {
       const stage = findStage(over?.id);
-      return stage ? `${nameOf(active.id)} is over ${STAGE_LABEL[stage]}.` : `${nameOf(active.id)} is no longer over a column.`;
+      return stage
+        ? `${nameOf(active.id)} is over ${STAGE_LABEL[stage]}.`
+        : `${nameOf(active.id)} is no longer over a column.`;
     },
     onDragEnd: ({ active, over }) => {
       const stage = findStage(over?.id);
-      return stage ? `Dropped ${nameOf(active.id)} in ${STAGE_LABEL[stage]}.` : `Dropped ${nameOf(active.id)}.`;
+      return stage
+        ? `Dropped ${nameOf(active.id)} in ${STAGE_LABEL[stage]}.`
+        : `Dropped ${nameOf(active.id)}.`;
     },
     onDragCancel: ({ active }) => `Stopped dragging ${nameOf(active.id)}. It's back where it was.`,
   };
 
   const active = activeId !== null ? byId.get(activeId) : undefined;
-  const visible = (stage: Stage) => columns[stage].map((id) => byId.get(id)).filter(Boolean) as Deal[];
+  const visible = (stage: Stage) =>
+    columns[stage].map((id) => byId.get(id)).filter(Boolean) as Deal[];
 
   return (
     <DndContext
@@ -180,7 +191,8 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
       accessibility={{
         announcements,
         screenReaderInstructions: {
-          draggable: "Drag with a pointer, or use the card's Stage button to move it with the keyboard.",
+          draggable:
+            "Drag with a pointer, or use the card's Stage button to move it with the keyboard.",
         },
       }}
     >
@@ -199,8 +211,9 @@ export function Board({ deals, totals, today, onAdd, onMove }: Props) {
           />
         ))}
       </div>
-      <DragOverlay>{active ? <DealCardBody deal={active} today={today} overlay /> : null}</DragOverlay>
+      <DragOverlay>
+        {active ? <DealCardBody deal={active} today={today} overlay /> : null}
+      </DragOverlay>
     </DndContext>
   );
 }
-

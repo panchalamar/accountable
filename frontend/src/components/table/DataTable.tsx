@@ -87,7 +87,8 @@ export function DataTable<T extends RowData>({
         },
         sortDescFirst: column.descFirst ?? false,
         sortUndefined: "last",
-        sortFn: (a, b, id) => compareValues(a.getValue(id) as SortValue, b.getValue(id) as SortValue),
+        sortFn: (a, b, id) =>
+          compareValues(a.getValue(id) as SortValue, b.getValue(id) as SortValue),
       })),
     [columns],
   );
@@ -119,61 +120,90 @@ export function DataTable<T extends RowData>({
         </p>
       </div>
       <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-[14px]">
-        <caption className="sr-only">{caption}</caption>
-        <thead>
-          <tr>
-            {columns.map((column) => {
-              const isSorted = sortedBy?.id === column.id ? (sortedBy.desc ? "descending" : "ascending") : "none";
-              const tableColumn = table.getColumn(column.id);
-              const Icon = isSorted === "ascending" ? ArrowUp : isSorted === "descending" ? ArrowDown : ArrowUpDown;
-              return (
-                <th
-                  key={column.id}
-                  scope="col"
-                  aria-sort={isSorted}
-                  className={`pb-2 pt-1 text-[13px] font-medium text-ink-muted ${column.align === "right" || column.mono ? "text-right" : "text-left"} px-3 first:pl-0`}
-                  style={{ width: column.width }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => tableColumn?.toggleSorting(isSorted === "none" ? column.descFirst ?? false : isSorted === "ascending")}
-                    className={`inline-flex items-center gap-1.5 rounded-[6px] py-1 hover:text-ink ${isSorted !== "none" ? "text-ink" : ""} ${column.align === "right" || column.mono ? "flex-row-reverse" : ""}`}
+        <table className="w-full border-collapse text-[14px]">
+          <caption className="sr-only">{caption}</caption>
+          <thead>
+            <tr>
+              {columns.map((column) => {
+                const isSorted =
+                  sortedBy?.id === column.id
+                    ? sortedBy.desc
+                      ? "descending"
+                      : "ascending"
+                    : "none";
+                const tableColumn = table.getColumn(column.id);
+                const Icon =
+                  isSorted === "ascending"
+                    ? ArrowUp
+                    : isSorted === "descending"
+                      ? ArrowDown
+                      : ArrowUpDown;
+                return (
+                  <th
+                    key={column.id}
+                    scope="col"
+                    aria-sort={isSorted}
+                    className={`pb-2 pt-1 text-[13px] font-medium text-ink-muted ${column.align === "right" || column.mono ? "text-right" : "text-left"} px-3 first:pl-0`}
+                    style={{ width: column.width }}
                   >
-                    {column.header}
-                    <Icon size={14} aria-hidden="true" className={isSorted === "none" ? "opacity-50" : ""} />
-                  </button>
-                </th>
-              );
-            })}
-            {rowActions ? (
-              <th scope="col" className="w-[150px] pb-2 pt-1 text-right text-[13px] font-medium text-ink-muted">
-                <span className="sr-only">Actions</span>
-              </th>
-            ) : null}
-          </tr>
-        </thead>
-        <tbody>
-          {shown.map((row) => (
-            <tr key={row.id} className="border-t border-divider hover:bg-[#F7FAFA]">
-              {columns.map((column) => (
-                <td
-                  key={column.id}
-                  className={`px-3 py-[11px] align-middle first:pl-0 ${column.align === "right" || column.mono ? "text-right" : ""} ${column.mono ? "num whitespace-nowrap text-[13.5px]" : ""}`}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        tableColumn?.toggleSorting(
+                          isSorted === "none"
+                            ? (column.descFirst ?? false)
+                            : isSorted === "ascending",
+                        )
+                      }
+                      className={`inline-flex items-center gap-1.5 rounded-[6px] py-1 hover:text-ink ${isSorted !== "none" ? "text-ink" : ""} ${column.align === "right" || column.mono ? "flex-row-reverse" : ""}`}
+                    >
+                      {column.header}
+                      <Icon
+                        size={14}
+                        aria-hidden="true"
+                        className={isSorted === "none" ? "opacity-50" : ""}
+                      />
+                    </button>
+                  </th>
+                );
+              })}
+              {rowActions ? (
+                <th
+                  scope="col"
+                  className="w-[150px] pb-2 pt-1 text-right text-[13px] font-medium text-ink-muted"
                 >
-                  {column.render ? column.render(row.original as T) : column.text(row.original as T)}
-                </td>
-              ))}
-              {rowActions ? <td className="py-[7px] pl-3 text-right whitespace-nowrap">{rowActions(row.original as T)}</td> : null}
+                  <span className="sr-only">Actions</span>
+                </th>
+              ) : null}
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {shown.length === 0 ? (
-        <p className="border-t border-divider py-8 text-center text-ink-muted">
-          {search.trim() ? `No ${noun.many} match '${search.trim()}'` : emptyMessage}
-        </p>
-      ) : null}
+          </thead>
+          <tbody>
+            {shown.map((row) => (
+              <tr key={row.id} className="border-t border-divider hover:bg-[#F7FAFA]">
+                {columns.map((column) => (
+                  <td
+                    key={column.id}
+                    className={`px-3 py-[11px] align-middle first:pl-0 ${column.align === "right" || column.mono ? "text-right" : ""} ${column.mono ? "num whitespace-nowrap text-[13.5px]" : ""}`}
+                  >
+                    {column.render
+                      ? column.render(row.original as T)
+                      : column.text(row.original as T)}
+                  </td>
+                ))}
+                {rowActions ? (
+                  <td className="py-[7px] pl-3 text-right whitespace-nowrap">
+                    {rowActions(row.original as T)}
+                  </td>
+                ) : null}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {shown.length === 0 ? (
+          <p className="border-t border-divider py-8 text-center text-ink-muted">
+            {search.trim() ? `No ${noun.many} match '${search.trim()}'` : emptyMessage}
+          </p>
+        ) : null}
       </div>
     </div>
   );

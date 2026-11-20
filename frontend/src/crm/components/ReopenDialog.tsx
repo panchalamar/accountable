@@ -18,7 +18,14 @@ type Props = {
 
 // Moving a Won or Lost deal back to an open stage asks for a new expected
 // close date, 30 days from today by default, so it doesn't show as late.
-export function ReopenDialog({ open, dealName, stage, onReopen, onCancel, onCloseAutoFocus }: Props) {
+export function ReopenDialog({
+  open,
+  dealName,
+  stage,
+  onReopen,
+  onCancel,
+  onCloseAutoFocus,
+}: Props) {
   return (
     <FormDialog
       open={open}

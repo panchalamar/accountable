@@ -22,7 +22,14 @@ export function ContactPage() {
   const [deleting, setDeleting] = useState(false);
 
   if (contact.isError) {
-    return <LoadFailed error={contact.error} title="Contact" backTo="/contacts" backLabel="Go to Contacts" />;
+    return (
+      <LoadFailed
+        error={contact.error}
+        title="Contact"
+        backTo="/contacts"
+        backLabel="Go to Contacts"
+      />
+    );
   }
   const person = contact.data;
   if (!person) {
@@ -54,7 +61,11 @@ export function ContactPage() {
               <Pencil size={16} aria-hidden="true" />
               Edit
             </button>
-            <button type="button" className="btn btn-secondary text-alert-strong" onClick={() => setDeleting(true)}>
+            <button
+              type="button"
+              className="btn btn-secondary text-alert-strong"
+              onClick={() => setDeleting(true)}
+            >
               <Trash size={16} aria-hidden="true" />
               Delete
             </button>
@@ -86,7 +97,10 @@ export function ContactPage() {
           </section>
           <section className="panel p-6" aria-labelledby="deals-h">
             <h2 id="deals-h" className="mb-3 text-[17px] font-semibold">
-              Main contact on <span className="num text-[14px] font-medium text-ink-muted">{person.deals.length}</span>
+              Main contact on{" "}
+              <span className="num text-[14px] font-medium text-ink-muted">
+                {person.deals.length}
+              </span>
             </h2>
             {person.deals.length === 0 ? (
               <p className="text-ink-muted">Not the main contact on any deal.</p>
@@ -95,7 +109,10 @@ export function ContactPage() {
                 {person.deals.map((d) => (
                   <li key={d.id} className="border-t border-divider py-2.5 first:border-t-0">
                     <div className="flex items-center justify-between gap-3">
-                      <Link to={`/deals/${d.id}`} className="font-semibold text-ink hover:underline">
+                      <Link
+                        to={`/deals/${d.id}`}
+                        className="font-semibold text-ink hover:underline"
+                      >
                         {d.name}
                       </Link>
                       <StageChip stage={d.stage} />
@@ -111,7 +128,12 @@ export function ContactPage() {
           </section>
         </div>
         <Timeline
-          on={{ kind: "contact", id: person.id, name: person.name, organization: person.organization }}
+          on={{
+            kind: "contact",
+            id: person.id,
+            name: person.name,
+            organization: person.organization,
+          }}
           items={timeline.data}
           loading={timeline.isLoading}
         />

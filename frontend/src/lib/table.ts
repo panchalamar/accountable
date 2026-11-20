@@ -2,7 +2,10 @@
 // browser.
 
 /** True when any of the row's shown text contains the search, ignoring case. */
-export function matchesSearch(shownText: Array<string | null | undefined>, search: string): boolean {
+export function matchesSearch(
+  shownText: Array<string | null | undefined>,
+  search: string,
+): boolean {
   const needle = search.trim().toLowerCase();
   if (!needle) return true;
   return shownText.some((text) => (text ?? "").toLowerCase().includes(needle));

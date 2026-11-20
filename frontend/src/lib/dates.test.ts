@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { formatDate, formatLongDate, formatWhen, parseDate, parseDateTime, toISODate } from "./dates";
+import {
+  formatDate,
+  formatLongDate,
+  formatWhen,
+  parseDate,
+  parseDateTime,
+  toISODate,
+} from "./dates";
 
 describe("dates", () => {
   it('formats as "Nov 16, 2026"', () => {

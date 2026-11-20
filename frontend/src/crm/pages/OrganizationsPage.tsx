@@ -70,7 +70,14 @@ export function OrganizationsPage() {
   );
 
   if (organizations.isError) {
-    return <LoadFailed error={organizations.error} title="Organizations" backTo="/" backLabel="Go to the dashboard" />;
+    return (
+      <LoadFailed
+        error={organizations.error}
+        title="Organizations"
+        backTo="/"
+        backLabel="Go to the dashboard"
+      />
+    );
   }
   const rows = organizations.data ?? [];
 
@@ -78,9 +85,17 @@ export function OrganizationsPage() {
     <Page>
       <PageHeader
         title="Organizations"
-        context={organizations.data ? countLabel(rows.length, rows.length, "organization", "organizations") : null}
+        context={
+          organizations.data
+            ? countLabel(rows.length, rows.length, "organization", "organizations")
+            : null
+        }
         actions={
-          <button type="button" className="btn btn-primary h-[42px]" onClick={() => setAdding(true)}>
+          <button
+            type="button"
+            className="btn btn-primary h-[42px]"
+            onClick={() => setAdding(true)}
+          >
             <Plus size={18} aria-hidden="true" />
             Add organization
           </button>
@@ -101,14 +116,22 @@ export function OrganizationsPage() {
             toolbar={<SearchBox value={search} onChange={setSearch} label="Search organizations" />}
             emptyMessage="No organizations yet. Add the companies you do business with."
             rowActions={(o) => (
-              <RowActions name={o.name} onEdit={() => setEditing(o)} onDelete={() => setDeleting(o)} />
+              <RowActions
+                name={o.name}
+                onEdit={() => setEditing(o)}
+                onDelete={() => setDeleting(o)}
+              />
             )}
           />
         </section>
       )}
       <OrganizationForm open={adding} onOpenChange={setAdding} />
       {editing ? (
-        <OrganizationForm open onOpenChange={(open) => !open && setEditing(null)} organization={editing} />
+        <OrganizationForm
+          open
+          onOpenChange={(open) => !open && setEditing(null)}
+          organization={editing}
+        />
       ) : null}
       {deleting ? (
         <DeleteDialog

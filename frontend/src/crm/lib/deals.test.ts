@@ -60,7 +60,12 @@ describe("board totals", () => {
   const totals = boardTotals(deals, TODAY);
 
   it("counts open deals only for the board", () => {
-    expect(totals.open).toEqual({ count: 4, value: 2_690_000, expected: 52_000 + 34_000 + 440_000 + 712_500, late: 1 });
+    expect(totals.open).toEqual({
+      count: 4,
+      value: 2_690_000,
+      expected: 52_000 + 34_000 + 440_000 + 712_500,
+      late: 1,
+    });
   });
 
   it("gives each column its count and value, and open columns their expected revenue", () => {

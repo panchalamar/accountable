@@ -49,7 +49,8 @@ def test_the_same_holds_for_an_activity_logged_on_a_deal(client, make: Make):
 def test_an_activity_must_keep_at_least_one_link(client, make: Make):
     contact = make.contact()
     response = client.post(
-        "/api/activities", json={"type": "note", "description": "Loose", "occurred_at": "2026-11-16T09:00"}
+        "/api/activities",
+        json={"type": "note", "description": "Loose", "occurred_at": "2026-11-16T09:00"},
     )
     assert response.status_code == 422
     assert response.json()["errors"] == {"link": "Link the activity to a contact or a deal."}
@@ -69,7 +70,8 @@ def test_editing_keeps_links_after_the_contact_moves_organization(client, make: 
     deal = make.deal(lead)
     activity = make.activity(helper, deal, description="Before the move")
     client.put(
-        f"/api/contacts/{helper['id']}", json={"name": helper["name"], "organization_id": make.org()["id"]}
+        f"/api/contacts/{helper['id']}",
+        json={"name": helper["name"], "organization_id": make.org()["id"]},
     )
     response = client.put(
         f"/api/activities/{activity['id']}",
@@ -83,7 +85,10 @@ def test_editing_keeps_links_after_the_contact_moves_organization(client, make: 
     )
     assert response.status_code == 200, response.text
     assert response.json()["description"] == "Edited after the move"
-    assert (response.json()["contact"]["id"], response.json()["deal"]["id"]) == (helper["id"], deal["id"])
+    assert (response.json()["contact"]["id"], response.json()["deal"]["id"]) == (
+        helper["id"],
+        deal["id"],
+    )
 
 
 def test_patch_sets_done_and_unsets_it(client, make: Make):

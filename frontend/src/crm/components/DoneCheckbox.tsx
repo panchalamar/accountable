@@ -18,7 +18,15 @@ type Props = {
 };
 
 // A follow-up's Done checkbox. Ticking saves at once.
-export function DoneCheckbox({ id, done, description, onDark, onChange, onError, elementId }: Props) {
+export function DoneCheckbox({
+  id,
+  done,
+  description,
+  onDark,
+  onChange,
+  onError,
+  elementId,
+}: Props) {
   const setDone = useSetDone();
   const base = onDark
     ? "border-sea-mist bg-transparent hover:border-primary data-[state=checked]:border-primary data-[state=checked]:bg-primary text-ink"

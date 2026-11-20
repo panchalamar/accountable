@@ -76,7 +76,11 @@ def test_reopening_without_a_close_date_is_refused(make: Make):
 def test_reopening_with_a_date_sets_it(make: Make):
     deal = make.deal(stage="won")
     moved = make.move(deal, "proposal", close_date="2026-12-16").json()
-    assert (moved["stage"], moved["close_date"], moved["probability"]) == ("proposal", "2026-12-16", 50)
+    assert (moved["stage"], moved["close_date"], moved["probability"]) == (
+        "proposal",
+        "2026-12-16",
+        50,
+    )
     deal = make.deal(stage="lost")
     edited = make.edit_deal(deal, stage="qualified", close_date="2026-12-20").json()
     assert (edited["stage"], edited["close_date"]) == ("qualified", "2026-12-20")
@@ -88,9 +92,13 @@ def test_every_stage_change_adds_a_row_with_from_to_and_the_time(client, make: M
     make.edit_deal(make.get(f"/api/deals/{deal['id']}"), stage="proposal")
     assert history(client, deal["id"]) == [("new", "qualified"), ("qualified", "proposal")]
     with client.app.state.engine.connect() as conn:
-        times = conn.execute(
-            select(stage_changes.c.changed_at).where(stage_changes.c.deal_id == deal["id"])
-        ).scalars().all()
+        times = (
+            conn.execute(
+                select(stage_changes.c.changed_at).where(stage_changes.c.deal_id == deal["id"])
+            )
+            .scalars()
+            .all()
+        )
     assert times == [FIXED_NOW, FIXED_NOW]
 
 
@@ -152,5 +160,7 @@ def test_the_edit_and_the_move_follow_the_same_rules(client, make: Make, start, 
     edited = make.edit_deal(by_edit, stage=target, close_date=close_date or "2026-12-31").json()
 
     fields = ("stage", "probability", "close_date", "furthest_stage", "position")
-    assert {k: moved[k] for k in fields if k != "position"} == {k: edited[k] for k in fields if k != "position"}
+    assert {k: moved[k] for k in fields if k != "position"} == {
+        k: edited[k] for k in fields if k != "position"
+    }
     assert history(client, by_move["id"]) == history(client, by_edit["id"]) == [(start, target)]

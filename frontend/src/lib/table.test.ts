@@ -6,7 +6,12 @@ import { countLabel, matchesSearch, sortRows } from "./table";
 
 describe("table search", () => {
   it("ignores case and matches any shown text, such as the organization or a formatted amount", () => {
-    const shown = ["Steel supply agreement 2027", "Northwind Metals", formatMoney(950000), formatDate("2026-12-11")];
+    const shown = [
+      "Steel supply agreement 2027",
+      "Northwind Metals",
+      formatMoney(950000),
+      formatDate("2026-12-11"),
+    ];
     expect(matchesSearch(shown, "NORTHWIND")).toBe(true);
     expect(matchesSearch(shown, "$950,000")).toBe(true);
     expect(matchesSearch(shown, "dec 11")).toBe(true);
@@ -31,7 +36,11 @@ describe("table sort", () => {
   it("sorts money as numbers, not text", () => {
     expect(sortRows(deals, (d) => d.value).map((d) => d.value)).toEqual([90000, 250000, 1000000]);
     // As text, "$90,000" would come after "$250,000".
-    expect(sortRows(deals, (d) => formatMoney(d.value)).map((d) => d.name)).not.toEqual(["a", "c", "b"]);
+    expect(sortRows(deals, (d) => formatMoney(d.value)).map((d) => d.name)).not.toEqual([
+      "a",
+      "c",
+      "b",
+    ]);
     expect(sortRows(deals, (d) => d.value, true).map((d) => d.name)).toEqual(["b", "c", "a"]);
   });
 

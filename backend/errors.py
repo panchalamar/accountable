@@ -105,11 +105,13 @@ def validation_errors(errors: list[dict[str, Any]]) -> dict[str, str]:
     return out
 
 
-async def _app_error(_request: Request, exc: AppError) -> JSONResponse:
+async def _app_error(_request: Request, exc: Exception) -> JSONResponse:
+    assert isinstance(exc, AppError), "installed for AppError only"
     return JSONResponse(status_code=exc.status, content=exc.body())
 
 
-async def _request_validation_error(_request: Request, exc: RequestValidationError) -> JSONResponse:
+async def _request_validation_error(_request: Request, exc: Exception) -> JSONResponse:
+    assert isinstance(exc, RequestValidationError), "installed for RequestValidationError only"
     return JSONResponse(
         status_code=422,
         content={"message": CHECK_FIELDS, "errors": validation_errors(list(exc.errors()))},
@@ -117,5 +119,5 @@ async def _request_validation_error(_request: Request, exc: RequestValidationErr
 
 
 def install(app: FastAPI) -> None:
-    app.add_exception_handler(AppError, _app_error)  # type: ignore[arg-type]
-    app.add_exception_handler(RequestValidationError, _request_validation_error)  # type: ignore[arg-type]
+    app.add_exception_handler(AppError, _app_error)
+    app.add_exception_handler(RequestValidationError, _request_validation_error)

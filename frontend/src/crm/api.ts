@@ -26,7 +26,13 @@ export type Organization = {
   notes: string | null;
   created_at: string;
   updated_at: string;
-  contacts: { id: number; name: string; job_title: string | null; email: string | null; status: Status }[];
+  contacts: {
+    id: number;
+    name: string;
+    job_title: string | null;
+    email: string | null;
+    status: Status;
+  }[];
   deals: {
     id: number;
     name: string;
@@ -51,7 +57,14 @@ export type ContactRow = {
 export type Contact = ContactRow & {
   created_at: string;
   updated_at: string;
-  deals: { id: number; name: string; stage: Stage; value: number; probability: number; close_date: string }[];
+  deals: {
+    id: number;
+    name: string;
+    stage: Stage;
+    value: number;
+    probability: number;
+    close_date: string;
+  }[];
 };
 
 export type Deal = {
@@ -82,9 +95,21 @@ export type Activity = {
 
 export type TimelineItem =
   | (Activity & { kind: "activity"; at: string })
-  | { kind: "stage_change"; id: number; deal: Link; from_stage: Stage; to_stage: Stage; at: string };
+  | {
+      kind: "stage_change";
+      id: number;
+      deal: Link;
+      from_stage: Stage;
+      to_stage: Stage;
+      at: string;
+    };
 
-export type OrganizationDeleteCheck = { can_delete: boolean; message: string; contacts: number; deals: number };
+export type OrganizationDeleteCheck = {
+  can_delete: boolean;
+  message: string;
+  contacts: number;
+  deals: number;
+};
 export type ContactDeleteCheck = {
   can_delete: boolean;
   message: string;
@@ -101,7 +126,12 @@ export type DealDeleteCheck = {
 };
 export type DeleteCheck = { can_delete: boolean; message: string; blocking_deals?: Link[] };
 
-export type OrganizationInput = { name: string; website?: string; industry?: string; notes?: string };
+export type OrganizationInput = {
+  name: string;
+  website?: string;
+  industry?: string;
+  notes?: string;
+};
 export type ContactInput = {
   name: string;
   organization_id: number | null;
@@ -155,8 +185,23 @@ export type FollowUp = {
 };
 
 export type RecentItem =
-  | { kind: "activity"; id: number; type: ActivityType; description: string; at: string; contact: Link | null; deal: Link | null }
-  | { kind: "stage_change"; id: number; deal: Link; from_stage: Stage; to_stage: Stage; at: string };
+  | {
+      kind: "activity";
+      id: number;
+      type: ActivityType;
+      description: string;
+      at: string;
+      contact: Link | null;
+      deal: Link | null;
+    }
+  | {
+      kind: "stage_change";
+      id: number;
+      deal: Link;
+      from_stage: Stage;
+      to_stage: Stage;
+      at: string;
+    };
 
 export type Dashboard = {
   today: string;
@@ -209,27 +254,45 @@ export function refreshAfterSave(queryClient: QueryClient) {
 // Queries
 
 export const useOrganizations = () =>
-  useQuery({ queryKey: keys.organizations, queryFn: () => api.get<OrganizationRow[]>("/organizations") });
+  useQuery({
+    queryKey: keys.organizations,
+    queryFn: () => api.get<OrganizationRow[]>("/organizations"),
+  });
 
 export const useOrganization = (id: number) =>
-  useQuery({ queryKey: keys.organization(id), queryFn: () => api.get<Organization>(`/organizations/${id}`), retry: false });
+  useQuery({
+    queryKey: keys.organization(id),
+    queryFn: () => api.get<Organization>(`/organizations/${id}`),
+    retry: false,
+  });
 
 export const useContacts = () =>
   useQuery({ queryKey: keys.contacts, queryFn: () => api.get<ContactRow[]>("/contacts") });
 
 export const useContact = (id: number) =>
-  useQuery({ queryKey: keys.contact(id), queryFn: () => api.get<Contact>(`/contacts/${id}`), retry: false });
+  useQuery({
+    queryKey: keys.contact(id),
+    queryFn: () => api.get<Contact>(`/contacts/${id}`),
+    retry: false,
+  });
 
 export const useContactTimeline = (id: number) =>
-  useQuery({ queryKey: keys.contactTimeline(id), queryFn: () => api.get<TimelineItem[]>(`/contacts/${id}/timeline`) });
+  useQuery({
+    queryKey: keys.contactTimeline(id),
+    queryFn: () => api.get<TimelineItem[]>(`/contacts/${id}/timeline`),
+  });
 
-export const useDeals = () => useQuery({ queryKey: keys.deals, queryFn: () => api.get<Deal[]>("/deals") });
+export const useDeals = () =>
+  useQuery({ queryKey: keys.deals, queryFn: () => api.get<Deal[]>("/deals") });
 
 export const useDeal = (id: number) =>
   useQuery({ queryKey: keys.deal(id), queryFn: () => api.get<Deal>(`/deals/${id}`), retry: false });
 
 export const useDealTimeline = (id: number) =>
-  useQuery({ queryKey: keys.dealTimeline(id), queryFn: () => api.get<TimelineItem[]>(`/deals/${id}/timeline`) });
+  useQuery({
+    queryKey: keys.dealTimeline(id),
+    queryFn: () => api.get<TimelineItem[]>(`/deals/${id}/timeline`),
+  });
 
 export const useDashboard = () =>
   useQuery({ queryKey: keys.dashboard, queryFn: () => api.get<Dashboard>("/dashboard") });
@@ -246,14 +309,20 @@ function useSave<TInput, TResult>(save: (input: TInput) => Promise<TResult>) {
 
 export const useSaveOrganization = (id?: number) =>
   useSave((input: OrganizationInput) =>
-    id ? api.put<Organization>(`/organizations/${id}`, input) : api.post<Organization>("/organizations", input),
+    id
+      ? api.put<Organization>(`/organizations/${id}`, input)
+      : api.post<Organization>("/organizations", input),
   );
 
 export const useSaveContact = (id?: number) =>
-  useSave((input: ContactInput) => (id ? api.put<Contact>(`/contacts/${id}`, input) : api.post<Contact>("/contacts", input)));
+  useSave((input: ContactInput) =>
+    id ? api.put<Contact>(`/contacts/${id}`, input) : api.post<Contact>("/contacts", input),
+  );
 
 export const useSaveDeal = (id?: number) =>
-  useSave((input: DealInput) => (id ? api.put<Deal>(`/deals/${id}`, input) : api.post<Deal>("/deals", input)));
+  useSave((input: DealInput) =>
+    id ? api.put<Deal>(`/deals/${id}`, input) : api.post<Deal>("/deals", input),
+  );
 
 export const useSaveActivity = (id?: number) =>
   useSave((input: ActivityInput) =>
@@ -261,7 +330,9 @@ export const useSaveActivity = (id?: number) =>
   );
 
 export const useSetDone = () =>
-  useSave(({ id, done }: { id: number; done: boolean }) => api.patch<Activity>(`/activities/${id}`, { done }));
+  useSave(({ id, done }: { id: number; done: boolean }) =>
+    api.patch<Activity>(`/activities/${id}`, { done }),
+  );
 
 export type RecordKind = "organization" | "contact" | "deal" | "activity";
 

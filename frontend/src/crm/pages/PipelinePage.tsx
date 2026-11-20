@@ -19,7 +19,9 @@ export function PipelinePage() {
   const today = todayDate();
 
   if (deals.isError) {
-    return <LoadFailed error={deals.error} title="Pipeline" backTo="/" backLabel="Go to the dashboard" />;
+    return (
+      <LoadFailed error={deals.error} title="Pipeline" backTo="/" backLabel="Go to the dashboard" />
+    );
   }
   const onTheBoard = (deals.data ?? []).filter((d) => onBoard(d, today));
   const totals = boardTotals(onTheBoard, today);
@@ -34,9 +36,12 @@ export function PipelinePage() {
         context={
           deals.data ? (
             <p aria-live="polite">
-              <span className="num font-semibold text-ink">{formatMoney(totals.open.value)}</span> open across{" "}
-              {totals.open.count} {totals.open.count === 1 ? "deal" : "deals"}, with{" "}
-              <span className="num font-semibold text-ink">{formatMoney(totals.open.expected)}</span> expected.{" "}
+              <span className="num font-semibold text-ink">{formatMoney(totals.open.value)}</span>{" "}
+              open across {totals.open.count} {totals.open.count === 1 ? "deal" : "deals"}, with{" "}
+              <span className="num font-semibold text-ink">
+                {formatMoney(totals.open.expected)}
+              </span>{" "}
+              expected.{" "}
               {late === 0 ? "None are late." : late === 1 ? "1 is late." : `${late} are late.`}
             </p>
           ) : null

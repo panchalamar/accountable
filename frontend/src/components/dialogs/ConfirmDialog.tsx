@@ -16,14 +16,27 @@ type Props = {
 
 // Asks before something that can't be undone. When the action isn't allowed,
 // it offers only Close.
-export function ConfirmDialog({ open, onOpenChange, title, children, confirmLabel, onConfirm, busy }: Props) {
+export function ConfirmDialog({
+  open,
+  onOpenChange,
+  title,
+  children,
+  confirmLabel,
+  onConfirm,
+  busy,
+}: Props) {
   const focus = useReturnFocus();
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 z-40 bg-ink/40" />
-        <AlertDialog.Content {...focus} className="fixed left-1/2 top-[18vh] z-50 w-[calc(100vw-48px)] max-w-[520px] -translate-x-1/2 rounded-[16px] bg-panel p-7 shadow-[0_20px_60px_rgba(7,59,76,0.25)]">
-          <AlertDialog.Title className="text-[20px] font-semibold tracking-[-0.01em]">{title}</AlertDialog.Title>
+        <AlertDialog.Content
+          {...focus}
+          className="fixed left-1/2 top-[18vh] z-50 w-[calc(100vw-48px)] max-w-[520px] -translate-x-1/2 rounded-[16px] bg-panel p-7 shadow-[0_20px_60px_rgba(7,59,76,0.25)]"
+        >
+          <AlertDialog.Title className="text-[20px] font-semibold tracking-[-0.01em]">
+            {title}
+          </AlertDialog.Title>
           <AlertDialog.Description asChild>
             <div className="mt-3 text-[15px] text-ink">{children}</div>
           </AlertDialog.Description>

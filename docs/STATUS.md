@@ -166,6 +166,14 @@ Found while testing the fixes:
 
 - `docs/STANDARDS.md`, written by hand, says how code is written here. AGENTS.md points to it, and `docs/REVIEW.md` has a pass that checks each change against it.
 
+### Checks
+
+- `npm run check` runs Prettier, ESLint (recommended TypeScript, React Hooks and jsx-a11y rules, complexity at most 15) and tsc on the frontend, ruff format, ruff check (its defaults plus import order and C901 at 15) and ty on the backend, gitleaks over the git history and the working tree (`.gitleaks.toml` lets the git-ignored `.env` through), then `npm test` with at least 80% unit test coverage. `npm run check:quick` skips Playwright; `npm run format` fixes formatting.
+- ESLint runs on TypeScript 6, installed at the root, since typescript-eslint doesn't support 7 yet. `tsc` still uses the frontend's TypeScript 7.
+- Fixes to pass them, with no rule loosened or silenced: FastAPI dependencies use `Annotated` (`EngineDep`), ty's None and handler-type findings are narrowed properly, the four big form components are split up, and FollowUps and OrganizationPage no longer set state in effects. The deal form's "Add a contact at ..." link now asks for the form through router state instead of `?add=contact`.
+- Frontend unit coverage went from 47% to 99% of lines; the backend is at 98%.
+
 ## Bugs
 
 - Editing an organization: the Industry dropdown shows only the current industry, since the browser filters the datalist by what is already in the box. It should list every industry in use (spec: "suggests industries already in use"). Confirmed in Chrome: the arrow also shows only the current industry; clearing the box shows all 9.
+- Follow-ups: ticking an item hides it at once, which unmounts its `DoneCheckbox`, so if the save fails the `onError` that should bring it back never runs (`frontend/src/crm/dashboard/FollowUps.tsx`). The item stays hidden until the next refetch.

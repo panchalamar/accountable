@@ -53,7 +53,10 @@ export function boardTotals<T extends Dated & Money>(deals: T[], today: Date): B
   const columns = Object.fromEntries(
     STAGES.map((stage) => {
       const inColumn = deals.filter((d) => d.stage === stage);
-      return [stage, { count: inColumn.length, value: totalValue(inColumn), expected: totalExpected(inColumn) }];
+      return [
+        stage,
+        { count: inColumn.length, value: totalValue(inColumn), expected: totalExpected(inColumn) },
+      ];
     }),
   ) as Record<Stage, ColumnTotals>;
   const open = deals.filter((d) => OPEN_STAGES.includes(d.stage));

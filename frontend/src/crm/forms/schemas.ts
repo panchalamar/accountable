@@ -59,7 +59,9 @@ export const dealSchema = z.object({
   name: requiredText(200),
   organization_id: z.string().min(1, MESSAGES.organization),
   main_contact_id: z.string().min(1, MESSAGES.mainContact),
-  stage: z.enum(["new", "qualified", "proposal", "negotiation", "won", "lost"], { message: MESSAGES.stage }),
+  stage: z.enum(["new", "qualified", "proposal", "negotiation", "won", "lost"], {
+    message: MESSAGES.stage,
+  }),
   value: z
     .string()
     .refine((v) => parseMoney(v) !== null, MESSAGES.value)
@@ -82,4 +84,3 @@ export type OrganizationValues = z.infer<typeof organizationSchema>;
 export type ContactValues = z.infer<typeof contactSchema>;
 export type DealValues = z.infer<typeof dealSchema>;
 export type ActivityValues = z.infer<typeof activitySchema>;
-

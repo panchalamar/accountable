@@ -1,6 +1,6 @@
 import { Pencil, Plus, Trash } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router";
+import { useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 
 import { PageHeader } from "../../components/layout/PageHeader";
 import { formatDate, today } from "../../lib/dates";
@@ -18,23 +18,30 @@ import { Detail, Loading, LoadFailed, Page } from "./layout";
 export function OrganizationPage() {
   const id = Number(useParams().id);
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
+  const location = useLocation();
   const organization = useOrganization(id);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [addingContact, setAddingContact] = useState(false);
   const [addingDeal, setAddingDeal] = useState(false);
 
-  // The deal form's "Add a contact at ..." link lands here with ?add=contact.
-  useEffect(() => {
-    if (params.get("add") === "contact") {
-      setAddingContact(true);
-      setParams({}, { replace: true });
-    }
-  }, [params, setParams]);
+  // The deal form's "Add a contact at ..." link asks for the form through
+  // router state, so the URL stays clean. Closing the form clears the ask.
+  const addContactAsked = (location.state as { addContact?: boolean } | null)?.addContact === true;
+  function changeAddingContact(open: boolean) {
+    setAddingContact(open);
+    if (!open && addContactAsked) navigate(location.pathname, { replace: true, state: null });
+  }
 
   if (organization.isError) {
-    return <LoadFailed error={organization.error} title="Organization" backTo="/organizations" backLabel="Go to Organizations" />;
+    return (
+      <LoadFailed
+        error={organization.error}
+        title="Organization"
+        backTo="/organizations"
+        backLabel="Go to Organizations"
+      />
+    );
   }
   const org = organization.data;
   if (!org) {
@@ -66,7 +73,11 @@ export function OrganizationPage() {
               <Pencil size={16} aria-hidden="true" />
               Edit
             </button>
-            <button type="button" className="btn btn-secondary text-alert-strong" onClick={() => setDeleting(true)}>
+            <button
+              type="button"
+              className="btn btn-secondary text-alert-strong"
+              onClick={() => setDeleting(true)}
+            >
               <Trash size={16} aria-hidden="true" />
               Delete
             </button>
@@ -91,16 +102,25 @@ export function OrganizationPage() {
               ) : null}
             </Detail>
             <Detail label="Industry">{org.industry}</Detail>
-            <Detail label="Notes">{org.notes ? <span className="whitespace-pre-line">{org.notes}</span> : null}</Detail>
+            <Detail label="Notes">
+              {org.notes ? <span className="whitespace-pre-line">{org.notes}</span> : null}
+            </Detail>
           </dl>
         </section>
         <div className="flex flex-col gap-6">
           <section className="panel p-6" aria-labelledby="contacts-h">
             <div className="mb-3 flex items-center justify-between">
               <h2 id="contacts-h" className="text-[17px] font-semibold">
-                Contacts <span className="num text-[14px] font-medium text-ink-muted">{org.contacts.length}</span>
+                Contacts{" "}
+                <span className="num text-[14px] font-medium text-ink-muted">
+                  {org.contacts.length}
+                </span>
               </h2>
-              <button type="button" className="btn btn-secondary h-9" onClick={() => setAddingContact(true)}>
+              <button
+                type="button"
+                className="btn btn-secondary h-9"
+                onClick={() => setAddingContact(true)}
+              >
                 <Plus size={16} aria-hidden="true" />
                 Add contact
               </button>
@@ -110,8 +130,14 @@ export function OrganizationPage() {
             ) : (
               <ul>
                 {org.contacts.map((c) => (
-                  <li key={c.id} className="flex items-center gap-3 border-t border-divider py-2.5 first:border-t-0">
-                    <Link to={`/contacts/${c.id}`} className="font-semibold text-ink hover:underline">
+                  <li
+                    key={c.id}
+                    className="flex items-center gap-3 border-t border-divider py-2.5 first:border-t-0"
+                  >
+                    <Link
+                      to={`/contacts/${c.id}`}
+                      className="font-semibold text-ink hover:underline"
+                    >
                       {c.name}
                     </Link>
                     <span className="text-[14px] text-ink-muted">{c.job_title}</span>
@@ -124,9 +150,16 @@ export function OrganizationPage() {
           <section className="panel p-6" aria-labelledby="deals-h">
             <div className="mb-3 flex items-center justify-between">
               <h2 id="deals-h" className="text-[17px] font-semibold">
-                Deals <span className="num text-[14px] font-medium text-ink-muted">{org.deals.length}</span>
+                Deals{" "}
+                <span className="num text-[14px] font-medium text-ink-muted">
+                  {org.deals.length}
+                </span>
               </h2>
-              <button type="button" className="btn btn-secondary h-9" onClick={() => setAddingDeal(true)}>
+              <button
+                type="button"
+                className="btn btn-secondary h-9"
+                onClick={() => setAddingDeal(true)}
+              >
                 <Plus size={16} aria-hidden="true" />
                 Add deal
               </button>
@@ -140,7 +173,10 @@ export function OrganizationPage() {
                     key={d.id}
                     className="grid grid-cols-[minmax(0,1fr)_110px_110px_160px] items-center gap-4 border-t border-divider py-2.5 first:border-t-0"
                   >
-                    <Link to={`/deals/${d.id}`} className="truncate font-semibold text-ink hover:underline">
+                    <Link
+                      to={`/deals/${d.id}`}
+                      className="truncate font-semibold text-ink hover:underline"
+                    >
                       {d.name}
                     </Link>
                     <StageChip stage={d.stage} />
@@ -157,7 +193,11 @@ export function OrganizationPage() {
         </div>
       </div>
       <OrganizationForm open={editing} onOpenChange={setEditing} organization={org} />
-      <ContactForm open={addingContact} onOpenChange={setAddingContact} organizationId={org.id} />
+      <ContactForm
+        open={addingContact || addContactAsked}
+        onOpenChange={changeAddingContact}
+        organizationId={org.id}
+      />
       <DealForm open={addingDeal} onOpenChange={setAddingDeal} organizationId={org.id} />
       <DeleteDialog
         kind="organization"

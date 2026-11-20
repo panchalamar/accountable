@@ -1,14 +1,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { type UseFormRegister, useForm, useWatch } from "react-hook-form";
 import { Link } from "react-router";
 import { toast } from "sonner";
 
-import { DialogBody, DialogFooter, FormDialog, LoadingBody } from "../../components/dialogs/FormDialog";
+import {
+  DialogBody,
+  DialogFooter,
+  FormDialog,
+  LoadingBody,
+} from "../../components/dialogs/FormDialog";
 import { SelectField, TextField } from "../../components/fields/Field";
 import { formatDate, toISODate, today } from "../../lib/dates";
-import { type ContactRow, type Deal, type OrganizationRow, useContacts, useOrganizations, useSaveDeal } from "../api";
+import {
+  type ContactRow,
+  type Deal,
+  type OrganizationRow,
+  useContacts,
+  useOrganizations,
+  useSaveDeal,
+} from "../api";
 import { STAGES, STAGE_LABEL, STAGE_PROBABILITY, type Stage, isClosed } from "../lib/stages";
 import { type DealValues, dealSchema, parseMoney } from "./schemas";
 import { placeServerErrors } from "./serverErrors";
@@ -26,7 +38,11 @@ type Props = {
 
 export function DealForm({ open, onOpenChange, deal, organizationId, stage, onSaved }: Props) {
   return (
-    <FormDialog open={open} onOpenChange={onOpenChange} title={deal ? `Edit ${deal.name}` : "Add deal"}>
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={deal ? `Edit ${deal.name}` : "Add deal"}
+    >
       <DealFields
         deal={deal}
         organizationId={organizationId}
@@ -41,7 +57,15 @@ export function DealForm({ open, onOpenChange, deal, organizationId, stage, onSa
   );
 }
 
-const ORDER = ["name", "organization_id", "main_contact_id", "stage", "value", "probability", "close_date"] as const;
+const ORDER = [
+  "name",
+  "organization_id",
+  "main_contact_id",
+  "stage",
+  "value",
+  "probability",
+  "close_date",
+] as const;
 
 type StageNotes = {
   probabilityNote: string | null;
@@ -86,6 +110,47 @@ function DealFields(props: FieldsProps) {
   return <DealFieldsReady {...props} organizations={organizations} contacts={contacts} />;
 }
 
+function dealDefaults(deal: Deal | undefined, organizationId?: number, stage?: Stage): DealValues {
+  const startStage: Stage = deal?.stage ?? stage ?? "new";
+  if (deal) {
+    return {
+      name: deal.name,
+      organization_id: String(deal.organization.id),
+      main_contact_id: String(deal.main_contact.id),
+      stage: startStage,
+      value: String(deal.value),
+      probability: String(deal.probability),
+      close_date: deal.close_date,
+    };
+  }
+  return {
+    name: "",
+    organization_id: String(organizationId ?? ""),
+    main_contact_id: "",
+    stage: startStage,
+    value: "",
+    probability: String(STAGE_PROBABILITY[startStage]),
+    close_date: isClosed(startStage) ? toISODate(today()) : "",
+  };
+}
+
+/**
+ * The close date to show after the stage changes from `previous` to `next`,
+ * or undefined to leave it as it is.
+ */
+function closeDateForStage(next: Stage, previous: Stage, deal?: Deal): string | undefined {
+  if (isClosed(next)) return toISODate(today());
+  if (!deal) return isClosed(previous) ? "" : undefined;
+  if (isClosed(deal.stage)) return toISODate(addDays(today(), 30));
+  return deal.close_date;
+}
+
+function savedMessage(saved: Deal, deal?: Deal): string {
+  if (!deal) return `Added ${saved.name}.`;
+  if (saved.stage !== deal.stage) return `Moved ${saved.name} to ${STAGE_LABEL[saved.stage]}.`;
+  return `Saved ${saved.name}.`;
+}
+
 function DealFieldsReady({
   deal,
   organizationId,
@@ -97,23 +162,12 @@ function DealFieldsReady({
 }: FieldsProps & { organizations: OrganizationRow[]; contacts: ContactRow[] }) {
   const [formError, setFormError] = useState<string | null>(null);
   const save = useSaveDeal(deal?.id);
-  const startStage: Stage = deal?.stage ?? stage ?? "new";
-  const original = deal ? deal.stage : null;
-  const todayISO = toISODate(today());
 
   const form = useForm<DealValues>({
     resolver: zodResolver(dealSchema),
-    defaultValues: {
-      name: deal?.name ?? "",
-      organization_id: String(deal?.organization.id ?? organizationId ?? ""),
-      main_contact_id: deal ? String(deal.main_contact.id) : "",
-      stage: startStage,
-      value: deal ? String(deal.value) : "",
-      probability: String(deal?.probability ?? STAGE_PROBABILITY[startStage]),
-      close_date: deal?.close_date ?? (isClosed(startStage) ? todayISO : ""),
-    },
+    defaultValues: dealDefaults(deal, organizationId, stage),
   });
-  const { register, handleSubmit, formState, watch, setValue } = form;
+  const { register, handleSubmit, formState, control, setValue } = form;
   const errors = formState.errors;
 
   // Start on the first field, also when the form mounts after its lists load.
@@ -121,12 +175,9 @@ function DealFieldsReady({
     form.setFocus("name");
   }, [form]);
 
-  const orgId = watch("organization_id");
-  const chosenStage = watch("stage") as Stage;
-  const notes = stageNotes(original, chosenStage);
-  const organization = organizations.find((o) => String(o.id) === orgId);
-  const choices = contacts.filter((c) => String(c.organization.id) === orgId);
-  const noContacts = Boolean(orgId) && choices.length === 0;
+  const orgId = useWatch({ control, name: "organization_id" });
+  const chosenStage = useWatch({ control, name: "stage" }) as Stage;
+  const notes = stageNotes(deal ? deal.stage : null, chosenStage);
 
   function chooseStage(next: Stage) {
     if (deal && next === deal.stage) {
@@ -136,15 +187,8 @@ function DealFieldsReady({
       return;
     }
     setValue("probability", String(STAGE_PROBABILITY[next]));
-    if (isClosed(next)) {
-      setValue("close_date", todayISO);
-    } else if (deal && isClosed(deal.stage)) {
-      setValue("close_date", toISODate(addDays(today(), 30)));
-    } else if (!deal && isClosed(chosenStage)) {
-      setValue("close_date", "");
-    } else if (deal) {
-      setValue("close_date", deal.close_date);
-    }
+    const closeDate = closeDateForStage(next, chosenStage, deal);
+    if (closeDate !== undefined) setValue("close_date", closeDate);
   }
 
   const submit = handleSubmit(async (values) => {
@@ -159,11 +203,7 @@ function DealFieldsReady({
         probability: Number(values.probability),
         close_date: values.close_date,
       });
-      if (deal && saved.stage !== deal.stage) {
-        toast.success(`Moved ${saved.name} to ${STAGE_LABEL[saved.stage]}.`);
-      } else {
-        toast.success(deal ? `Saved ${saved.name}.` : `Added ${saved.name}.`);
-      }
+      toast.success(savedMessage(saved, deal));
       onDone(saved);
     } catch (error) {
       setFormError(placeServerErrors(error, form, [...ORDER]));
@@ -176,7 +216,12 @@ function DealFieldsReady({
   return (
     <form onSubmit={submit} noValidate className="flex min-h-0 flex-col">
       <DialogBody error={formError}>
-        <TextField label="Name" autoComplete="off" {...register("name")} error={errors.name?.message} />
+        <TextField
+          label="Name"
+          autoComplete="off"
+          {...register("name")}
+          error={errors.name?.message}
+        />
         <SelectField
           label="Organization"
           {...organizationField}
@@ -194,31 +239,14 @@ function DealFieldsReady({
             </option>
           ))}
         </SelectField>
-        <SelectField
-          label="Main contact"
-          {...register("main_contact_id")}
-          disabled={!orgId || noContacts}
+        <MainContactField
+          orgId={orgId}
+          organization={organizations.find((o) => String(o.id) === orgId)}
+          choices={contacts.filter((c) => String(c.organization.id) === orgId)}
+          register={register}
           error={errors.main_contact_id?.message}
-          hint={
-            noContacts && organization ? (
-              <>
-                {organization.name} has no contacts yet. Add a contact first.{" "}
-                <Link to={`/organizations/${organization.id}?add=contact`} className="link font-medium" onClick={onClose}>
-                  Add a contact at {organization.name}
-                </Link>
-              </>
-            ) : !orgId ? (
-              "Choose an organization first."
-            ) : null
-          }
-        >
-          <option value="">{orgId ? "Choose a main contact" : "Choose an organization first"}</option>
-          {choices.map((contact) => (
-            <option key={contact.id} value={contact.id}>
-              {contact.name}
-            </option>
-          ))}
-        </SelectField>
+          onClose={onClose}
+        />
         <SelectField
           label="Stage"
           {...stageField}
@@ -264,5 +292,69 @@ function DealFieldsReady({
       </DialogBody>
       <DialogFooter submitLabel={deal ? "Save" : "Add deal"} submitting={formState.isSubmitting} />
     </form>
+  );
+}
+
+type MainContactProps = {
+  orgId: string;
+  organization?: OrganizationRow;
+  choices: ContactRow[];
+  register: UseFormRegister<DealValues>;
+  error?: string;
+  onClose: () => void;
+};
+
+function MainContactField({
+  orgId,
+  organization,
+  choices,
+  register,
+  error,
+  onClose,
+}: MainContactProps) {
+  const noContacts = Boolean(orgId) && choices.length === 0;
+  return (
+    <SelectField
+      label="Main contact"
+      {...register("main_contact_id")}
+      disabled={!orgId || noContacts}
+      error={error}
+      hint={
+        noContacts && organization ? (
+          <NoContactsHint organization={organization} onClose={onClose} />
+        ) : !orgId ? (
+          "Choose an organization first."
+        ) : null
+      }
+    >
+      <option value="">{orgId ? "Choose a main contact" : "Choose an organization first"}</option>
+      {choices.map((contact) => (
+        <option key={contact.id} value={contact.id}>
+          {contact.name}
+        </option>
+      ))}
+    </SelectField>
+  );
+}
+
+function NoContactsHint({
+  organization,
+  onClose,
+}: {
+  organization: OrganizationRow;
+  onClose: () => void;
+}) {
+  return (
+    <>
+      {organization.name} has no contacts yet. Add a contact first.{" "}
+      <Link
+        to={`/organizations/${organization.id}`}
+        state={{ addContact: true }}
+        className="link font-medium"
+        onClick={onClose}
+      >
+        Add a contact at {organization.name}
+      </Link>
+    </>
   );
 }

@@ -37,7 +37,10 @@ def test_a_malformed_request_gives_422_in_plain_words(client, make: Make):
     )
     assert response.status_code == 422
     assert response.json()["message"] == "Check the highlighted fields."
-    assert all("Value error" not in m and "Input should" not in m for m in response.json()["errors"].values())
+    assert all(
+        "Value error" not in m and "Input should" not in m
+        for m in response.json()["errors"].values()
+    )
 
     response = client.post("/api/contacts", json={"name": "Ann", "organization_id": "first"})
     assert response.json()["errors"] == {"organization_id": "Enter a whole number."}

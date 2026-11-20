@@ -59,7 +59,9 @@ export function DealPage() {
               stage={d.stage}
               // The same menu as on the board: the deal goes to the top of the chosen column.
               onChoose={(stage) => {
-                const sent = mover.request(d, stage, topCardId(allDeals.data ?? [], stage, d.id), { refocus });
+                const sent = mover.request(d, stage, topCardId(allDeals.data ?? [], stage, d.id), {
+                  refocus,
+                });
                 if (sent) refocus();
               }}
               triggerClassName="inline-flex items-center gap-0.5 rounded-full"
@@ -90,7 +92,11 @@ export function DealPage() {
               <Pencil size={16} aria-hidden="true" />
               Edit
             </button>
-            <button type="button" className="btn btn-secondary text-alert-strong" onClick={() => setDeleting(true)}>
+            <button
+              type="button"
+              className="btn btn-secondary text-alert-strong"
+              onClick={() => setDeleting(true)}
+            >
               <Trash size={16} aria-hidden="true" />
               Delete
             </button>
@@ -115,7 +121,11 @@ export function DealPage() {
             <Detail label={isOpen(d.stage) ? "Expected close date" : "Closed"}>
               <span className="flex items-center gap-2">
                 <span className="num">{formatDate(d.close_date)}</span>
-                {late ? <LateChip /> : isOpen(d.stage) ? <span className="text-[13.5px] text-ink-muted">{dueIn(d.close_date, now)}</span> : null}
+                {late ? (
+                  <LateChip />
+                ) : isOpen(d.stage) ? (
+                  <span className="text-[13.5px] text-ink-muted">{dueIn(d.close_date, now)}</span>
+                ) : null}
               </span>
             </Detail>
             <Detail label="Organization">

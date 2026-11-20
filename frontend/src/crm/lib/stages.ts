@@ -62,12 +62,42 @@ type StageStyle = {
 };
 
 export const STAGE_STYLE: Record<Stage, StageStyle> = {
-  new: { fill: COLORS.cerulean, chip: COLORS.ceruleanStrong, chipText: COLORS.white, tint: "var(--tint-new)" },
-  qualified: { fill: COLORS.marigold, chip: COLORS.marigold, chipText: COLORS.midnight, tint: "var(--tint-qualified)" },
-  proposal: { fill: COLORS.coral, chip: COLORS.coral, chipText: COLORS.midnight, tint: "var(--tint-proposal)" },
-  negotiation: { fill: COLORS.midnight, chip: COLORS.midnight, chipText: COLORS.white, tint: "var(--tint-negotiation)" },
-  won: { fill: COLORS.seaGreen, chip: COLORS.seaGreen, chipText: COLORS.midnight, tint: "var(--tint-won)" },
-  lost: { fill: COLORS.inkMuted, chip: COLORS.inkMuted, chipText: COLORS.white, tint: "var(--tint-lost)" },
+  new: {
+    fill: COLORS.cerulean,
+    chip: COLORS.ceruleanStrong,
+    chipText: COLORS.white,
+    tint: "var(--tint-new)",
+  },
+  qualified: {
+    fill: COLORS.marigold,
+    chip: COLORS.marigold,
+    chipText: COLORS.midnight,
+    tint: "var(--tint-qualified)",
+  },
+  proposal: {
+    fill: COLORS.coral,
+    chip: COLORS.coral,
+    chipText: COLORS.midnight,
+    tint: "var(--tint-proposal)",
+  },
+  negotiation: {
+    fill: COLORS.midnight,
+    chip: COLORS.midnight,
+    chipText: COLORS.white,
+    tint: "var(--tint-negotiation)",
+  },
+  won: {
+    fill: COLORS.seaGreen,
+    chip: COLORS.seaGreen,
+    chipText: COLORS.midnight,
+    tint: "var(--tint-won)",
+  },
+  lost: {
+    fill: COLORS.inkMuted,
+    chip: COLORS.inkMuted,
+    chipText: COLORS.white,
+    tint: "var(--tint-lost)",
+  },
 };
 
 export const STATUSES: Status[] = ["lead", "qualified", "customer"];

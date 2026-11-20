@@ -20,10 +20,22 @@ const SIZING: Record<ChipSize, string> = {
 };
 
 /** The fully rounded chip that the CRM's stage, status and Late chips use. */
-export function Chip({ children, background, color, size = "md", className = "", style, title }: Props) {
+export function Chip({
+  children,
+  background,
+  color,
+  size = "md",
+  className = "",
+  style,
+  title,
+}: Props) {
   const sizing = SIZING[size];
   return (
-    <span className={`chip ${sizing} ${className}`} style={{ background, color, ...style }} title={title}>
+    <span
+      className={`chip ${sizing} ${className}`}
+      style={{ background, color, ...style }}
+      title={title}
+    >
       {children}
     </span>
   );

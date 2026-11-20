@@ -14,7 +14,9 @@ def test_organizations_list_with_contact_and_open_deal_counts(make: Make):
 
 
 def test_organization_page_lists_its_contacts_and_deals(make: Make):
-    org = make.org("Paged Ltd", website="https://paged.example.com", industry="Energy", notes="Big account")
+    org = make.org(
+        "Paged Ltd", website="https://paged.example.com", industry="Energy", notes="Big account"
+    )
     ann = make.contact(org, name="Ann Page", job_title="Buyer", status="customer")
     make.contact(org, name="Bob Page")
     deal = make.deal(ann, name="Paged deal")
@@ -54,7 +56,12 @@ def test_editing_each_kind_of_record_saves_every_field(client, make: Make):
     org = make.org()
     response = client.put(
         f"/api/organizations/{org['id']}",
-        json={"name": "Edited Org", "website": "edited.example.com", "industry": "Healthcare", "notes": "N"},
+        json={
+            "name": "Edited Org",
+            "website": "edited.example.com",
+            "industry": "Healthcare",
+            "notes": "N",
+        },
     )
     assert response.status_code == 200
     assert {k: response.json()[k] for k in ("name", "website", "industry", "notes")} == {

@@ -1,0 +1,14 @@
+# gitleaks' default rules. The working-tree scan skips what git ignores on
+# purpose: .env holds real keys and never leaves this machine.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Git-ignored local files"
+paths = [
+  '''(^|/)\.env$''',
+  '''(^|/)node_modules/''',
+  '''(^|/)\.venv/''',
+  '''^data/''',
+  '''^(test-results|playwright-report|frontend/coverage|htmlcov)/''',
+]

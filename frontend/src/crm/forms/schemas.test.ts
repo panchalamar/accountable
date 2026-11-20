@@ -15,7 +15,10 @@ const SERVER = {
   tooLong: "Use 200 characters or fewer.",
 };
 
-function firstError(result: { success: boolean; error?: { issues: { path: PropertyKey[]; message: string }[] } }, field: string) {
+function firstError(
+  result: { success: boolean; error?: { issues: { path: PropertyKey[]; message: string }[] } },
+  field: string,
+) {
   return result.error?.issues.find((issue) => issue.path[0] === field)?.message;
 }
 
@@ -32,12 +35,27 @@ describe("form messages", () => {
   });
 
   it("are what the schemas give", () => {
-    expect(firstError(organizationSchema.safeParse({ name: "   ", website: "", industry: "", notes: "" }), "name")).toBe(SERVER.name);
     expect(
-      firstError(organizationSchema.safeParse({ name: "x".repeat(201), website: "", industry: "", notes: "" }), "name"),
+      firstError(
+        organizationSchema.safeParse({ name: "   ", website: "", industry: "", notes: "" }),
+        "name",
+      ),
+    ).toBe(SERVER.name);
+    expect(
+      firstError(
+        organizationSchema.safeParse({
+          name: "x".repeat(201),
+          website: "",
+          industry: "",
+          notes: "",
+        }),
+        "name",
+      ),
     ).toBe(SERVER.tooLong);
     const contact = { name: "Ann", organization_id: "1", phone: "", job_title: "", status: "lead" };
-    expect(firstError(contactSchema.safeParse({ ...contact, email: "ann@acme" }), "email")).toBe(SERVER.email);
+    expect(firstError(contactSchema.safeParse({ ...contact, email: "ann@acme" }), "email")).toBe(
+      SERVER.email,
+    );
     expect(contactSchema.safeParse({ ...contact, email: "" }).success).toBe(true);
     const deal = {
       name: "D",
@@ -51,8 +69,8 @@ describe("form messages", () => {
       expect(firstError(dealSchema.safeParse({ ...deal, value }), "value")).toBe(SERVER.value);
     }
     expect(dealSchema.safeParse({ ...deal, value: "250,000" }).success).toBe(true);
-    expect(firstError(dealSchema.safeParse({ ...deal, value: "1", probability: "101" }), "probability")).toBe(
-      SERVER.probability,
-    );
+    expect(
+      firstError(dealSchema.safeParse({ ...deal, value: "1", probability: "101" }), "probability"),
+    ).toBe(SERVER.probability);
   });
 });

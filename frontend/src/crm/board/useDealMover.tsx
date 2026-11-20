@@ -33,14 +33,23 @@ export function useDealMover() {
   // cleared, so the way back is kept here.
   const refocusAfterDialog = useRef<(() => void) | undefined>(undefined);
 
-  function send(deal: Deal, stage: Stage, beforeId: number | null, closeDate: string | null = null) {
+  function send(
+    deal: Deal,
+    stage: Stage,
+    beforeId: number | null,
+    closeDate: string | null = null,
+  ) {
     const previous = queryClient.getQueryData<Deal[]>(keys.deals);
     const previousDeal = queryClient.getQueryData<Deal>(keys.deal(deal.id));
     void queryClient.cancelQueries({ queryKey: keys.deals });
     const move = { dealId: deal.id, stage, beforeId, closeDate };
     const next = applyMove(previous ?? [deal], move, today());
     if (previous) queryClient.setQueryData(keys.deals, next);
-    if (previousDeal) queryClient.setQueryData(keys.deal(deal.id), next.find((d) => d.id === deal.id));
+    if (previousDeal)
+      queryClient.setQueryData(
+        keys.deal(deal.id),
+        next.find((d) => d.id === deal.id),
+      );
 
     const changed = stage !== deal.stage;
     if (changed) setAnnouncement(`Moved ${deal.name} to ${STAGE_LABEL[stage]}`);
@@ -48,7 +57,8 @@ export function useDealMover() {
     api
       .post<Deal>(`/deals/${deal.id}/move`, { stage, before_id: beforeId, close_date: closeDate })
       .then(() => {
-        if (changed && isClosed(stage)) toast.success(`Moved to ${STAGE_LABEL[stage]}. Close date set to today.`);
+        if (changed && isClosed(stage))
+          toast.success(`Moved to ${STAGE_LABEL[stage]}. Close date set to today.`);
       })
       .catch((error) => {
         if (previous) queryClient.setQueryData(keys.deals, previous);
@@ -62,7 +72,12 @@ export function useDealMover() {
   }
 
   /** Returns false when it's waiting for the reopen dialog. */
-  function request(deal: Deal, stage: Stage, beforeId: number | null, options: MoveOptions = {}): boolean {
+  function request(
+    deal: Deal,
+    stage: Stage,
+    beforeId: number | null,
+    options: MoveOptions = {},
+  ): boolean {
     if (isClosed(deal.stage) && !isClosed(stage)) {
       refocusAfterDialog.current = options.refocus;
       setReopening({ deal, stage, beforeId, options });

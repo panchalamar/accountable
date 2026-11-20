@@ -150,9 +150,7 @@ def upgrade() -> None:
         sa.Column("from_stage", sa.String(length=20), nullable=False),
         sa.Column("to_stage", sa.String(length=20), nullable=False),
         sa.Column("changed_at", sa.DateTime(), nullable=False),
-        sa.CheckConstraint(
-            f"from_stage IN ({STAGES})", name=op.f("ck_stage_changes_from_stage")
-        ),
+        sa.CheckConstraint(f"from_stage IN ({STAGES})", name=op.f("ck_stage_changes_from_stage")),
         sa.CheckConstraint(f"to_stage IN ({STAGES})", name=op.f("ck_stage_changes_to_stage")),
         sa.ForeignKeyConstraint(
             ["deal_id"],

@@ -10,7 +10,10 @@ const LINK = "text-primary hover:underline";
 
 function Icon({ children }: { children: React.ReactNode }) {
   return (
-    <span className="grid h-7 w-7 place-items-center rounded-full bg-sea-mist/12 text-sea-mist" aria-hidden="true">
+    <span
+      className="grid h-7 w-7 place-items-center rounded-full bg-sea-mist/12 text-sea-mist"
+      aria-hidden="true"
+    >
       {children}
     </span>
   );
@@ -24,14 +27,19 @@ export function RecentActivity({ items }: { items: RecentItem[] }) {
         Recent activity
       </h2>
       {items.length === 0 ? (
-        <p className="mt-2.5 text-[13.5px] text-sea-mist">Nothing yet. Activities and stage changes show here.</p>
+        <p className="mt-2.5 text-[13.5px] text-sea-mist">
+          Nothing yet. Activities and stage changes show here.
+        </p>
       ) : (
         <ol className="mt-2.5">
           {items.map((item, i) => {
             const divider = i ? "shadow-[inset_0_1px_0_rgba(205,216,219,0.16)]" : "";
             if (item.kind === "stage_change") {
               return (
-                <li key={`s${item.id}`} className={`grid grid-cols-[28px_minmax(0,1fr)] gap-3 py-[9px] ${divider}`}>
+                <li
+                  key={`s${item.id}`}
+                  className={`grid grid-cols-[28px_minmax(0,1fr)] gap-3 py-[9px] ${divider}`}
+                >
                   <Icon>
                     <ArrowRight size={14} />
                   </Icon>
@@ -54,7 +62,10 @@ export function RecentActivity({ items }: { items: RecentItem[] }) {
             }
             const TypeIcon = TYPE_ICON[item.type];
             return (
-              <li key={`a${item.id}`} className={`grid grid-cols-[28px_minmax(0,1fr)] gap-3 py-[9px] ${divider}`}>
+              <li
+                key={`a${item.id}`}
+                className={`grid grid-cols-[28px_minmax(0,1fr)] gap-3 py-[9px] ${divider}`}
+              >
                 <Icon>
                   <TypeIcon size={14} />
                 </Icon>

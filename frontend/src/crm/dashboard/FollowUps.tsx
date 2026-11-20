@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { Link } from "react-router";
 
 import type { FollowUp } from "../api";
@@ -39,26 +39,23 @@ function Timing({ days }: { days: number }) {
 // off the list; focus moves to the next one, so a keyboard user isn't lost.
 export function FollowUps({ overdue, upcoming }: Props) {
   const [hidden, setHidden] = useState<Set<number>>(new Set());
-  const [focusTarget, setFocusTarget] = useState<string | null>(null);
+  const [shown, setShown] = useState({ overdue, upcoming });
 
   // Once the server's list no longer has a ticked item, forget it.
-  useEffect(() => {
+  if (shown.overdue !== overdue || shown.upcoming !== upcoming) {
+    setShown({ overdue, upcoming });
     const present = new Set([...overdue, ...upcoming].map((f) => f.id));
-    setHidden((current) => {
-      const kept = [...current].filter((id) => present.has(id));
-      return kept.length === current.size ? current : new Set(kept);
-    });
-  }, [overdue, upcoming]);
-
-  useEffect(() => {
-    if (focusTarget) {
-      document.getElementById(focusTarget)?.focus();
-      setFocusTarget(null);
-    }
-  }, [focusTarget]);
+    const kept = [...hidden].filter((id) => present.has(id));
+    if (kept.length !== hidden.size) setHidden(new Set(kept));
+  }
 
   const groups = [
-    { key: "overdue", title: "Overdue", items: overdue.filter((f) => !hidden.has(f.id)), empty: "Nothing overdue." },
+    {
+      key: "overdue",
+      title: "Overdue",
+      items: overdue.filter((f) => !hidden.has(f.id)),
+      empty: "Nothing overdue.",
+    },
     {
       key: "upcoming",
       title: "Next 7 days",
@@ -72,7 +69,8 @@ export function FollowUps({ overdue, upcoming }: Props) {
     const at = group.items.findIndex((f) => f.id === item.id);
     const next = group.items[at + 1] ?? group.items[at - 1];
     setHidden((current) => new Set(current).add(item.id));
-    setFocusTarget(next ? boxId(next.id) : `follow-ups-${group.key}`);
+    // The next item, or the group's heading, stays on screen after this one goes.
+    document.getElementById(next ? boxId(next.id) : `follow-ups-${group.key}`)?.focus();
   }
 
   return (
@@ -126,16 +124,24 @@ export function FollowUps({ overdue, upcoming }: Props) {
                     />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-[14.5px] font-medium leading-[1.4] text-white">{item.description}</p>
+                    <p className="text-[14.5px] font-medium leading-[1.4] text-white">
+                      {item.description}
+                    </p>
                     <p className="mt-0.5 text-[13px] leading-[1.4]">
                       {item.contact ? (
-                        <Link to={`/contacts/${item.contact.id}`} className="text-primary hover:underline">
+                        <Link
+                          to={`/contacts/${item.contact.id}`}
+                          className="text-primary hover:underline"
+                        >
                           {item.contact.name}
                         </Link>
                       ) : null}
                       {item.contact && item.deal ? <span className="text-sea-mist">, </span> : null}
                       {item.deal ? (
-                        <Link to={`/deals/${item.deal.id}`} className="text-primary hover:underline">
+                        <Link
+                          to={`/deals/${item.deal.id}`}
+                          className="text-primary hover:underline"
+                        >
                           {item.deal.name}
                         </Link>
                       ) : null}

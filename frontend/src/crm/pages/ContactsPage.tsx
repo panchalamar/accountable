@@ -57,7 +57,12 @@ export function ContactsPage() {
             </a>
           ) : null,
       },
-      { id: "phone", header: "Phone", text: (c) => c.phone ?? "", render: (c) => <span className="whitespace-nowrap">{c.phone}</span> },
+      {
+        id: "phone",
+        header: "Phone",
+        text: (c) => c.phone ?? "",
+        render: (c) => <span className="whitespace-nowrap">{c.phone}</span>,
+      },
       {
         id: "status",
         header: "Status",
@@ -70,7 +75,14 @@ export function ContactsPage() {
   );
 
   if (contacts.isError) {
-    return <LoadFailed error={contacts.error} title="Contacts" backTo="/" backLabel="Go to the dashboard" />;
+    return (
+      <LoadFailed
+        error={contacts.error}
+        title="Contacts"
+        backTo="/"
+        backLabel="Go to the dashboard"
+      />
+    );
   }
   const all = contacts.data ?? [];
   const counts: Record<StatusChoice, number> = {
@@ -87,7 +99,11 @@ export function ContactsPage() {
         title="Contacts"
         context={contacts.data ? countLabel(all.length, all.length, "contact", "contacts") : null}
         actions={
-          <button type="button" className="btn btn-primary h-[42px]" onClick={() => setAdding(true)}>
+          <button
+            type="button"
+            className="btn btn-primary h-[42px]"
+            onClick={() => setAdding(true)}
+          >
             <Plus size={18} aria-hidden="true" />
             Add contact
           </button>
@@ -117,12 +133,20 @@ export function ContactsPage() {
                 ? "No contacts yet. Add the people you deal with."
                 : `No contacts with the status ${STATUS_LABEL[status]}.`
             }
-            rowActions={(c) => <RowActions name={c.name} onEdit={() => setEditing(c)} onDelete={() => setDeleting(c)} />}
+            rowActions={(c) => (
+              <RowActions
+                name={c.name}
+                onEdit={() => setEditing(c)}
+                onDelete={() => setDeleting(c)}
+              />
+            )}
           />
         </section>
       )}
       <ContactForm open={adding} onOpenChange={setAdding} />
-      {editing ? <ContactForm open onOpenChange={(open) => !open && setEditing(null)} contact={editing} /> : null}
+      {editing ? (
+        <ContactForm open onOpenChange={(open) => !open && setEditing(null)} contact={editing} />
+      ) : null}
       {deleting ? (
         <DeleteDialog
           kind="contact"

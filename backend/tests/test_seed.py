@@ -43,7 +43,9 @@ def rows(path: Path, query) -> list[dict]:
 def add_org(path: Path, name: str) -> None:
     engine = create_engine(sqlite_url(path))
     with engine.begin() as conn:
-        conn.execute(insert(organizations).values(name=name, created_at=clock.now(), updated_at=clock.now()))
+        conn.execute(
+            insert(organizations).values(name=name, created_at=clock.now(), updated_at=clock.now())
+        )
     engine.dispose()
 
 
@@ -98,7 +100,9 @@ def test_yes_flag_skips_the_question(database):
     code, asked, _said = run("--yes")
     assert code == 0 and asked == []
     assert "Mine" not in [o["name"] for o in rows(database, select(organizations))]
-    assert re.fullmatch(r"accountable-\d{8}-\d{6}\.db", next((database.parent / "backups").iterdir()).name)
+    assert re.fullmatch(
+        r"accountable-\d{8}-\d{6}\.db", next((database.parent / "backups").iterdir()).name
+    )
 
 
 def test_with_no_database_it_creates_one_and_makes_no_backup(database):
@@ -118,7 +122,9 @@ def test_seeding_on_two_days_shifts_the_dates_by_the_same_number_of_days(databas
             if d["stage"] not in ("won", "lost")
         ]
         lost_closes = [
-            d["close_date"] for d in rows(database, select(deals).order_by(deals.c.name)) if d["stage"] == "lost"
+            d["close_date"]
+            for d in rows(database, select(deals).order_by(deals.c.name))
+            if d["stage"] == "lost"
         ]
         follow_ups = [
             a["follow_up_date"]
