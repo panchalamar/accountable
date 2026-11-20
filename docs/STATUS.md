@@ -162,6 +162,10 @@ Found while testing the fixes:
 - AGENTS.md: `docs/spec.md` is the first thing to read, and only the current branch's change folder gets read.
 - `docs/REVIEW.md`: a new pass flags code that `docs/spec.md` doesn't describe, and the plan pass points at the change's own `plan.md`.
 
+### Coding standards
+
+- `docs/STANDARDS.md`, written by hand, says how code is written here. AGENTS.md points to it, and `docs/REVIEW.md` has a pass that checks each change against it.
+
 ## Bugs
 
 - Editing an organization: the Industry dropdown shows only the current industry, since the browser filters the datalist by what is already in the box. It should list every industry in use (spec: "suggests industries already in use"). Confirmed in Chrome: the arrow also shows only the current industry; clearing the box shows all 9.
