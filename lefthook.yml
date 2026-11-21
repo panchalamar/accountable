@@ -1,0 +1,49 @@
+# Git hooks, set up by `npm install`. Before each commit: format the staged
+# files and stage the result, then lint, type-check and scan for secrets.
+# The same tools as `npm run check`, minus the tests, so it stays quick.
+# Lint and formatting look at the staged files; tsc and ty check their whole
+# side, since a change in one file can break the types of another.
+# `git commit --no-verify` skips it once.
+#
+# A file that's only partly staged gets its staged part formatted. lefthook
+# then puts the unstaged lines back by line number, so if formatting added or
+# removed lines above them, unstaged lines you added can land a few lines off.
+# The commit is always right. Stage whole files, or `npm run format` first.
+
+# With doublestar, `backend/**/*.py` also matches files directly in backend/.
+glob_matcher: doublestar
+
+pre-commit:
+  piped: true
+  jobs:
+    - name: format
+      group:
+        parallel: true
+        jobs:
+          - name: prettier
+            glob: "frontend/**"
+            run: npx prettier --write --ignore-unknown {staged_files}
+            stage_fixed: true
+          - name: ruff format
+            glob: "backend/**/*.py"
+            run: uv run ruff format {staged_files} && uv run ruff check --fix --select I {staged_files}
+            stage_fixed: true
+
+    - name: check
+      group:
+        parallel: true
+        jobs:
+          - name: eslint
+            glob: "frontend/**/*.{ts,tsx,js,jsx,mjs,cjs}"
+            run: npx eslint --max-warnings 0 --no-warn-ignored {staged_files}
+          - name: tsc
+            glob: "frontend/**/*.{ts,tsx,json}"
+            run: npm run typecheck -w frontend
+          - name: ruff check
+            glob: "backend/**/*.py"
+            run: uv run ruff check {staged_files}
+          - name: ty
+            glob: "backend/**/*.py"
+            run: uv run ty check backend
+          - name: gitleaks
+            run: gitleaks git --pre-commit --staged --no-banner --redact .

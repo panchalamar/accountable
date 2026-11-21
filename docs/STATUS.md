@@ -173,6 +173,13 @@ Found while testing the fixes:
 - Fixes to pass them, with no rule loosened or silenced: FastAPI dependencies use `Annotated` (`EngineDep`), ty's None and handler-type findings are narrowed properly, the four big form components are split up, and FollowUps and OrganizationPage no longer set state in effects. The deal form's "Add a contact at ..." link now asks for the form through router state instead of `?add=contact`.
 - Frontend unit coverage went from 47% to 99% of lines; the backend is at 98%.
 
+### Hooks
+
+- **Pre-commit (lefthook, `lefthook.yml`)**: Prettier on staged `frontend/` files and `ruff format` plus import sorting on staged `backend/` Python, with the result staged; then ESLint and `ruff check` on the staged files, tsc and ty over their whole side, and `gitleaks git --pre-commit --staged`. No tests. Jobs skip when nothing staged matches, so a typical commit takes 1 to 2 seconds. `npm install` sets it up (lefthook is in `allowScripts`); `git commit --no-verify` skips it. The approval names lefthook 2.2.2, so after upgrading lefthook run `npm install-scripts approve lefthook`, or fresh clones won't get the hook.
+- **Claude Code (`.claude/settings.json`, scripts in `.claude/hooks/`)**: a Stop hook runs `npm run check:quick` (about 20 seconds) when Claude finishes a turn, and on failure sends Claude back once with only the failing steps' output. The next stop is let through without a rerun, so it can't loop. A PreToolUse hook blocks Edit, Write and NotebookEdit on any file named `.env`, and Bash commands that name a `.env` file. The Bash check reads the command's text, so a command that reaches `.env` without naming it gets through, and one that only mentions it is refused too: `ls .env`, or a commit message that says ".env" (use `git commit -F <file>`).
+- Tested: every failure kind (ESLint, tsc, ruff check, ty, gitleaks, a file Prettier can't parse) refused a real `git commit`; formatting was staged; the Stop hook blocked exactly once in nested `claude -p` sessions, both when Claude couldn't fix the failure and when it fixed it; the `.env` guard blocked Write in a nested session and Bash in this one.
+- Known limit: in a partly staged file, lefthook puts the unstaged lines back by line number after formatting, so added lines can land a few lines off if formatting changed the line count above them. The commit is right. Same as lint-staged.
+
 ## Bugs
 
 - Editing an organization: the Industry dropdown shows only the current industry, since the browser filters the datalist by what is already in the box. It should list every industry in use (spec: "suggests industries already in use"). Confirmed in Chrome: the arrow also shows only the current industry; clearing the box shows all 9.
