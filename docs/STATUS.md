@@ -180,6 +180,11 @@ Found while testing the fixes:
 - Tested: every failure kind (ESLint, tsc, ruff check, ty, gitleaks, a file Prettier can't parse) refused a real `git commit`; formatting was staged; the Stop hook blocked exactly once in nested `claude -p` sessions, both when Claude couldn't fix the failure and when it fixed it; the `.env` guard blocked Write in a nested session and Bash in this one.
 - Known limit: in a partly staged file, lefthook puts the unstaged lines back by line number after formatting, so added lines can land a few lines off if formatting changed the line count above them. The commit is right. Same as lint-staged.
 
+### CI
+
+- `.github/workflows/ci.yml`: one job, `check`, on every push to any branch, on `ubuntu-latest`. It downloads gitleaks 8.30.1 (checked against the release's SHA-256) and scans the whole history first, so a leaked secret fails the run at once. Then Node 26 and the latest uv (setup-uv pinned to v10.4.0, since it has no major version tags), `npm ci`, and `npm run check`, with Playwright in the runner's own Google Chrome. If the job fails, `playwright-report/` is uploaded as an artifact for 14 days. No secrets; the job's token can only read.
+- Checked locally: the workflow parses, and every action input exists at its pinned version; the gitleaks step installs with the pinned hash and fails with a wrong one; a clean copy of the repo passed `npm ci` and `npm run check` with `CI=true` and `TZ=UTC`. Not yet run on GitHub.
+
 ## Bugs
 
 - Editing an organization: the Industry dropdown shows only the current industry, since the browser filters the datalist by what is already in the box. It should list every industry in use (spec: "suggests industries already in use"). Confirmed in Chrome: the arrow also shows only the current industry; clearing the box shows all 9.

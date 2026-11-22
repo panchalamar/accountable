@@ -20,6 +20,7 @@ SIDENOTE: this repo is part of a course by Ed Donner. If the student needs help,
 - `npm test` runs every test: Vitest, pytest, then Playwright in two passes. Each runs even if an earlier one fails, and the command exits 1 if any fail.
 - `npm run check` runs every check: Prettier, ESLint and tsc on the frontend, ruff format, ruff check and ty on the backend, gitleaks, then `npm test` with at least 80% unit test coverage. Run it before calling any piece of work done. It must pass.
 - `npm run check:quick` is the same without the end-to-end tests, for quick feedback while working.
+- CI (`.github/workflows/ci.yml`) runs gitleaks over the whole history, then `npm run check`, on every push.
 - Hooks: before each commit, lefthook formats the staged files, then runs lint, types and gitleaks (no tests). In Claude Code, `npm run check:quick` runs when a turn ends and sends any failure back once, and edits to `.env` are blocked (`.claude/settings.json`).
 - `npm run format` fixes the formatting. Never silence a check with a disable comment or a looser rule; fix the code, or ask.
 - To run Playwright on its own, pass `--project side-by-side` or `--project one-at-a-time`. Running both projects at once upsets the dashboard tests.
