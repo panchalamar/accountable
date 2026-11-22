@@ -18,9 +18,9 @@ const steps = [
   { name: "ruff format", command: "uv", args: ["run", "ruff", "format", "--check", "backend"] },
   { name: "ruff check", command: "uv", args: ["run", "ruff", "check", "backend"] },
   { name: "ty", command: "uv", args: ["run", "ty", "check", "backend"] },
-  { name: "gitleaks, history", command: "gitleaks", args: ["git", "--no-banner", "--redact", "."] },
+  { name: "gitleaks, history", command: "gitleaks", args: ["git", "--no-banner", "--redact", "--verbose", "."] },
   // .gitleaks.toml lets the git-ignored .env through.
-  { name: "gitleaks, working tree", command: "gitleaks", args: ["dir", "--no-banner", "--redact", "."] },
+  { name: "gitleaks, working tree", command: "gitleaks", args: ["dir", "--no-banner", "--redact", "--verbose", "."] },
   {
     name: quick ? "Unit tests with coverage" : "All tests with coverage",
     command: "node",

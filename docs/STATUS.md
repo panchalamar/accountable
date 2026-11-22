@@ -169,6 +169,7 @@ Found while testing the fixes:
 ### Checks
 
 - `npm run check` runs Prettier, ESLint (recommended TypeScript, React Hooks and jsx-a11y rules, complexity at most 15) and tsc on the frontend, ruff format, ruff check (its defaults plus import order and C901 at 15) and ty on the backend, gitleaks over the git history and the working tree (`.gitleaks.toml` lets the git-ignored `.env` through), then `npm test` with at least 80% unit test coverage. `npm run check:quick` skips Playwright; `npm run format` fixes formatting.
+- gitleaks runs with `--redact --verbose` everywhere (here, the pre-commit hook and CI), so a finding shows its rule, file and line but never the secret. Its generic rule only sees a made-up key of letters, digits and `_-.=`; one with a `[` in it got through.
 - ESLint runs on TypeScript 6, installed at the root, since typescript-eslint doesn't support 7 yet. `tsc` still uses the frontend's TypeScript 7.
 - Fixes to pass them, with no rule loosened or silenced: FastAPI dependencies use `Annotated` (`EngineDep`), ty's None and handler-type findings are narrowed properly, the four big form components are split up, and FollowUps and OrganizationPage no longer set state in effects. The deal form's "Add a contact at ..." link now asks for the form through router state instead of `?add=contact`.
 - Frontend unit coverage went from 47% to 99% of lines; the backend is at 98%.

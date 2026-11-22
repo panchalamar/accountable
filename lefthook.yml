@@ -46,4 +46,4 @@ pre-commit:
             glob: "backend/**/*.py"
             run: uv run ty check backend
           - name: gitleaks
-            run: gitleaks git --pre-commit --staged --no-banner --redact .
+            run: gitleaks git --pre-commit --staged --no-banner --redact --verbose .
